@@ -13,8 +13,8 @@ import { Rating } from "primereact/rating";
 
 import { InputText } from "primereact/inputtext";
 
-import AutocompleteMui from "../Components/Autocmplemoassat";
-import Controls from "../Components/FormsUi/Control";
+import AutocompleteMui from "../../Components/Autocmplemoassat";
+import Controls from "../../Components/FormsUi/Control";
 
 import { Container, Grid, Paper } from "@material-ui/core";
 import ButtonMui from "@material-ui/core/Button";
@@ -29,6 +29,8 @@ import { useTheme } from "@material-ui/core/styles";
 import * as Yup from "yup";
 import axios from "axios";
 import Draggable from 'react-draggable';
+import { useRouter } from "next/router";
+
 
 function PaperComponent(props) {
   return (
@@ -51,20 +53,18 @@ const FORM_VALIDATION = Yup.object().shape({
   forced: Yup.number().integer().required("حقل الزامي"),
   vacancy: Yup.number().integer().required("حقل الزامي"),
   surplus: Yup.number().integer().required("حقل الزامي"),
-  moassa: Yup.object({
-    EtabMatricule:Yup.number().positive().required("حقل الزامي"),
-    EtabNom:Yup.string().required("حقل الزامي"),
-    bladia:Yup.string().required("حقل الزامي"),
-  }).nullable().required("حقل الزامي"),
+  moassa: Yup.mixed().required("حقل الزامي").nullable(),
   daira: Yup.string().required("حقل الزامي").nullable(),
 });
 const DataTableCrud = (res) => {
+    const rouet = useRouter();
+    console.log(rouet);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const [data, setdata] = useState([...res.data]);
 /************************getMoassat********************************* */
-  const fetcher = async (url,param='') => {
-    const res = await axios.get(url, {
+  const fetcher = async (param) => {
+    const res = await axios.get(`/api/hello`, {
       params: {
         ...param,
       },
@@ -74,7 +74,7 @@ const DataTableCrud = (res) => {
     return data;
   };
   const postData = async (values) => {
-    const res = await axios.post(`/api/postdata`, values);
+    const res = await axios.post(`/api/hello`, values);
     console.log(res.data);
     return res;
   };
@@ -101,16 +101,7 @@ const DataTableCrud = (res) => {
   
   const dt = useRef(null);
  
-useEffect(() => {
-  fetcher('api/schools').then((res)=>{
-    if (res.length) {
-       setProducts(res)
-    }
-   
-  }
-  )
- 
-}, [])
+
  
 
   const editProduct = (product) => {
@@ -172,7 +163,7 @@ useEffect(() => {
     setDisble(true);
     if (data.includes(newInputValue)) {
       if (!gobalOptions[newInputValue]) {
-        fetcher(`/api/hello`,{ daira_name: newInputValue })
+        fetcher({ daira_name: newInputValue })
           .then(function (response) {
             setGobalOptions((prev) => {
               return {
@@ -243,13 +234,10 @@ useEffect(() => {
     // const test =  products&&products.map((word) => {
     //      return word.moassa === values.moassa?[...prev,values]:[...prev,values]})
   };
-/**********************indexOfValueInDataList************************ */
+/**********************lengthList************************ */
+const lengthList = (data,index) =>  <div>{index.rowIndex+1}</div>
 
-const indexOfValueInDataList = (data,props) =>  {
- const indexOfValue = products.findIndex(x => x.moassa.EtabMatricule === props.rowData.moassa.EtabMatricule);
-return <div>{indexOfValue+1}</div>
-}
-/**********************indexOfValueInDataList************************ */
+/**********************lengthList************************ */
   return (
     <div className="datatable-crud">
       <div>
@@ -380,7 +368,7 @@ return <div>{indexOfValue+1}</div>
       <div className="card">
         <DataTable
           ref={dt}
-          value={products||[]}
+          value={products}
           selection={selectedMoassa}
           onSelectionChange={(e) => setSelectedMoassa(e.value)}
           dataKey="id"
@@ -399,9 +387,9 @@ return <div>{indexOfValue+1}</div>
         >
           <Column selectionMode="multiple"></Column>
           <Column field="daira" header="الدائرة"></Column>
-          <Column field='index' header="الرقم" body={indexOfValueInDataList}></Column>
+          <Column field='len' header="الرقم" body={lengthList}></Column>
 
-          <Column field="moassa.bladia" header="البلدية" sortable></Column>
+          <Column field="moassa.bladia" header="البلدية"></Column>
           <Column field="moassa.EtabNom" header="المؤسسة" sortable></Column>
           <Column
             field="moassa.EtabMatricule"
