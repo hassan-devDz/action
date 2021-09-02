@@ -1,4 +1,4 @@
-import middleware from "../../mongo/connectDb";
+import middleware from "../../middleware/connectDb";
 import nextConnect from "next-connect";
 
 const handler = nextConnect();
@@ -6,7 +6,7 @@ const handler = nextConnect();
 handler.use(middleware);
 handler.get(async (req, res) => {
   const query = await req.query;
-  console.log(query);
+  
 
   const key_query = Object.keys(query)[0];
   const dararIsTrue = [

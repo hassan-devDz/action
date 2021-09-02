@@ -39,7 +39,7 @@ function PaperComponent(props) {
 }
 
 const INITIAL_FORM_STATE = {
-  potential_vacancy: 0, //محتمل
+  potentialVacancy: 0, //محتمل
   forced: 0, //مجبر
   vacancy: 0, //شاغر
   surplus: 0, //فائض
@@ -47,7 +47,7 @@ const INITIAL_FORM_STATE = {
   daira: null,
 };
 const FORM_VALIDATION = Yup.object().shape({
-  potential_vacancy: Yup.number().integer().required("حقل الزامي"),
+  potentialVacancy: Yup.number().integer().required("حقل الزامي"),
   forced: Yup.number().integer().required("حقل الزامي"),
   vacancy: Yup.number().integer().required("حقل الزامي"),
   surplus: Yup.number().integer().required("حقل الزامي"),
@@ -287,7 +287,7 @@ return <div>{indexOfValue+1}</div>
                     </Grid>
                     <Grid item xs={3}>
                       <Controls.Textfield
-                        name={"potential_vacancy"}
+                        name={"potentialVacancy"}
                         label={"محتمل الشغور"}
                         InputProps={{
                           inputComponent: Controls.NumberFormatCustom,
@@ -408,7 +408,7 @@ return <div>{indexOfValue+1}</div>
             header="رقم المؤسسة"
             sortable
           ></Column>
-          <Column field="potential_vacancy" header="محتمل الشغور">
+          <Column field="potentialVacancy" header="محتمل الشغور">
             {/* body={imageBodyTemplate}*/}
           </Column>
           <Column field="forced" header="مجبر" sortable>
