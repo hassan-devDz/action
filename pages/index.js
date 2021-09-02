@@ -427,7 +427,9 @@ return <div>{indexOfValue+1}</div>
 };
 
 export async function getServerSideProps() {
-  const res = await fetch(`https://harak.vercel.app/api/hello`);
+  const urlBass = process.env.URL_BASE
+  console.log(urlBass);
+  const res = await fetch( `${urlBass}api/hello`);
   const data = await res.json();
 
   return {
