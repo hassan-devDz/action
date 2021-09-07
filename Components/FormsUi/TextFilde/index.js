@@ -9,7 +9,7 @@ const TextfieldWrapper = ({
   const { setFieldValue } = useFormikContext();
   const [field, mata] = useField(name);
   const handleChange = (evt) => {
-   
+   console.log(evt);
     const onlyNums = evt.target.value;
    const { value } = evt.target;
    if ( +value == value) {

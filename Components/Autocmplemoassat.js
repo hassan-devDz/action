@@ -54,6 +54,7 @@ function useResetCache(data) {
 
 // Adapter for react-window
 const ListboxComponent = forwardRef(function ListboxComponent(props, ref) {
+  
   const { children, ...other } = props;
   const itemData = React.Children.toArray(children);
 

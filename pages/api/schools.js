@@ -1,4 +1,4 @@
-import middleware from "../../mongo/connectDb";
+import middleware from "../../middleware/connectDb";
 import nextConnect from "next-connect";
 
 const handler = nextConnect();

@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Scheherazade:wght@400;700&display=swap');
 html,
 body {
     padding: 0;
@@ -13869,8 +13870,16 @@ template {
     display: none;
 }
 
+.p-paginator.p-component.p-paginator-bottom {
+    margin-top: 15px;
+}
 
-/* cairo-regular - arabic */
+
+/*
+////////////////////////////////////
+///  FONT CAIRO-REGULAR - ARABIC  //
+////////////////////////////////////
+*/
 
 @font-face {
     font-family: 'Cairo';
