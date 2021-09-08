@@ -4,14 +4,14 @@ import "primeicons/primeicons.css";
 
 import "primeflex/primeflex.css";
 
-import { DataTable } from "primereact-test/datatable";
-import { Column } from "primereact-test/column";
+import { DataTable } from "hassanreact/datatable";
+import { Column } from "hassanreact/column";
 
-import { Button } from "primereact-test/button";
+import { Button } from "hassanreact/button";
 
-import { Rating } from "primereact-test/rating";
+import { Rating } from "hassanreact/rating";
 
-import { InputText } from "primereact-test/inputtext";
+import { InputText } from "hassanreact/inputtext";
 
 import AutocompleteMui from "../../Components/Autocmplemoassat";
 import Controls from "../../Components/FormsUi/Control";
