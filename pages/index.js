@@ -4,15 +4,15 @@ import "primeicons/primeicons.css";
 
 import "primeflex/primeflex.css";
 
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
+import { DataTable } from "primereact-test/datatable";
+import { Column } from "primereact-test/column";
 import CloudDownloadTwoToneIcon from '@material-ui/icons/CloudDownloadTwoTone';
-import { Button } from "primereact/button";
+import { Button } from "primereact-test/button";
 import CloudUploadTwoToneIcon from '@material-ui/icons/CloudUploadTwoTone';
-import { Rating } from "primereact/rating";
+import { Rating } from "primereact-test/rating";
 import AddTwoToneIcon from '@material-ui/icons/AddTwoTone';
 import Tooltip from '@material-ui/core/Tooltip';
-import { InputText } from "primereact/inputtext";
+import { InputText } from "primereact-test/inputtext";
 import SchoolTwoToneIcon from '@material-ui/icons/SchoolTwoTone';
 import AutocompleteMui from "../Components/Autocmplemoassat";
 import Controls from "../Components/FormsUi/Control";
