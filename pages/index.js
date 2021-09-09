@@ -268,7 +268,7 @@ const DataTableCrud = (res) => {
   };
   /**********************indexOfValueInDataList************************ */
   /********************edit Rows**************************** */
-
+const [editListOfMoassat, setEditListOfMoassat] = useState([])
   const onRowEditInit = (event) => {
     originalRows[event.index] = { ...products[event.index] };
   };
@@ -287,7 +287,7 @@ const DataTableCrud = (res) => {
   const onEditorValueChange = (props, value) => {
     let updatedProducts = [...props.value];
     updatedProducts[props.rowIndex][props.field] = value;
-
+    console.log(props.value);
     setProducts(updatedProducts);
   };
 
