@@ -109,7 +109,7 @@ const Static = (prpos) => {
               direction="column"
             >
               <Typography
-                variant="h6"
+                variant="body1"
                 component="h4"
                 align="left"
                 
