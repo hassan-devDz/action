@@ -481,9 +481,7 @@ const replaceStrIcon = (rowData,parms) => {
        <Grid container spacing={2} justifyContent='center'>
          <Grid item xs={12} sm={9}>
       <Paper elevation={3} style={{padding:10}}>
-      <Typography variant="h4" component="h1"  align="center">
-    الجمهورية الجزائري
-      </Typography>
+      
       <Typography variant="h4" component="h1"  align="center">
        جدول الحركة التنقلية للموسم 2021/2022
       </Typography></Paper></Grid>
