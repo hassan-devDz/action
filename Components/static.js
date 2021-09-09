@@ -112,7 +112,7 @@ const Static = (prpos) => {
                 variant="body1"
                 component="h4"
                 align="left"
-                
+                gutterBottom
                 color="textSecondary"
                 style={{ fontWeight: 700 }}
               >
