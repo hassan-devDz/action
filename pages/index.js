@@ -78,7 +78,7 @@ const themebutton = createTheme({
     },
   },
 });
-let originalRows = {};
+
 let editorRow = {};
 const INITIAL_FORM_STATE = {
   potentialVacancy: 0, //محتمل
@@ -102,7 +102,9 @@ const FORM_VALIDATION = Yup.object().shape({
     .required("حقل الزامي"),
   daira: Yup.string().required("حقل الزامي").nullable(),
 });
+let originalRows = {};
 const DataTableCrud = (res) => {
+  
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
@@ -141,7 +143,7 @@ const DataTableCrud = (res) => {
 
   const [selectedMoassa, setSelectedMoassa] = useState([]);
   const onSelected = (e) => {
-    console.log(e,selectedMoassa);
+    
     setSelectedMoassa(e.value)
   }
 
@@ -161,7 +163,7 @@ const DataTableCrud = (res) => {
   /*******************EitMoassa********************* */
   const [editMoassa, setEitMoassa] = useState({});
 
-  console.log(editMoassa);
+ 
   const confirmDeleteProduct = (product) => {
     setEitMoassa(product);
     //setDeleteProductDialog(true);
@@ -215,6 +217,7 @@ const DataTableCrud = (res) => {
 
   /*****************************dialugMui*********** */
   const [open, setOpen] = useState(false);
+  const [disbleSorted, setdisbleSorted] = useState(true);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -268,27 +271,48 @@ const DataTableCrud = (res) => {
   };
   /**********************indexOfValueInDataList************************ */
   /********************edit Rows**************************** */
-const [editListOfMoassat, setEditListOfMoassat] = useState([])
+const isEqual = (first,second) => {
+  return JSON.stringify(first)===JSON.stringify(second)
+}
+
   const onRowEditInit = (event) => {
-    originalRows[event.index] = { ...products[event.index] };
+    const indexOfValue = products.findIndex(
+      (x) => x.moassa.EtabMatricule === event.data.moassa.EtabMatricule
+    );
+    originalRows[indexOfValue] = { ...products[indexOfValue] };
+    console.log(originalRows[indexOfValue]);
   };
 
   const onRowEditCancel = (event) => {
+    const indexOfValue = products.findIndex(
+      (x) => x.moassa.EtabMatricule === event.data.moassa.EtabMatricule
+    );
     let _products = [...products];
-    _products[event.index] = originalRows[event.index];
-    delete originalRows[event.index];
+    _products[indexOfValue] = originalRows[indexOfValue];
+    delete originalRows[indexOfValue];
 
     setProducts(_products);
+    
   };
 
   const onRowEditSave = (props) => {
-    console.log(props, originalRows);
+   
+    
   };
   const onEditorValueChange = (props, value) => {
-    let updatedProducts = [...props.value];
-    updatedProducts[props.rowIndex][props.field] = value;
-    console.log(props.value);
+    
+    let updatedProducts = [...products];
+    const indexOfValue = updatedProducts.findIndex(
+      (x) => x.moassa.EtabMatricule === props.rowData.moassa.EtabMatricule
+    );
+    props.rowData[props.field]=value
+    updatedProducts[indexOfValue][props.field] = value;
+    console.log(props.rowData.moassa.EtabMatricule);
+    //console.log(props,value,updatedProducts[props.rowIndex][props.field],isEqual(props.rowData,originalRows[props.rowIndex]));
     setProducts(updatedProducts);
+   
+    
+    
   };
 
   const inputTextEditor = (props) => {
@@ -307,27 +331,38 @@ const [editListOfMoassat, setEditListOfMoassat] = useState([])
   };
 
   const actionBodyTemplate1 = (rowData, props) => {
+    if (props.editing) {
+      setdisbleSorted(false)
+    }
+    const indexOfValue = products.findIndex(
+      (x) => x.moassa.EtabMatricule === props.rowData.moassa.EtabMatricule
+    );
     const it = props.rowEditor.onInitClick;
     
+    
     const onRowEditInitCh = (e) => {
-      console.log(e, rowData, props.rowIndex, props.editing);
+      setdisbleSorted(false)
 
       it(e);
     };
     const con = props.rowEditor.onCancelClick;
 
     const onRowEditInitconsol = (e) => {
-      console.log(e, rowData, props.rowIndex, props.editing);
-      props.rowEditor.saveIconClassName = "datatable-crud";
+      
+      setdisbleSorted(true)
 
       con(e);
     };
     const sav = props.rowEditor.onSaveClick;
     const onRowEditInitSave = (e) => {
+      setdisbleSorted(true)
+      console.log(e);
       sav(e);
     };
-
+   
+    
     if (props.editing) {
+      
       return (
         <>
           <Grid container justifyContent="center" spacing={2}>
@@ -349,6 +384,7 @@ const [editListOfMoassat, setEditListOfMoassat] = useState([])
                 color="secondary"
                 aria-label="save edits "
                 onClick={onRowEditInitSave}
+                disabled={isEqual(props.rowData,originalRows[indexOfValue])}
               >
                 <CheckTwoToneIcon />
               </MyButton>
@@ -441,12 +477,13 @@ const [editListOfMoassat, setEditListOfMoassat] = useState([])
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={2}>
           <TextField
-           
+           disabled={!disbleSorted}
             label="بحــث"
             variant="outlined"
             color="primary"
             style={{ backgroundColor: "#fff" }}
             id="standard-start-adornment"
+            onChange={(e,d)=>console.log(e,d)}
             onInput={(e) => setGlobalFilter(e.target.value)}
             //className={clsx(classes.margin, classes.textField)}
             InputProps={{
@@ -621,16 +658,19 @@ const replaceStrIcon = (rowData,parms) => {
           onRowEditInit={onRowEditInit}
           onRowEditCancel={onRowEditCancel}
           onRowEditSave={onRowEditSave}
+          
           paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+          currentPageReportTemplate="عرض {first} الى {last} من اصل {totalRecords} صفحة"
           globalFilter={globalFilter}
           header={taxtSearch}
           stripedRows
+          
           removableSort
           loading={loading}
           scrollable scrollHeight="500px" frozenWidth="190px"
         >
-          <Column selectionMode="multiple" style={{width:50}} frozen></Column><Column
+          <Column columnKey="multiple" selectionMode="multiple" style={{width:50}} frozen></Column><Column
+          columnKey="index"
             field="index"
             header="الرقم"
             body={indexOfValueInDataList}
@@ -638,18 +678,19 @@ const replaceStrIcon = (rowData,parms) => {
             style={{}}
             frozen
           ></Column>          
-          <Column field="moassa.EtabNom" header="المؤسسة" sortable style={{width:240}} body={replaceStrIcon} ></Column>
+          <Column columnKey="moassa.EtabNom" field="moassa.EtabNom" header="المؤسسة" sortable={disbleSorted} style={{width:240}} body={replaceStrIcon} ></Column>
 
-          <Column field="daira" header="الدائرة" headerStyle={{width:100,padding:7}} style={{padding:7,height:81}} sortable frozen></Column>
+          <Column columnKey="daira" field="daira" header="الدائرة" headerStyle={{width:100,padding:7}} style={{padding:7,height:81}} sortable={disbleSorted} frozen></Column>
           
 
-          <Column field="moassa.bladia" header="البلدية" sortable  headerStyle={{width:100,padding:7}}></Column>
+          <Column columnKey="moassa.bladia" field="moassa.bladia" header="البلدية" sortable={disbleSorted}  headerStyle={{width:100,padding:7}}></Column>
           {/* <Column
             field="moassa.EtabMatricule"
             header="رقم المؤسسة"
-            sortable
+            sortable={disbleSorted}
           ></Column> */}
           <Column
+          columnKey="potentialVacancy"
             field="potentialVacancy"
             header="محتمل الشغور"
             editor={inputTextEditor}
@@ -658,21 +699,23 @@ const replaceStrIcon = (rowData,parms) => {
             {/* body={imageBodyTemplate}*/}
           </Column>
           <Column
+          columnKey="forced"
             field="forced"
             header="مجبر"
-            sortable
+            sortable={disbleSorted}
             editor={inputTextEditor}
             headerStyle={{width:120}}
           >
             {/*body={priceBodyTemplate}*/}
           </Column>
-          <Column field="vacancy" header="شاغر" sortable headerStyle={{width:120}}editor={inputTextEditor}></Column>
-          <Column field="surplus" header="فائض" sortable headerStyle={{width:120}}editor={inputTextEditor}>
+          <Column columnKey="vacancy" field="vacancy" header="شاغر" sortable={disbleSorted} headerStyle={{width:120}}editor={inputTextEditor}></Column>
+          <Column columnKey="surplus" field="surplus" header="فائض" sortable={disbleSorted} headerStyle={{width:120}}editor={inputTextEditor}>
             {/*body={ratingBodyTemplate}*/}
           </Column>
 
         
           <Column
+          columnKey="actionBodyTemplate1"
             rowEditor
             headerStyle={{ width: "7rem" }}
             bodyStyle={{ textAlign: "center", height: 81 }}
