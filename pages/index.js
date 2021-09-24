@@ -243,7 +243,7 @@ const DataTableCrud = (res) => {
   const [editMoassa, setEitMoassa] = useState({});
 
   const deleteProduct = (rowData) => {
-    putData("delete","/api/delete",rowData).then((response) => {
+    putData("put","/api/delete",rowData).then((response) => {
       const newProducts = products.filter((item) => item.moassa.EtabMatricule !== rowData.moassa.EtabMatricule);
         setProducts(newProducts);
         

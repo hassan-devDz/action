@@ -7,7 +7,7 @@ import { moassaSchema } from "../../schemas/schemas_moassa";
 const handler = nextConnect();
 
 handler.use(middleware);
-handler.delete(async (req, res) => {
+handler.put(async (req, res) => {
   /*التاكد من ان المعومات المرسلة موجودة في الداتا*** */
 
   /*^^^^التاكد من ان المعومات المرسلة موجودة في الداتا^^^^*/
@@ -30,6 +30,7 @@ handler.delete(async (req, res) => {
     modifiedCount,
     upsertedCount,
     matchedCount,
+    sample_post,
     "sample_postsample_postsample_post"
   );
 
