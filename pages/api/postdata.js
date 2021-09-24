@@ -9,38 +9,40 @@ const handler = nextConnect();
 handler.use(middleware);
 handler.post(async (req, res) => {
   /****التاكد من ان المعومات المرسلة موجودة في الداتا*** */
-  const data_collection_query = await req.db.collection("Hassan");
-  const data_query = await data_collection_query.findOne({
+  const Hassan_collection_query = await req.db.collection("Hassan");
+  const Hassan_query = await Hassan_collection_query.findOne({
     "daira.daira_name": req.body.daira,
     "daira.commune_name.bladia": req.body.moassa.bladia,
     "daira.commune_name.moassata.EtabMatricule": `${req.body.moassa.EtabMatricule}`,
     "daira.commune_name.moassata.EtabNom": req.body.moassa.EtabNom,
   });
-   if (!data_query) {
-    return res.status(400).json({ error: "معلومات غير صحيحة" });
+   if (!Hassan_query) {
+    return res.status(400).json({ error: "بيانات غير صحيحة" });
   }
   
  /****التاكد من ان المعومات المرسلة موجودة في الداتا*** */
 
-  const data_collection = await req.db.collection("sample");
+  const sample_collection = await req.db.collection("sample");
 
-  const year = await data_collection.findOne({
+  
+  const isExt = await sample_collection.findOne({
     year: "2021",
-  });
-  const isExt = await data_collection.findOne({
-    year: "2021",
-    "schools.moassa.EtabMatricule": { $ne: req.body.moassa.EtabMatricule },
+    "schools.moassa.EtabMatricule": { $eq: req.body.moassa.EtabMatricule },
   });
 
-  if (isExt || !year) {
-    const data_post = await data_collection.updateOne(
+  if ( !isExt ) {
+    const sample_post = await sample_collection.updateOne(
       { year: "2021" },
       { $addToSet: { schools: req.body } },
       { upsert: true }
     );
     return res.status(201).send("ok");
   }
-  return res.status(422).json({ error: "هناك خطأ ما" });
+  if (isExt) {
+    return res.status(422).json({message:"موجود بالفعل"});
+
+  }
+  return res.status(422).json({ message: "هناك خطأ ما" });
 
   //var url = new URL(req.headers.referer);
 });

@@ -64,7 +64,8 @@ const Static = (prpos) => {
                   color="secondary"
                   style={{ fontFamily: "Helvetica", fontWeight: 700 }}
                 >
-                  {prpos.data.length>0?sumForced:<Skeleton width={'50%'} />}
+                  {!prpos.loading?sumForced||0:<Skeleton width={'50%'} />}
+                  {console.log(prpos.loading)}
                 </Typography>
               </Grid>
               <Grid
@@ -114,7 +115,7 @@ const Static = (prpos) => {
                 align="left"
                 gutterBottom
                 color="textSecondary"
-                style={{ fontWeight: 700 }}
+                style={{ fontWeight: 700, whiteSpace: "nowrap" }}
               >
                 عدد المدارس
               </Typography>
@@ -125,7 +126,7 @@ const Static = (prpos) => {
                 color="secondary"
                 style={{ fontFamily: "Helvetica", fontWeight: 700 }}
               >
-                {prpos.data.length>0?prpos.data.length : <Skeleton width={'50%'} />}
+                {!prpos.loading?prpos.data.length||0 : <Skeleton width={'50%'} />}
               </Typography>
             </Grid>
 
