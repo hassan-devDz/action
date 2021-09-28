@@ -27,7 +27,7 @@ handler.post(async (req, res) => {
   
   const isExt = await sample_collection.findOne({
     year: "2021",
-    "schools.moassa.EtabMatricule": { $eq: req.body.moassa.EtabMatricule },
+    "schools.moassa.EtabMatricule": { $eq: +req.body.moassa.EtabMatricule },
   });
 
   if ( !isExt ) {

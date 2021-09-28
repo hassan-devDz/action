@@ -24,6 +24,8 @@ import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import CheckTwoToneIcon from "@material-ui/icons/CheckTwoTone";
 import ClearTwoToneIcon from "@material-ui/icons/ClearTwoTone";
 
+import ScaleLoader from "react-spinners/ScaleLoader";
+
 import DeleteTwoToneIcon from "@material-ui/icons/DeleteTwoTone";
 import TextField from "@material-ui/core/TextField";
 import DialogMui from "@material-ui/core/Dialog";
@@ -54,6 +56,7 @@ import FormControl from "@material-ui/core/FormControl";
 import SearchIcon from "@material-ui/icons/Search";
 import Static from "../Components/static";
 import useStyles from "../Components/FormsUi/StyleForm";
+import AlertDialog from '../Components/Notification/ConfiremDeleteDialog';
 const MyButton = styled(ButtonWrapper)({
   minWidth: 40,
   padding: "5px 6px",
@@ -77,7 +80,20 @@ const themebutton = createTheme({
     },
   },
 });
-
+let arr=[]
+arr[24]='none'
+const spinners = createTheme({
+  direction: "rtl",
+  palette: {
+    background: {
+      paper: 'transparent',
+    },
+  },
+  shadows: 
+  arr
+  
+  
+});
 let editorRow = {};
 const INITIAL_FORM_STATE = {
   potentialVacancy: 0, //محتمل
@@ -192,7 +208,7 @@ const DataTableCrud = (res) => {
   const postData =  (url,values) => {
     
    const response =  axios.post(url, values)
-    
+    console.log(values);
     return response;
   };
   const putData =  (method,url,values) => {
@@ -240,10 +256,13 @@ const DataTableCrud = (res) => {
     });
   }, []);
   /*******************EitMoassa********************* */
-  const [editMoassa, setEitMoassa] = useState({});
+  const [confirmDeleteDailog, setConfirmDeleteDailog] = useState(false);
 
   const deleteProduct = (rowData) => {
+  
+    setSpinnersLoding(true)
     putData("put","/api/delete",rowData).then((response) => {
+      setSpinnersLoding(false)
       const newProducts = products.filter((item) => item.moassa.EtabMatricule !== rowData.moassa.EtabMatricule);
         setProducts(newProducts);
         
@@ -254,7 +273,9 @@ const DataTableCrud = (res) => {
     
       
     })
-    setEitMoassa(rowData);
+    
+   
+    //setConfirmDeleteDailog(rowData);
     //setDeleteProductDialog(true);
   };
 
@@ -301,8 +322,7 @@ const DataTableCrud = (res) => {
 
   /*****************************dialugMui*********** */
   const [open, setOpen] = useState(false);
-  
-
+  const [spinnersLoding, setSpinnersLoding] = useState(false)
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -315,10 +335,10 @@ const DataTableCrud = (res) => {
 
   const handelSubmit = async (values) => {
     const isInProducts = products.findIndex(
-      (ele) => ele.moassa.EtabMatricule === values.moassa.EtabMatricule
+      (ele) => ele.moassa.EtabMatricule == values.moassa.EtabMatricule
     );
-
-    if (products.length > 0 && isInProducts < 0) {
+      console.log(isInProducts);
+    if (isInProducts < 0) {
       // try {
       //   const res = await postData(values)
       //   console.log(res);
@@ -338,10 +358,11 @@ const DataTableCrud = (res) => {
       //   console.error(error.message);
       //   alert(error);
       // }
+      setSpinnersLoding(true)
       postData("/api/postdata",values)
         .then((response) => {
           console.log(response);
-         
+          setSpinnersLoding(false)
             alert(response.data);
           setProducts((prev) => {
             return [...prev, values];
@@ -350,6 +371,7 @@ const DataTableCrud = (res) => {
           
         })
         .catch((err) => {
+          setSpinnersLoding(false)
           if (err.response) {
             console.log(err.response);
             alert(err.response.data.message||err.response.data);
@@ -361,18 +383,19 @@ const DataTableCrud = (res) => {
             // anything else
           }
         });
-    } else if (isInProducts >= 0) {
-      alert("موجود بالفعل");
     } else {
-      postData("/api/postdata",values)
-        .then((response) => {
-          alert(response.data);
-          setProducts([values]);
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    }
+      alert("موجود بالفعل");
+    } 
+    // else {
+    //   postData("/api/postdata",values)
+    //     .then((response) => {
+    //       alert(response.data);
+    //       setProducts([values]);
+    //     })
+    //     .catch((error) => {
+    //       alert(error);
+    //     });
+    // }
 
     // const test =  products&&products.map((word) => {
     //      return word.moassa === values.moassa?[...prev,values]:[...prev,values]})
@@ -421,14 +444,16 @@ console.log(editingRows);
   };
 
   const onRowEditSave = (event) => {
+    setSpinnersLoding(true)
    putData("put","/api/update",event.data).then((response) => {
     console.log(response);
-   
+    setSpinnersLoding(false)
       alert(response.data);
   
     
   })
   .catch((err) => {
+    setSpinnersLoding(false)
     if (err.response) {  
 
       if (err.response.data.name==="ValidationError") {
@@ -442,6 +467,7 @@ console.log(editingRows);
       alert(err.response.data.errors[0]);
       }else{
         alert(err.response.data);
+        console.log(err.response);
       }
       
       // client received an error response (5xx, 4xx)
@@ -481,7 +507,7 @@ console.log(editingRows);
       />
     );
   };
-
+/**************************جسم تحديث البانات في الجدول *********************** */
   const actionBodyTemplate1 = (rowData, props) => {
     const editButton = props.rowEditor.onInitClick;
 
@@ -548,23 +574,16 @@ console.log(editingRows);
         </Grid>
         <Grid item xs={6}>
           <ThemeProvider theme={themebutton}>
-            <MyButton
-              variant="outlined"
-              color="secondary"
-              aria-label="information update "
-              onClick={() => deleteProduct(rowData)}
-            >
-              <DeleteTwoToneIcon />
-            </MyButton>
+            <AlertDialog rowData={rowData} onDeleteProduct={deleteProduct}/>
           </ThemeProvider>
         </Grid>
       </Grid>
     );
   };
  
-  /********************************************************** */
+  /*****************************رأس الجدول***************************** */
 
-  const taxtSearch = (
+  const headarTable = (
     <>
       <Grid
         container
@@ -650,7 +669,7 @@ console.log(editingRows);
     </>
   );
 
-
+/**--------------------ايقونة المدرسة في الجدول------------------------- */
   const replaceStrIcon = (rowData, parms) => {
     const name = rowData.moassa.EtabNom.replace("المدرسة الابتدائية", "");
     return (
@@ -664,11 +683,19 @@ console.log(editingRows);
       </>
     );
   };
- 
+ /****************************start App*************************** */
   return (
     <>
       {" "}
+      <AlertDialog/>
       <Container maxWidth="xl" style={{ marginBottom: 2, marginTop: 12 }}>
+        <ThemeProvider theme={spinners}>
+        <DialogMui
+        open={spinnersLoding}
+        
+        >
+          <ScaleLoader color="#dbdbdb" loading={spinnersLoding}  size={50} />
+        </DialogMui></ThemeProvider>
         <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12} sm={9}>
             <Paper elevation={3} style={{ padding: 10 }}>
@@ -806,6 +833,7 @@ console.log(editingRows);
         <DataTable
           ref={dt}
           value={products || []}
+          selectionMode="checkbox"
           selection={selectedMoassa}
           onSelectionChange={onSelected}
           dataKey="moassa.EtabMatricule"
@@ -824,7 +852,7 @@ console.log(editingRows);
           editingRows={editingRows}
           onRowEditChange={onRowEditChange}
           globalFilter={globalFilter}
-          header={taxtSearch}
+          header={headarTable}
           stripedRows
           removableSort
           loading={loading}

@@ -47,7 +47,7 @@ surplus: Yup.number()
     otherwise: Yup.number(),
   }),
     moassa: Yup.object({
-      EtabMatricule: Yup.number().required("حقل الزامي"),
+      EtabMatricule: Yup.number().integer().positive().required("حقل الزامي"),
       EtabNom: Yup.string().required("حقل الزامي"),
       bladia: Yup.string().required("حقل الزامي"),
     }).required("حقل الزامي"),
