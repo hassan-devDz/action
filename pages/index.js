@@ -272,7 +272,19 @@ const DataTableCrud = (res) => {
         alert(response.data);
     
       
-    })
+    }) .catch((err) => {
+      setSpinnersLoding(false)
+      if (err.response) {
+        console.log(err.response);
+        alert(err.response.data.message||err.response.data);
+        // client received an error response (5xx, 4xx)
+      } else if (err.request) {
+        console.log(err.request);
+        // client never received a response, or request never left
+      } else {
+        // anything else
+      }
+    });
     
    
     //setConfirmDeleteDailog(rowData);
