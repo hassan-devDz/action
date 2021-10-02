@@ -52,6 +52,7 @@ import AlertDialog from "../Components/Notification/ConfiremDeleteDialog";
 import { moassaSchema } from "../schemas/schemas_moassa";
 
 import replaceStrIcon from "../Components/IconReplaceTxt/IconRepTxt";
+import DateP from '../Components/date';
 
 const MyButton = styled(ButtonWrapper)({
   minWidth: 40,
@@ -130,7 +131,8 @@ const DataTableCrud = (res) => {
     [open, setOpen] = useState(false), //فتح النافذة المنبثقة لإضافة مدرسة في جدول الحركة
     [spinnersLoding, setSpinnersLoding] = useState(false), //سبينر في انتظار رد السرفر على طلب اضافة مدرسة
     [editingRows, setEditingRows] = useState({}); //تعديل الداتا في صف معين من الجدول
-  /**----------------all useState----------------------- */
+    const [year, setYear] = useState(new Date().getFullYear())
+    /**----------------all useState----------------------- */
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
@@ -148,20 +150,20 @@ const DataTableCrud = (res) => {
 
   // const { data, error } = useSWR('/api/user', fetcher)
   /********************* طلب إضافة مؤسسة للجدول *********************start */
-  const postData = (url, values) => {
-    const response = axios.post(url, values);
-    console.log(values);
-    return response;
-  };
+ 
   /********************* طلب إضافة مؤسسة للجدول *********************end */
 
   /********************* طلب تعديل أو حذف مؤسسة من الجدول *********************start */
 
-  const putData = (method, url, values) => {
+  const putData = (method, url, values,query='') => {
     const response = axios({
       method: method,
-      url: url,
-      data: values,
+      url: url+'?Year='+query,
+      data: values
+      
+          
+        
+      
     });
 
     return response;
@@ -175,7 +177,7 @@ const DataTableCrud = (res) => {
   const dt = useRef(null);
 
   useEffect(() => {
-    fetcher("api/schools").then((res) => {
+    fetcher("api/schools",{ Year: new Date().getFullYear() }).then((res) => {
       setListMoassat(res);
       setLoading(false);
     });
@@ -184,7 +186,7 @@ const DataTableCrud = (res) => {
 
   const deleteProduct = (rowData) => {
     setSpinnersLoding(true);
-    putData("put", "/api/delete", rowData)
+    putData("put", "/api/delete", rowData,year)
       .then((response) => {
         setSpinnersLoding(false);
 
@@ -193,7 +195,7 @@ const DataTableCrud = (res) => {
         );
         setListMoassat(newlistMoassat);
 
-        console.log(response);
+        
 
         alert(response.data.message);
       })
@@ -203,11 +205,11 @@ const DataTableCrud = (res) => {
           setSpinnersLoding(false);
         });
         if (err.response) {
-          console.log(err.response);
+          
           alert(err.response.data.message || err.response.data);
           // client received an error response (5xx, 4xx)
         } else if (err.request) {
-          console.log(err.request);
+          
           // client never received a response, or request never left
         } else {
           // anything else
@@ -266,14 +268,14 @@ const DataTableCrud = (res) => {
     let _listMoassat = listMoassat
       .filter((val) => selectedMoassa.includes(val))
       .map((ele) => ele.moassa.EtabMatricule);
-    putData("put", "/api/deletMany", { arrayEtabMatricule: _listMoassat })
+    putData("put", "/api/deletMany", { arrayEtabMatricule: _listMoassat },year)
       .then((response) => {
-        console.log(response);
+        
         setSpinnersLoding(false);
         setSelectedMoassa([]);
         setListMoassat(newlistMoassat);
 
-        console.log(response);
+        
 
         alert(response.data.message);
       })
@@ -283,11 +285,11 @@ const DataTableCrud = (res) => {
           setSpinnersLoding(false);
         });
         if (err.response) {
-          console.log(err.response);
+          
           alert(err.response.data.message || err.response.data);
           // client received an error response (5xx, 4xx)
         } else if (err.request) {
-          console.log(err.request);
+          
           // client never received a response, or request never left
         } else {
           // anything else
@@ -300,12 +302,13 @@ const DataTableCrud = (res) => {
     const isInlistMoassat = listMoassat.findIndex(
       (ele) => ele.moassa.EtabMatricule == values.moassa.EtabMatricule
     );
-    console.log(isInlistMoassat);
+    
     if (isInlistMoassat < 0) {
       setSpinnersLoding(true);
-      postData("/api/postdata", values)
+      
+      putData("post","/api/postdata", values,year)
         .then((response) => {
-          console.log(response);
+          
           setSpinnersLoding(false);
           alert(response.data);
           setListMoassat((prev) => {
@@ -315,11 +318,11 @@ const DataTableCrud = (res) => {
         .catch((err) => {
           setSpinnersLoding(false);
           if (err.response) {
-            console.log(err.response);
+            
             alert(err.response.data.message || err.response.data);
             // client received an error response (5xx, 4xx)
           } else if (err.request) {
-            console.log(err.request);
+            
             // client never received a response, or request never left
           } else {
             // anything else
@@ -360,13 +363,13 @@ const DataTableCrud = (res) => {
     setEditingRows(event.data);
   };
   const onRowEditInit = (event) => {
-    console.log(event);
+    
 
     originalRows[indexOfValue(event.data)] = {
       ...listMoassat[indexOfValue(event.data)],
     };
   };
-  console.log(editingRows);
+ 
   const onRowEditCancel = (event) => {
     let _listMoassat = [...listMoassat];
     _listMoassat[indexOfValue(event.data)] =
@@ -378,9 +381,9 @@ const DataTableCrud = (res) => {
 
   const onRowEditSave = (event) => {
     setSpinnersLoding(true);
-    putData("put", "/api/update", event.data)
+    putData("put", "/api/update", event.data,year)
       .then((response) => {
-        console.log(response);
+        
         setSpinnersLoding(false);
         alert(response.data);
       })
@@ -394,16 +397,16 @@ const DataTableCrud = (res) => {
             delete originalRows[indexOfValue(event.data)];
 
             setListMoassat(_listMoassat);
-            console.log(err.response);
+            
             alert(err.response.data.errors[0]);
           } else {
             alert(err.response.data);
-            console.log(err.response);
+            
           }
 
           // client received an error response (5xx, 4xx)
         } else if (err.request) {
-          console.log(err.request);
+          
           // client never received a response, or request never left
         } else {
           // anything else
@@ -510,7 +513,17 @@ const DataTableCrud = (res) => {
   };
 
   /*****************************رأس الجدول***************************** */
-
+ const onYearPicker = (e) => {
+   setYear(e)
+  
+   setLoading(true);
+  fetcher(`api/schools`,{ Year: e }).then((res) => {
+    setListMoassat(res);
+    setSpinnersLoding(false)
+    setLoading(false);
+  });
+    console.log(e)
+  }
   const headarTable = (
     <>
       <Grid
@@ -534,6 +547,7 @@ const DataTableCrud = (res) => {
             </ThemeProvider>
           </Grid>
           <Grid item xs={12} sm={6}>
+            
             <MyButton
               variant="outlined"
               color="primary"
@@ -543,6 +557,7 @@ const DataTableCrud = (res) => {
               أضف الى القائمة
             </MyButton>
           </Grid>
+         
         </Grid>
         <Grid item container xs={12} sm={6} md={3} lg={3} spacing={1}>
           <Grid item xs={6}>
@@ -569,6 +584,10 @@ const DataTableCrud = (res) => {
             </MyButton>
           </Grid>
         </Grid>
+        <Grid item xs={12} sm={6}md={4} lg={2}>
+            <DateP onChange={onYearPicker}/>
+            
+          </Grid>
         <Grid item xs={12} sm={6} md={4} lg={3}>
           <TextField
             fullWidth
@@ -577,7 +596,7 @@ const DataTableCrud = (res) => {
             color="primary"
             style={{ backgroundColor: "#fff" }}
             id="standard-start-adornment"
-            onChange={(e, d) => console.log(e, d)}
+            
             onInput={(e) => setGlobalFilter(e.target.value)}
             //className={clsx(classes.margin, classes.textField)}
             InputProps={{
@@ -595,6 +614,7 @@ const DataTableCrud = (res) => {
     </>
   );
 
+ 
   /****************************body App*************************** */
   return (
     <>
@@ -873,7 +893,7 @@ const DataTableCrud = (res) => {
 
 export async function getServerSideProps() {
   const urlBass = await process.env.URL_BASE;
-  console.log(urlBass);
+  
   const res = await fetch(`${urlBass}api/hello`);
   const data = await res.json();
 

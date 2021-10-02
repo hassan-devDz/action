@@ -26,13 +26,13 @@ handler.post(async (req, res) => {
 
   
   const isExt = await sample_collection.findOne({
-    year: "2021",
+    year: req.query.Year,
     "schools.moassa.EtabMatricule": { $eq: +req.body.moassa.EtabMatricule },
   });
 
   if ( !isExt ) {
     const sample_post = await sample_collection.updateOne(
-      { year: "2021" },
+      { year: req.query.Year },
       { $addToSet: { schools: req.body } },
       { upsert: true }
     );

@@ -9,10 +9,10 @@ const handler = nextConnect();
 handler.use(middleware);
 handler.put(async (req, res) => {
   /*التاكد من ان المعومات المرسلة موجودة في الداتا*** */
-
+console.log(req.query);
   /*^^^^التاكد من ان المعومات المرسلة موجودة في الداتا^^^^*/
   const simple_query = {
-    year: "2021"
+    year: req.query.Year
   };
 
 

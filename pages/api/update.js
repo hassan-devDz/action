@@ -12,7 +12,7 @@ handler.put(async (req, res) => {
 
   /*^^^^التاكد من ان المعومات المرسلة موجودة في الداتا^^^^*/
   const simple_query = {
-    year: "2021",
+    year: req.query.Year,
     "schools.moassa.bladia": req.body.moassa.bladia,
     "schools.moassa.EtabMatricule": req.body.moassa.EtabMatricule,
     "schools.moassa.EtabNom": req.body.moassa.EtabNom,
