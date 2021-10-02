@@ -41,7 +41,23 @@ const theme = createTheme({
   },
   spacing:8,
   typography: {
-    fontFamily: '"Cairo" ,"Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Cairo" ,"Roboto", "Helvetica", "Arial", "sans-serif"',
+   
+    h6: {
+      fontFamily: '"Cairo" ,"Roboto", "Helvetica", "Arial", "sans-serif""',
+    fontWeight: 500,
+    fontSize: "1.25rem",
+    lineHeight: 1.6,
+    letterSpacing: "0.0075em",
+    }, body1: {
+      fontFamily: '"Cairo" ,"Roboto", "Helvetica", "Arial", "sans-serif""',
+      fontWeight: 400,
+      fontSize: "1rem",
+      lineHeight: 1.5,
+      letterSpacing: "0.00938em",
+    }
+
+    
   },
   transitions: {
     duration: {

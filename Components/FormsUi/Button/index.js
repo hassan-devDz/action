@@ -3,7 +3,7 @@ import { Button } from '@material-ui/core';
 import { useFormikContext } from 'formik';
 import Paper from '@material-ui/core/Paper'
 import useStyles from '../StyleForm'
-const ButtonWrapper = ({
+const ButtonWrapperIndex = ({
   children,
   ...otherProps
 }) => {
@@ -36,4 +36,4 @@ const ButtonWrapper = ({
   );
 };
 
-export default ButtonWrapper;
+export default ButtonWrapperIndex;

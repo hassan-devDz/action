@@ -50,8 +50,8 @@ surplus: Yup.number()
       EtabMatricule: Yup.number().integer().positive().required("حقل الزامي"),
       EtabNom: Yup.string().required("حقل الزامي"),
       bladia: Yup.string().required("حقل الزامي"),
-    }).required("حقل الزامي"),
-    daira: Yup.string().required("حقل الزامي"),
+    }).required("حقل الزامي").nullable(),
+    daira: Yup.string().required("حقل الزامي").nullable(),
   },
   [
     ["potentialVacancy", "forced"],
@@ -61,4 +61,10 @@ surplus: Yup.number()
     ["forced", "surplus"],
     ["potentialVacancy", "surplus"],
   ]);
+
+
+export const arrayMoassaSchema = Yup.object().shape({
+ 
+    arrayEtabMatricule: Yup.array().of(Yup.number().required("حقل الزامي")).required(),
+  });
 

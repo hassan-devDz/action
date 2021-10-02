@@ -7,19 +7,17 @@ import "primeflex/primeflex.css";
 import { DataTable } from "hassanreact/datatable";
 import { Column } from "hassanreact/column";
 import CloudDownloadTwoToneIcon from "@material-ui/icons/CloudDownloadTwoTone";
-import { Button } from "hassanreact/button";
+
 import CloudUploadTwoToneIcon from "@material-ui/icons/CloudUploadTwoTone";
-import { Rating } from "hassanreact/rating";
+
 import AddTwoToneIcon from "@material-ui/icons/AddTwoTone";
-import Tooltip from "@material-ui/core/Tooltip";
-import { InputText } from "hassanreact/inputtext";
-import SchoolTwoToneIcon from "@material-ui/icons/SchoolTwoTone";
+
 import AutocompleteMui from "../Components/Autocmplemoassat";
 import Controls from "../Components/FormsUi/Control";
-import ButtonWrapper from "../Components/FormsUi/Button/buttonNorm";
+import ButtonWrapper from "../Components/FormsUi/Button/ButtonNorm";
 import Typography from "@material-ui/core/Typography";
 import { Container, Grid, Paper } from "@material-ui/core";
-import ButtonMui from "@material-ui/core/Button";
+
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import CheckTwoToneIcon from "@material-ui/icons/CheckTwoTone";
 import ClearTwoToneIcon from "@material-ui/icons/ClearTwoTone";
@@ -36,31 +34,30 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import { red } from "@material-ui/core/colors";
-import {
-  makeStyles,
-  createTheme,
-  ThemeProvider,
-} from "@material-ui/core/styles";
-import * as Yup from "yup";
+import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+
 import axios from "axios";
 import Draggable from "react-draggable";
 
 import { styled } from "@material-ui/core/styles";
 
 import IconButton from "@material-ui/core/IconButton";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
+
 import InputAdornment from "@material-ui/core/InputAdornment";
-import FormControl from "@material-ui/core/FormControl";
 
 import SearchIcon from "@material-ui/icons/Search";
 import Static from "../Components/static";
-import useStyles from "../Components/FormsUi/StyleForm";
-import AlertDialog from '../Components/Notification/ConfiremDeleteDialog';
+
+import AlertDialog from "../Components/Notification/ConfiremDeleteDialog";
+import { moassaSchema } from "../schemas/schemas_moassa";
+
+import replaceStrIcon from "../Components/IconReplaceTxt/IconRepTxt";
+
 const MyButton = styled(ButtonWrapper)({
   minWidth: 40,
   padding: "5px 6px",
 });
+
 function PaperComponent(props) {
   return (
     <Draggable
@@ -79,22 +76,37 @@ const themebutton = createTheme({
       main: red.A700,
     },
   },
+
+  typography: {
+    fontFamily: '"Cairo" ,"Roboto", "Helvetica", "Arial", "sans-serif"',
+    h6: {
+      fontFamily: '"Cairo" ,"Roboto", "Helvetica", "Arial", "sans-serif""',
+      fontWeight: 500,
+      fontSize: "1.25rem",
+      lineHeight: 1.6,
+      letterSpacing: "0.0075em",
+    },
+    body1: {
+      fontFamily: '"Cairo" ,"Roboto", "Helvetica", "Arial", "sans-serif""',
+      fontWeight: 400,
+      fontSize: "1rem",
+      lineHeight: 1.5,
+      letterSpacing: "0.00938em",
+    },
+  },
 });
-let arr=[]
-arr[24]='none'
+let arr = [];
+arr[24] = "none";
 const spinners = createTheme({
   direction: "rtl",
   palette: {
     background: {
-      paper: 'transparent',
+      paper: "transparent",
     },
   },
-  shadows: 
-  arr
-  
-  
+  shadows: arr,
 });
-let editorRow = {};
+
 const INITIAL_FORM_STATE = {
   potentialVacancy: 0, //محتمل
   forced: 0, //مجبر
@@ -104,78 +116,24 @@ const INITIAL_FORM_STATE = {
   daira: null,
 };
 
-const isNotEquZero = ["vacancy", "surplus"];
-const FORM_VALIDATION = Yup.object().shape(
-  {
-    potentialVacancy: Yup.number()
-      .integer()
-      .when(["forced", "vacancy", "surplus"], {
-        is: (forced, vacancy, surplus) =>
-          forced === 0 && vacancy === 0 && surplus === 0,
-        then: Yup.number()
-          .integer()
-          .positive("يجب أن يكون أحد الحقول أكبر من الصفر")
-          .required("حقل الزامي"),
-        otherwise: Yup.number(),
-      }),
-    forced: Yup.number()
-      .integer()
-      .when(["potentialVacancy", "vacancy", "surplus"], {
-        is: (potentialVacancy, vacancy, surplus) =>
-          potentialVacancy === 0 && vacancy === 0 && surplus === 0,
-        then: Yup.number()
-          .integer()
-          .positive("يجب أن يكون أحد الحقول أكبر من الصفر")
-          .required("حقل الزامي"),
-        otherwise: Yup.number(),
-      }),
-    vacancy: Yup.number()
-      .integer()
-      .when(["potentialVacancy", "forced", "surplus"], {
-        is: (potentialVacancy, forced, surplus) =>
-          potentialVacancy === 0 && forced === 0 && surplus === 0,
-        then: Yup.number()
-          .integer()
-          .positive("يجب أن يكون أحد الحقول أكبر من الصفر")
-          .required("حقل الزامي"),
-        otherwise: Yup.number(),
-      }),
-    surplus: Yup.number()
-      .integer()
-      .when(["potentialVacancy", "forced", "vacancy"], {
-        is: (potentialVacancy, forced, vacancy) =>
-          potentialVacancy === 0 && forced === 0 && vacancy === 0,
-        then: Yup.number()
-          .integer()
-          .positive("يجب أن يكون أحد الحقول أكبر من الصفر")
-          .required("حقل الزامي"),
-        otherwise: Yup.number(),
-      }),
-    moassa: Yup.object({
-      EtabMatricule: Yup.number().positive().required("حقل الزامي"),
-      EtabNom: Yup.string().required("حقل الزامي"),
-      bladia: Yup.string().required("حقل الزامي"),
-    })
-      .nullable()
-      .required("حقل الزامي"),
-    daira: Yup.string().required("حقل الزامي").nullable(),
-  },
-  [
-    ["potentialVacancy", "forced"],
-    ["potentialVacancy", "vacancy"],
-    ["vacancy", "forced"],
-    ["vacancy", "surplus"],
-    ["forced", "surplus"],
-    ["potentialVacancy", "surplus"],
-  ]
-);
 let originalRows = {};
 const DataTableCrud = (res) => {
-  const classes = useStyles();
-  const [loading, setLoading] = useState(true);
+  /**----------------all useState----------------------- */
+  const [loading, setLoading] = useState(true), //جاري التحميل للجدول الرئيسي و احصائيات المدارس
+    [data, setdata] = useState([...res.data]), //قائمة الدوائر بالولاية
+    [listMoassat, setListMoassat] = useState([]), //قائمة المؤسسات المعنية بالحركة
+    [selectedMoassa, setSelectedMoassa] = useState([]), //المؤسسات التي تم تحديدها للحذف
+    [globalFilter, setGlobalFilter] = useState(null), //الكلمة التي سيتم البحث عنها في الجدول
+    [inputValueDaira, setInputValueDaira] = useState(""), //ادخال اسم الدائرة
+    [inputValueMoassa, setInputValueMoassa] = useState(""), //ادخال اسم المؤسسة
+    [gobalOptions, setGobalOptions] = useState([]), //اختيارات المؤسسات التابعة للدائرة
+    [open, setOpen] = useState(false), //فتح النافذة المنبثقة لإضافة مدرسة في جدول الحركة
+    [spinnersLoding, setSpinnersLoding] = useState(false), //سبينر في انتظار رد السرفر على طلب اضافة مدرسة
+    [editingRows, setEditingRows] = useState({}); //تعديل الداتا في صف معين من الجدول
+  /**----------------all useState----------------------- */
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
-  const [data, setdata] = useState([...res.data]);
+
   /************************getMoassat********************************* */
   const fetcher = async (url, param = "") => {
     const res = await axios.get(url, {
@@ -187,127 +145,88 @@ const DataTableCrud = (res) => {
 
     return data;
   };
-  // const fetcher = async url => {
-  //   const res = await fetch(url)
 
-  //   // If the status code is not in the range 200-299,
-  //   // we still try to parse and throw it.
-  //   if (!res.ok) {
-  //     const error = new Error('An error occurred while fetching the data.')
-  //     // Attach extra info to the error object.
-  //     error.info = await res.json()
-  //     error.status = res.status
-  //     throw error
-  //   }
-
-  //   return res.json()
-  // }
-
-  // // ...
   // const { data, error } = useSWR('/api/user', fetcher)
-  const postData =  (url,values) => {
-    
-   const response =  axios.post(url, values)
+  /********************* طلب إضافة مؤسسة للجدول *********************start */
+  const postData = (url, values) => {
+    const response = axios.post(url, values);
     console.log(values);
     return response;
   };
-  const putData =  (method,url,values) => {
+  /********************* طلب إضافة مؤسسة للجدول *********************end */
+
+  /********************* طلب تعديل أو حذف مؤسسة من الجدول *********************start */
+
+  const putData = (method, url, values) => {
     const response = axios({
       method: method,
       url: url,
-      data: values
+      data: values,
     });
-   
-     
-     return response;
-   };
 
-  const [fetcher1, setfetcher1] = useState({});
-
-  let emptyProduct = {
-    id: null,
-    name: "",
-    image: null,
-    description: "",
-    category: null,
-    price: 0,
-    quantity: 0,
-    rating: 0,
-    inventoryStatus: "INSTOCK",
+    return response;
   };
+  /********************* طلب تعديل أو حذف مؤسسة من الجدول *********************end */
 
-  const [products, setProducts] = useState([]);
-
-  const [selectedMoassa, setSelectedMoassa] = useState([]);
   const onSelected = (e) => {
     setSelectedMoassa(e.value);
   };
-
-  const [globalFilter, setGlobalFilter] = useState(null);
 
   const dt = useRef(null);
 
   useEffect(() => {
     fetcher("api/schools").then((res) => {
-      
-        setProducts(res);
-        setLoading(false);
-      
+      setListMoassat(res);
+      setLoading(false);
     });
   }, []);
-  /*******************EitMoassa********************* */
-  const [confirmDeleteDailog, setConfirmDeleteDailog] = useState(false);
+  /*******************ازالة مؤسسة من القائمة**********start******** */
 
   const deleteProduct = (rowData) => {
-  
-    setSpinnersLoding(true)
-    putData("put","/api/delete",rowData).then((response) => {
-      setSpinnersLoding(false)
-      const newProducts = products.filter((item) => item.moassa.EtabMatricule !== rowData.moassa.EtabMatricule);
-        setProducts(newProducts);
-        
-    
-      console.log(response);
-     
-        alert(response.data);
-    
-      
-    }) .catch((err) => {
-      setSpinnersLoding(false)
-      if (err.response) {
-        console.log(err.response);
-        alert(err.response.data.message||err.response.data);
-        // client received an error response (5xx, 4xx)
-      } else if (err.request) {
-        console.log(err.request);
-        // client never received a response, or request never left
-      } else {
-        // anything else
-      }
-    });
-    
-   
+    setSpinnersLoding(true);
+    putData("put", "/api/delete", rowData)
+      .then((response) => {
+        setSpinnersLoding(false);
+
+        const newlistMoassat = listMoassat.filter(
+          (element) => ![rowData].includes(element)
+        );
+        setListMoassat(newlistMoassat);
+
+        console.log(response);
+
+        alert(response.data.message);
+      })
+      .catch((err) => {
+        fetcher("api/schools").then((res) => {
+          setListMoassat(res);
+          setSpinnersLoding(false);
+        });
+        if (err.response) {
+          console.log(err.response);
+          alert(err.response.data.message || err.response.data);
+          // client received an error response (5xx, 4xx)
+        } else if (err.request) {
+          console.log(err.request);
+          // client never received a response, or request never left
+        } else {
+          // anything else
+        }
+      });
+
     //setConfirmDeleteDailog(rowData);
     //setDeleteProductDialog(true);
   };
+  /*******************ازالة مؤسسة من القائمة**********end******** */
 
-  /*--------------------start Dropdown---------------*/
-
-  /*--------------------end Dropdown---------------*/
-  /*----------------------getDairaè---------------------- */
-
-  const [inputValueDaira, setInputValueDaira] = useState("");
-  const [inputValueMoassa, setInputValueMoassa] = useState("");
-  const [gobalOptions, setGobalOptions] = useState([]);
-
-  const [disble, setDisble] = useState(true);
+  /*------------------طلب قائمة المؤسسات من خلال اختيار الدائرة المعنية---------بداية----- */
 
   const getValueDaira = (event, newInputValue) => {
     setInputValueDaira(newInputValue);
-    setDisble(true);
+
     if (data.includes(newInputValue)) {
       if (!gobalOptions[newInputValue]) {
-        fetcher(`/api/hello`, { daira_name: newInputValue })
+        fetcher(`/api/hello`, { daira_name: newInputValue }) //طلب قائمة المؤسسات من خلال اختيار الدائرة المعنية
           .then(function (response) {
             setGobalOptions((prev) => {
               return {
@@ -317,24 +236,18 @@ const DataTableCrud = (res) => {
                   : response,
               };
             });
-          })
-          .then(function () {
-            setDisble(false);
           });
-      }
-      if (gobalOptions[newInputValue]) {
-        setDisble(false);
       }
     }
   };
+  /*------------------طلب قائمة المؤسسات من خلال اختيار الدائرة المعنية---------نهاية------ */
 
-  const getValueMoassa = (event, newInputValue, h) => {
+  const getValueMoassa = (event, newInputValue) => {
     setInputValueMoassa(newInputValue);
   };
 
-  /*****************************dialugMui*********** */
-  const [open, setOpen] = useState(false);
-  const [spinnersLoding, setSpinnersLoding] = useState(false)
+  /************start**********فتح واغلاق  نافذة اضافة مؤسسة و نافذة تأكيد الحذف*********** */
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -342,51 +255,68 @@ const DataTableCrud = (res) => {
   const handleClose = () => {
     setOpen(false);
   };
+  /************end**********فتح واغلاق  نافذة اضافة مؤسسة و نافذة تأكيد الحذف*********** */
 
+  const handleDeleteSelected = () => {
+    setSpinnersLoding(true);
+    let newlistMoassat = listMoassat.filter(
+      (val) => !selectedMoassa.includes(val)
+    );
+
+    let _listMoassat = listMoassat
+      .filter((val) => selectedMoassa.includes(val))
+      .map((ele) => ele.moassa.EtabMatricule);
+    putData("put", "/api/deletMany", { arrayEtabMatricule: _listMoassat })
+      .then((response) => {
+        console.log(response);
+        setSpinnersLoding(false);
+        setSelectedMoassa([]);
+        setListMoassat(newlistMoassat);
+
+        console.log(response);
+
+        alert(response.data.message);
+      })
+      .catch((err) => {
+        fetcher("api/schools").then((res) => {
+          setListMoassat(res);
+          setSpinnersLoding(false);
+        });
+        if (err.response) {
+          console.log(err.response);
+          alert(err.response.data.message || err.response.data);
+          // client received an error response (5xx, 4xx)
+        } else if (err.request) {
+          console.log(err.request);
+          // client never received a response, or request never left
+        } else {
+          // anything else
+        }
+      });
+  };
   /**-******************************************Submit************************************************************** */
 
   const handelSubmit = async (values) => {
-    const isInProducts = products.findIndex(
+    const isInlistMoassat = listMoassat.findIndex(
       (ele) => ele.moassa.EtabMatricule == values.moassa.EtabMatricule
     );
-      console.log(isInProducts);
-    if (isInProducts < 0) {
-      // try {
-      //   const res = await postData(values)
-      //   console.log(res);
-      //   if (res.ok) {
-      //     const responseOk = await res.json()
-      //     console.log(responseOk);
-      //        alert(res.data)
-      //    setProducts((prev) => {
-      //     return [...prev, values];
-      //   });
-      //   }else{
-      //     const error = await res.json();
-      //   throw new Error(error.message)
-      //   }
-
-      // } catch (error) {
-      //   console.error(error.message);
-      //   alert(error);
-      // }
-      setSpinnersLoding(true)
-      postData("/api/postdata",values)
+    console.log(isInlistMoassat);
+    if (isInlistMoassat < 0) {
+      setSpinnersLoding(true);
+      postData("/api/postdata", values)
         .then((response) => {
           console.log(response);
-          setSpinnersLoding(false)
-            alert(response.data);
-          setProducts((prev) => {
+          setSpinnersLoding(false);
+          alert(response.data);
+          setListMoassat((prev) => {
             return [...prev, values];
           });
-          
-          
         })
         .catch((err) => {
-          setSpinnersLoding(false)
+          setSpinnersLoding(false);
           if (err.response) {
             console.log(err.response);
-            alert(err.response.data.message||err.response.data);
+            alert(err.response.data.message || err.response.data);
             // client received an error response (5xx, 4xx)
           } else if (err.request) {
             console.log(err.request);
@@ -397,24 +327,24 @@ const DataTableCrud = (res) => {
         });
     } else {
       alert("موجود بالفعل");
-    } 
+    }
     // else {
     //   postData("/api/postdata",values)
     //     .then((response) => {
     //       alert(response.data);
-    //       setProducts([values]);
+    //       setListMoassat([values]);
     //     })
     //     .catch((error) => {
     //       alert(error);
     //     });
     // }
 
-    // const test =  products&&products.map((word) => {
+    // const test =  listMoassat&&listMoassat.map((word) => {
     //      return word.moassa === values.moassa?[...prev,values]:[...prev,values]})
   };
   /**********************indexOfValueInDataList************************ */
   const indexOfValue = (value) =>
-    products.findIndex(
+    listMoassat.findIndex(
       (x) => x.moassa.EtabMatricule === value.moassa.EtabMatricule
     );
   const indexOfValueInDataList = (data, props) => {
@@ -425,84 +355,70 @@ const DataTableCrud = (res) => {
   const isEqual = (first, second) => {
     return JSON.stringify(first) === JSON.stringify(second);
   };
-  
-  
-  
-  
-  const [editingRows, setEditingRows] = useState({});
+
   const onRowEditChange = (event) => {
     setEditingRows(event.data);
-}
+  };
   const onRowEditInit = (event) => {
     console.log(event);
-    
-    
-    
+
     originalRows[indexOfValue(event.data)] = {
-      ...products[indexOfValue(event.data)],
+      ...listMoassat[indexOfValue(event.data)],
     };
   };
-console.log(editingRows);
+  console.log(editingRows);
   const onRowEditCancel = (event) => {
-   
-    
-    
-    let _products = [...products];
-    _products[indexOfValue(event.data)] =
+    let _listMoassat = [...listMoassat];
+    _listMoassat[indexOfValue(event.data)] =
       originalRows[indexOfValue(event.data)];
     delete originalRows[indexOfValue(event.data)];
 
-    setProducts(_products);
+    setListMoassat(_listMoassat);
   };
 
   const onRowEditSave = (event) => {
-    setSpinnersLoding(true)
-   putData("put","/api/update",event.data).then((response) => {
-    console.log(response);
-    setSpinnersLoding(false)
-      alert(response.data);
-  
-    
-  })
-  .catch((err) => {
-    setSpinnersLoding(false)
-    if (err.response) {  
+    setSpinnersLoding(true);
+    putData("put", "/api/update", event.data)
+      .then((response) => {
+        console.log(response);
+        setSpinnersLoding(false);
+        alert(response.data);
+      })
+      .catch((err) => {
+        setSpinnersLoding(false);
+        if (err.response) {
+          if (err.response.data.name === "ValidationError") {
+            let _listMoassat = [...listMoassat];
+            _listMoassat[indexOfValue(event.data)] =
+              originalRows[indexOfValue(event.data)];
+            delete originalRows[indexOfValue(event.data)];
 
-      if (err.response.data.name==="ValidationError") {
-            let _products = [...products];
-    _products[indexOfValue(event.data)] =
-      originalRows[indexOfValue(event.data)];
-    delete originalRows[indexOfValue(event.data)];
+            setListMoassat(_listMoassat);
+            console.log(err.response);
+            alert(err.response.data.errors[0]);
+          } else {
+            alert(err.response.data);
+            console.log(err.response);
+          }
 
-    setProducts(_products);
-      console.log(err.response);
-      alert(err.response.data.errors[0]);
-      }else{
-        alert(err.response.data);
-        console.log(err.response);
-      }
-      
-      // client received an error response (5xx, 4xx)
-    } else if (err.request) {
-      console.log(err.request);
-      // client never received a response, or request never left
-    } else {
-      // anything else
-
-    }
-  });
+          // client received an error response (5xx, 4xx)
+        } else if (err.request) {
+          console.log(err.request);
+          // client never received a response, or request never left
+        } else {
+          // anything else
+        }
+      });
   };
-  
+
   const onEditorValueChange = (props, value) => {
-    
-    
-    let updatedProducts = [...products];
+    let updatedlistMoassat = [...listMoassat];
 
     props.rowData[props.field] = value;
-    updatedProducts[indexOfValue(props.rowData)][props.field] = value;
+    updatedlistMoassat[indexOfValue(props.rowData)][props.field] = value;
     console.log(props.rowData.moassa.EtabMatricule);
-    //console.log(props,value,updatedProducts[props.rowIndex][props.field],isEqual(props.rowData,originalRows[props.rowIndex]));
-    setProducts(updatedProducts);
+    //console.log(props,value,updatedlistMoassat[props.rowIndex][props.field],isEqual(props.rowData,originalRows[props.rowIndex]));
+    setListMoassat(updatedlistMoassat);
   };
 
   const inputTextEditor = (props) => {
@@ -519,7 +435,7 @@ console.log(editingRows);
       />
     );
   };
-/**************************جسم تحديث البانات في الجدول *********************** */
+  /**************************جسم تحديث البانات في الجدول *********************** */
   const actionBodyTemplate1 = (rowData, props) => {
     const editButton = props.rowEditor.onInitClick;
 
@@ -586,13 +502,13 @@ console.log(editingRows);
         </Grid>
         <Grid item xs={6}>
           <ThemeProvider theme={themebutton}>
-            <AlertDialog rowData={rowData} onDeleteProduct={deleteProduct}/>
+            <AlertDialog rowData={rowData} onDeleteProduct={deleteProduct} />
           </ThemeProvider>
         </Grid>
       </Grid>
     );
   };
- 
+
   /*****************************رأس الجدول***************************** */
 
   const headarTable = (
@@ -609,7 +525,7 @@ console.log(editingRows);
               <MyButton
                 variant="outlined"
                 color="secondary"
-                onClick={handleClickOpen}
+                onClick={handleDeleteSelected}
                 disabled={selectedMoassa.length === 0 ? true : false}
                 startIcon={<DeleteTwoToneIcon />}
               >
@@ -623,7 +539,6 @@ console.log(editingRows);
               color="primary"
               onClick={handleClickOpen}
               startIcon={<AddTwoToneIcon />}
-              
             >
               أضف الى القائمة
             </MyButton>
@@ -636,7 +551,7 @@ console.log(editingRows);
                 variant="outlined"
                 color="secondary"
                 //onClick={}
-                disabled={products.length === 0 ? true : false}
+                disabled={listMoassat.length === 0 ? true : false}
                 startIcon={<CloudUploadTwoToneIcon />}
               >
                 تصدير
@@ -649,7 +564,6 @@ console.log(editingRows);
               color="primary"
               onClick={handleClickOpen}
               startIcon={<CloudDownloadTwoToneIcon />}
-              
             >
               إستراد
             </MyButton>
@@ -681,33 +595,16 @@ console.log(editingRows);
     </>
   );
 
-/**--------------------ايقونة المدرسة في الجدول------------------------- */
-  const replaceStrIcon = (rowData, parms) => {
-    const name = rowData.moassa.EtabNom.replace("المدرسة الابتدائية", "");
-    return (
-      <>
-        <Tooltip title={name} placement="top">
-          <span style={{ display: "flex", gap: 12 }}>
-            <SchoolTwoToneIcon color="primary" />
-            {name}
-          </span>
-        </Tooltip>
-      </>
-    );
-  };
- /****************************start App*************************** */
+  /****************************body App*************************** */
   return (
     <>
       {" "}
-      <AlertDialog/>
       <Container maxWidth="xl" style={{ marginBottom: 2, marginTop: 12 }}>
         <ThemeProvider theme={spinners}>
-        <DialogMui
-        open={spinnersLoding}
-        
-        >
-          <ScaleLoader color="#dbdbdb" loading={spinnersLoding}  size={50} />
-        </DialogMui></ThemeProvider>
+          <DialogMui open={spinnersLoding}>
+            <ScaleLoader color="#dbdbdb" loading={spinnersLoding} size={50} />
+          </DialogMui>
+        </ThemeProvider>
         <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12} sm={9}>
             <Paper elevation={3} style={{ padding: 10 }}>
@@ -728,7 +625,7 @@ console.log(editingRows);
                 initialValues={{
                   ...INITIAL_FORM_STATE,
                 }}
-                validationSchema={FORM_VALIDATION}
+                validationSchema={moassaSchema}
                 onSubmit={handelSubmit}
               >
                 <Form>
@@ -805,7 +702,8 @@ console.log(editingRows);
                         <AutocompleteMui
                           name="moassa"
                           label="المؤسسة"
-                          disabled={disble}
+                          loading
+                          loadingText={"في الانتظار"}
                           inputValue={inputValueMoassa}
                           onInputChange={getValueMoassa}
                           options={
@@ -819,19 +717,25 @@ console.log(editingRows);
                     </Grid>
                   </DialogContent>
                   <DialogActions>
-                    <Paper className={classes.buttonPapersubmit}>
-                      <ButtonMui
-                        className={classes.submit}
+                    <ThemeProvider theme={themebutton}>
+                      <MyButton
                         onClick={handleClose}
-                        color="primary"
+                        color="secondary"
                         size="large"
-                        variant="contained"
+                        variant="outlined"
+                        startIcon={<ClearTwoToneIcon />}
                       >
                         الغاء
-                      </ButtonMui>
-                    </Paper>
+                      </MyButton>
+                    </ThemeProvider>
 
-                    <Controls.Button color="primary">حفظ</Controls.Button>
+                    <Controls.Button
+                      color="primary"
+                      startIcon={<CheckTwoToneIcon />}
+                      variant="outlined"
+                    >
+                      حفظ
+                    </Controls.Button>
                   </DialogActions>
                 </Form>
               </Formik>
@@ -839,12 +743,10 @@ console.log(editingRows);
           </Grid>
         </Grid>
 
-        {/* <Toast ref={toast} /> */}
-
-        <Static data={products} loading={loading}/>
+        <Static data={listMoassat} loading={loading} />
         <DataTable
           ref={dt}
-          value={products || []}
+          value={listMoassat || []}
           selectionMode="checkbox"
           selection={selectedMoassa}
           onSelectionChange={onSelected}
@@ -859,8 +761,6 @@ console.log(editingRows);
           onRowEditSave={onRowEditSave}
           paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
           currentPageReportTemplate="عرض {first} الى {last} من اصل {totalRecords}"
-          
-
           editingRows={editingRows}
           onRowEditChange={onRowEditChange}
           globalFilter={globalFilter}
@@ -892,7 +792,7 @@ console.log(editingRows);
             field="moassa.EtabNom"
             header="المؤسسة"
             sortable
-            style={{ width: 240 }}
+            style={{ width: 300 }}
             body={replaceStrIcon}
           ></Column>
 
@@ -959,7 +859,6 @@ console.log(editingRows);
           <Column
             columnKey="actionBodyTemplate1"
             rowEditor
-            headerStyle={{ width: "7rem" }}
             bodyStyle={{ textAlign: "center", height: 81 }}
             body={actionBodyTemplate1}
             headerStyle={{ width: 170 }}

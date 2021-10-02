@@ -15,9 +15,9 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import { useTheme, makeStyles } from "@material-ui/core/styles";
 import { VariableSizeList } from "react-window";
-import { Typography } from "@material-ui/core";
+
 import Checkbox from "@material-ui/core/Checkbox";
-import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+
 import { useField, useFormikContext } from "formik";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";

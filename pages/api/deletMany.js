@@ -2,7 +2,7 @@ import nextConnect from "next-connect";
 
 import middleware from "../../middleware/connectDb";
 import { validate } from "../../middleware/validate";
-import { moassaSchema } from "../../schemas/schemas_moassa";
+import { arrayMoassaSchema } from "../../schemas/schemas_moassa";
 
 const handler = nextConnect();
 
@@ -12,12 +12,18 @@ handler.put(async (req, res) => {
 
   /*^^^^التاكد من ان المعومات المرسلة موجودة في الداتا^^^^*/
   const simple_query = {
-    year: "2021","schools.moassa.EtabMatricule": +req.body.moassa.EtabMatricule 
+    year: "2021"
   };
 
 
   const updateDocument = {
-    $pull: { schools:{"moassa.EtabMatricule": +req.body.moassa.EtabMatricule }}
+    $pull: {
+      schools: {
+        "moassa.EtabMatricule": {
+          "$in": req.body.arrayEtabMatricule
+        }
+      }
+    }
   };
   const sample_collection = await req.db.collection("sample");
   const sample_post = await sample_collection.updateOne(
@@ -36,15 +42,13 @@ handler.put(async (req, res) => {
 
   if (modifiedCount && matchedCount) {
     return res.status(200).json({message:"تمت العملية بنجاح"})
-  } else if (!modifiedCount && matchedCount) {
-    return res.status(422).json({ message: "لم يتم تغيير البيانات" });
-  } else {
+  }  else {
     return res.status(404).json({ message: "لا يمكن تحديث بيانات غير موجودة" });
   }
 
 });
 
-export default validate(moassaSchema, handler);
+export default validate(arrayMoassaSchema, handler);
 
   //   if (!isExt ) {
   //     return res.status(422).json({ message: "لا يمكن تحديث بيانات غير موجودة" });
