@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb'
 import nextConnect from 'next-connect';
-const MONGODB_URI = process.env.MONGODB_URI_LOCAL;
+const MONGODB_URI = process.env.MONGODB_URI;
 const MONGODB_DB = process.env.MONGODB_DB
 
 
