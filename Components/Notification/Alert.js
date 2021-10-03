@@ -22,24 +22,21 @@ module.exports = {
     Toast.fire({
       icon: "error",
       title: message,
-      background: "#e3f7df",
-      iconColor: "#55c83e",
+      
     });
   },
   openToastWarning: (message) => {
     Toast.fire({
       icon: "warning",
       title: message,
-      background: "#e3f7df",
-      iconColor: "#55c83e",
+      
     });
   },
   openToastInfo: (message) => {
     Toast.fire({
       icon: "info",
       title: message,
-      background: "#e3f7df",
-      iconColor: "#55c83e",
+      
     });
   },
 };
