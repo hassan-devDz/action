@@ -284,19 +284,27 @@ const [Message, setMessage] = useState(false)
         //alert(response.data.message);
       })
       .catch((err) => {
+        
         fetcher("api/schools").then((res) => {
           setListMoassat(res);
+          
+        }).catch((err)=>{
           setSpinnersLoding(false);
+          openToastError(err)
         });
         if (err.response) {
-          openToastSuccess(response.data.message)
-          alert(err.response.data.message || err.response.data);
+          openToastError(err.response.data.message || err.response.data)
+         
+
           // client received an error response (5xx, 4xx)
         } else if (err.request) {
-          console.log(err.request,"https://action-six.vercel.app/");
+          setSpinnersLoding(false);
+          openToastError("لا يمكن ارسال الطلب")
           // client never received a response, or request never left
         } else {
           // anything else
+          setSpinnersLoding(false);
+          openToastError("حدث خطأ ما")
         }
       });
   };
