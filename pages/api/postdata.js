@@ -36,7 +36,8 @@ handler.post(async (req, res) => {
       { $addToSet: { schools: req.body } },
       { upsert: true }
     );
-    return res.status(201).send("ok");
+    return res.status(201).json({message:"تمت العملية بنجاح"})
+
   }
   if (isExt) {
     return res.status(422).json({message:"موجود بالفعل"});

@@ -11,6 +11,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DeleteTwoToneIcon from "@material-ui/icons/DeleteTwoTone";
 import { styled } from "@material-ui/core/styles";
 import ButtonWrapper from "../FormsUi/Button/ButtonNorm";
+
 import theme from '../Theme';
 import {ThemeProvider} from '@material-ui/core/styles';
 const MyButton = styled(ButtonWrapper)({
@@ -19,15 +20,18 @@ const MyButton = styled(ButtonWrapper)({
 });
 export default function AlertDialog(props) {
   const [open, setOpen] = useState(false);
-
+  
   const handleClickOpen = () => {
     setOpen(true);
+    
     console.log(props.rowData);
   };
 const onDeleteProduct = (e) => {
   console.log(e,);
   setOpen(false);
   props.onDeleteProduct(props.rowData)
+ 
+  
   
 }
   const handleClose = (e) => {

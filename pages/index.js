@@ -42,13 +42,15 @@ import Draggable from "react-draggable";
 import { styled } from "@material-ui/core/styles";
 
 import IconButton from "@material-ui/core/IconButton";
-
+import IntegrationNotistack from '../Components/Notification/Alert';
 import InputAdornment from "@material-ui/core/InputAdornment";
 
 import SearchIcon from "@material-ui/icons/Search";
+import {  withSnackbar } from 'notistack';
 import Static from "../Components/static";
 
 import AlertDialog from "../Components/Notification/ConfiremDeleteDialog";
+import {openToastSuccess} from '../Components/Notification/Alert';
 import { moassaSchema } from "../schemas/schemas_moassa";
 
 import replaceStrIcon from "../Components/IconReplaceTxt/IconRepTxt";
@@ -120,6 +122,7 @@ const INITIAL_FORM_STATE = {
 let originalRows = {};
 const DataTableCrud = (res) => {
   /**----------------all useState----------------------- */
+  
   const [loading, setLoading] = useState(true), //جاري التحميل للجدول الرئيسي و احصائيات المدارس
     [data, setdata] = useState([...res.data]), //قائمة الدوائر بالولاية
     [listMoassat, setListMoassat] = useState([]), //قائمة المؤسسات المعنية بالحركة
@@ -183,8 +186,9 @@ const DataTableCrud = (res) => {
     });
   }, []);
   /*******************ازالة مؤسسة من القائمة**********start******** */
-
-  const deleteProduct = (rowData) => {
+const [Message, setMessage] = useState(false)
+  const deleteProduct = (rowData,e,t) => {
+    console.log(rowData,e,t);
     setSpinnersLoding(true);
     putData("put", "/api/delete", rowData,year)
       .then((response) => {
@@ -194,10 +198,10 @@ const DataTableCrud = (res) => {
           (element) => ![rowData].includes(element)
         );
         setListMoassat(newlistMoassat);
+        openToastSuccess(response.data.message)
+          
 
-        
-
-        alert(response.data.message);
+        //alert(response.data.message);
       })
       .catch((err) => {
         fetcher("api/schools").then((res) => {
@@ -276,8 +280,8 @@ const DataTableCrud = (res) => {
         setListMoassat(newlistMoassat);
 
         
-
-        alert(response.data.message);
+        openToastSuccess(response.data.message)
+        //alert(response.data.message);
       })
       .catch((err) => {
         fetcher("api/schools").then((res) => {
@@ -310,7 +314,9 @@ const DataTableCrud = (res) => {
         .then((response) => {
           
           setSpinnersLoding(false);
-          alert(response.data);
+          //alert(response.data);
+          openToastSuccess(response.data.message)
+          console.log(response);
           setListMoassat((prev) => {
             return [...prev, values];
           });
@@ -385,7 +391,8 @@ const DataTableCrud = (res) => {
       .then((response) => {
         
         setSpinnersLoding(false);
-        alert(response.data);
+        openToastSuccess(response.data.message)
+        //alert(response.data);
       })
       .catch((err) => {
         setSpinnersLoding(false);
@@ -505,7 +512,7 @@ const DataTableCrud = (res) => {
         </Grid>
         <Grid item xs={6}>
           <ThemeProvider theme={themebutton}>
-            <AlertDialog rowData={rowData} onDeleteProduct={deleteProduct} />
+            <AlertDialog rowData={rowData} onDeleteProduct={deleteProduct} message={Message} />
           </ThemeProvider>
         </Grid>
       </Grid>
@@ -616,10 +623,13 @@ const DataTableCrud = (res) => {
 
  
   /****************************body App*************************** */
+  
   return (
     <>
       {" "}
+     
       <Container maxWidth="xl" style={{ marginBottom: 2, marginTop: 12 }}>
+       
         <ThemeProvider theme={spinners}>
           <DialogMui open={spinnersLoding}>
             <ScaleLoader color="#dbdbdb" loading={spinnersLoding} size={50} />

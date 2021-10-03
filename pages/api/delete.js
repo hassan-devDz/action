@@ -36,9 +36,7 @@ handler.put(async (req, res) => {
 
   if (modifiedCount && matchedCount) {
     return res.status(200).json({message:"تمت العملية بنجاح"})
-  } else if (!modifiedCount && matchedCount) {
-    return res.status(422).json({ message: "لم يتم تغيير البيانات" });
-  } else {
+  }  else {
     return res.status(404).json({ message: "لا يمكن تحديث بيانات غير موجودة" });
   }
 
