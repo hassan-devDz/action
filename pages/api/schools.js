@@ -15,7 +15,9 @@ handler.get(async (req, res) => {
   if (data) {
     return res.status(200).json(data.schools );
   }
-return res.status(200).json([]);
+else{
+  return res.redirect('/404')
+}
    
   
   

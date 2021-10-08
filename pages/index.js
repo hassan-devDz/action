@@ -35,7 +35,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import { red } from "@material-ui/core/colors";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
-
+import Backdrop from '@material-ui/core/Backdrop';
 import axios from "axios";
 import Draggable from "react-draggable";
 
@@ -50,12 +50,13 @@ import {  withSnackbar } from 'notistack';
 import Static from "../Components/static";
 
 import AlertDialog from "../Components/Notification/ConfiremDeleteDialog";
-import {openToastSuccess,openToastError} from '../Components/Notification/Alert';
+import {openToastSuccess,openToastError,openToastInfo} from '../Components/Notification/Alert';
 import { moassaSchema } from "../schemas/schemas_moassa";
 
 import replaceStrIcon from "../Components/IconReplaceTxt/IconRepTxt";
 import DateP from '../Components/date';
-
+import TransferList from '../Components/TransferList/indexTransfert.js';
+import Drogble from '../Components/TransferList/drag';
 const MyButton = styled(ButtonWrapper)({
   minWidth: 40,
   padding: "5px 6px",
@@ -98,26 +99,18 @@ const themebutton = createTheme({
     },
   },
 });
-let arr = [];
-arr[24] = "none";
-const spinners = createTheme({
-  direction: "rtl",
-  palette: {
-    background: {
-      paper: "transparent",
-    },
-  },
-  shadows: arr,
-});
 
-const INITIAL_FORM_STATE = {
+
+
+const INITIAL_FORM_STATE = {daira: null,
   potentialVacancy: 0, //محتمل
   forced: 0, //مجبر
   vacancy: 0, //شاغر
   surplus: 0, //فائض
   moassa: [{ EtabMatricule: null, EtabNom: null, bladia: null }],
-  daira: null,
+  
 };
+
 
 let originalRows = {};
 const DataTableCrud = (res) => {
@@ -173,7 +166,8 @@ const DataTableCrud = (res) => {
   };
   /********************* طلب تعديل أو حذف مؤسسة من الجدول *********************end */
 
-  const onSelected = (e) => {
+  const onSelected = (e,d) => {
+    console.log(e,d);
     setSelectedMoassa(e.value);
   };
 
@@ -310,6 +304,7 @@ const [Message, setMessage] = useState(false)
   };
   /**-******************************************Submit************************************************************** */
 
+
   const handelSubmit = async (values) => {
     const isInlistMoassat = listMoassat.findIndex(
       (ele) => ele.moassa.EtabMatricule == values.moassa.EtabMatricule
@@ -332,8 +327,8 @@ const [Message, setMessage] = useState(false)
         .catch((err) => {
           setSpinnersLoding(false);
           if (err.response) {
+           openToastError(err.response.data.message || err.response.data)
             
-            alert(err.response.data.message || err.response.data);
             // client received an error response (5xx, 4xx)
           } else if (err.request) {
             
@@ -343,8 +338,8 @@ const [Message, setMessage] = useState(false)
           }
         });
     } else {
-      alert("موجود بالفعل");
-    }
+      openToastInfo("موجود بالفعل")
+         }
     // else {
     //   postData("/api/postdata",values)
     //     .then((response) => {
@@ -631,18 +626,21 @@ const [Message, setMessage] = useState(false)
 
  
   /****************************body App*************************** */
-  
+  // const static = listMoassat.map((x)=>{
+    
+  // })
   return (
     <>
       {" "}
      
       <Container maxWidth="xl" style={{ marginBottom: 2, marginTop: 12 }}>
        
-        <ThemeProvider theme={spinners}>
-          <DialogMui open={spinnersLoding}>
+       {/* <TransferList selectedMoassa={selectedMoassa}></TransferList> */}
+       
+          <Backdrop open={spinnersLoding} style={{zIndex:1301}}>
             <ScaleLoader color="#dbdbdb" loading={spinnersLoding} size={50} />
-          </DialogMui>
-        </ThemeProvider>
+          </Backdrop>
+        
         <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12} sm={9}>
             <Paper elevation={3} style={{ padding: 10 }}>
@@ -808,7 +806,7 @@ const [Message, setMessage] = useState(false)
           loading={loading}
           scrollable
           scrollHeight="500px"
-          frozenWidth="190px"
+          frozenWidth="204px"
         >
           <Column
             columnKey="multiple"
@@ -838,7 +836,7 @@ const [Message, setMessage] = useState(false)
             columnKey="daira"
             field="daira"
             header="الدائرة"
-            headerStyle={{ width: 100, padding: 7 }}
+            headerStyle={{ width: 114}}
             style={{ padding: 7, height: 81 }}
             sortable
             frozen
@@ -849,7 +847,7 @@ const [Message, setMessage] = useState(false)
             field="moassa.bladia"
             header="البلدية"
             sortable
-            headerStyle={{ width: 100, padding: 7 }}
+            headerStyle={{ width: 114, padding: 7 }}
           ></Column>
           {/* <Column
             field="moassa.EtabMatricule"
