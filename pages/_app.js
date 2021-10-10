@@ -24,7 +24,7 @@ function MyApp({ Component, pageProps }) {
     }
   }, []);
   return (
-    <>
+    <React.Fragment>
       <ThemeProvider theme={theme}>
       <StylesProvider jss={jss}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
@@ -34,7 +34,7 @@ function MyApp({ Component, pageProps }) {
           <Component {...pageProps} />
           </StylesProvider>
       </ThemeProvider>
-    </>
+    </React.Fragment>
   );
 }
 

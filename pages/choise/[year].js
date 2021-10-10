@@ -38,19 +38,19 @@ import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import Backdrop from "@material-ui/core/Backdrop";
 import axios from "axios";
 import Draggable from "react-draggable";
-
+import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { styled } from "@material-ui/core/styles";
 
 import IconButton from "@material-ui/core/IconButton";
 import IntegrationNotistack from "../../Components/Notification/Alert";
 import InputAdornment from "@material-ui/core/InputAdornment";
-
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import SearchIcon from "@material-ui/icons/Search";
 import { withSnackbar } from "notistack";
 import Static from "../../Components/static";
-
+import FormInfoInterested from '../../Components/Desires/FormInfoInterested';
 import AlertDialog from "../../Components/Notification/ConfiremDeleteDialog";
-import DialogOrderOfDesires from '../../Components/Desires/OrderOfDesires';
+import DialogOrderOfDesires from "../../Components/Desires/OrderOfDesires";
 import {
   openToastSuccess,
   openToastError,
@@ -63,7 +63,7 @@ import DateP from "../../Components/date";
 import TransferList from "../../Components/TransferList/indexTransfert.js";
 import Drogble from "../../Components/TransferList/drag";
 const MyButton = styled(ButtonWrapper)({
-  minWidth: 40,
+  //minWidth: 40,
   padding: "5px 6px",
 });
 
@@ -80,6 +80,7 @@ function PaperComponent() {
 
 const DataTableCrud2 = (props) => {
   console.log(props);
+
   /**----------------all useState----------------------- */
   const rouet = useRouter();
   console.log(rouet.query);
@@ -116,7 +117,7 @@ const DataTableCrud2 = (props) => {
   const putData = (method, url, values, query = "") => {
     const response = axios({
       method: method,
-      url: url + "?Year=" + query,
+      url: url + "?year=" + query,
       data: values,
     });
 
@@ -125,17 +126,23 @@ const DataTableCrud2 = (props) => {
   /********************* طلب تعديل أو حذف مؤسسة من الجدول *********************end */
   const results = (arr1, arr2) => {
     return arr1.filter(
-      ({ moassa: id1 }) =>
-        !arr2.some(({ moassa: id2 }) => id2.EtabMatricule === id1.EtabMatricule)
+      ({ moassa: elementArr1 }) =>
+        !arr2.some(
+          ({ moassa: elementArr2 }) =>
+            elementArr2.EtabMatricule === elementArr1.EtabMatricule
+        )
     )[0].moassa.EtabNom;
   };
+
   const onSelected = (e, d) => {
+    console.log(e);
     if (e.value.length > selectedMoassa.length) {
       openToastSuccess(`تمت اضافة ${results(e.value, selectedMoassa)}`);
     }
     if (e.value.length < selectedMoassa.length) {
       openToastError(`تمت حذف ${results(selectedMoassa, e.value)}`);
     }
+    /********************استبعاد الفائض************** */
     if (
       e.value.length > 0 &&
       e.value[e.value.length - 1].forced === 0 &&
@@ -144,13 +151,10 @@ const DataTableCrud2 = (props) => {
       e.value[e.value.length - 1].surplus > 0
     ) {
       console.log(e.value[e.value.length - 1]);
-      openToastError("لايمكن");
-    }else{
-       setSelectedMoassa(e.value);
+      openToastError("لايمكن إختيار هاته المؤسسة لعدم وجود منصب");
+    } else {
+      setSelectedMoassa(e.value);
     }
-   
-
-   
   };
 
   const dt = useRef(null);
@@ -160,6 +164,7 @@ const DataTableCrud2 = (props) => {
       .then((res) => {
         setListMoassat(res);
         setLoading(false);
+        console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -183,7 +188,7 @@ const DataTableCrud2 = (props) => {
   if (selectedMoassa.length > 5) {
     let _selectedMoassa = selectedMoassa.slice(0, 5);
     setSelectedMoassa(_selectedMoassa);
-    openToastError("لايمكن");
+    openToastError("الحد الأقصى للرغبات هو 5");
   }
 
   /**********************indexOfValueInDataList************************ */
@@ -191,10 +196,8 @@ const DataTableCrud2 = (props) => {
     listMoassat.findIndex(
       (x) => x.moassa.EtabMatricule === value.moassa.EtabMatricule
     );
-    
-   
+
   const indexOfValueInDataList = (data, props) => {
-    
     return <div>{indexOfValue(data) + 1}</div>;
   };
   /**********************indexOfValueInDataList************************ */
@@ -205,7 +208,7 @@ const DataTableCrud2 = (props) => {
     setYear(e);
     setSelectedMoassa([]);
     setLoading(true);
-    fetcher(`../api/schools`, { Year: e })
+    fetcher(`../api/schools`, { year: e })
       .then((res) => {
         setListMoassat(res);
         setSpinnersLoding(false);
@@ -217,11 +220,23 @@ const DataTableCrud2 = (props) => {
       });
     console.log(e);
   };
-  const [myChoise, setMyChoise] = useState(false)
+  const [myChoise, setMyChoise] = useState(false);
 
   const headarTable = (
-    <>
+    <><Grid
+    container
+        spacing={2}
+        justifyContent="center"
+        alignItems="center"
+    >
+      <Grid item xs={12} ><Typography variant="h4" component="h3" style={{textAlign:"center",fontWeight:700}}>
+        إختـــر الرغبـــات
+        </Typography></Grid>
+      
+    
       <Grid
+      item
+      xs={12}
         container
         spacing={2}
         justifyContent="space-between"
@@ -232,25 +247,22 @@ const DataTableCrud2 = (props) => {
             color="secondary"
             disabled={selectedMoassa == false}
             onClick={(e) => setSelectedMoassa([])}
+            startIcon={<AutorenewIcon />}
           >
             إعادة اختيار
           </MyButton>
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={2}>
-          <MyButton
-            color="secondary"
-            
-            onClick={(e) => setMyChoise(!myChoise)}
-          >
-            {!myChoise?"مشاهدة اختياراتي":"مشاهدة الكل"}
+          <MyButton color="secondary" onClick={(e) => setMyChoise(!myChoise)}startIcon={<VisibilityIcon />}>
+            {!myChoise ? "مشاهدة اختياراتي" : "مشاهدة الكل"}
           </MyButton>
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={2}>
-          <DialogOrderOfDesires selectedMoassa={selectedMoassa}></DialogOrderOfDesires>
+          <DialogOrderOfDesires
+            selectedMoassa={selectedMoassa}
+          ></DialogOrderOfDesires>
         </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={2}>
-          <DateP onChange={onYearPicker} />
-        </Grid>
+
         <Grid item xs={12} sm={6} md={4} lg={3}>
           <TextField
             fullWidth
@@ -272,40 +284,40 @@ const DataTableCrud2 = (props) => {
             }}
           />
         </Grid>
-      </Grid>
+      </Grid></Grid>
     </>
   );
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const handleClose = () => {
-    setOpen(false)
-  }
-const DailogMui1 = () => {
-  
-  return ( 
-    <DialogMui
-    open={open}
-    onClose={handleClose}
-    aria-labelledby="alert-dialog-title"
-    aria-describedby="alert-dialog-description"
-  >
-    <DialogTitle id="alert-dialog-title">{"رتب رغباتك عن طريق السحب والافلات "}</DialogTitle>
-    <DialogContent>
-      <DialogContentText id="alert-dialog-description">
-      <Drogble selectedMoassa={selectedMoassa} />
-      </DialogContentText>
-    </DialogContent>
-    <DialogActions>
-      <MyButton onClick={handleClose} color="primary">
-        Disagree
-      </MyButton>
-      <MyButton onClick={handleClose} color="primary" autoFocus>
-        Agree
-      </MyButton>
-    </DialogActions>
-  </DialogMui>
-   );
-}
- 
+    setOpen(false);
+  };
+  const DailogMui1 = () => {
+    return (
+      <DialogMui
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"رتب رغباتك عن طريق السحب والافلات "}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" component="div">
+            <Drogble selectedMoassa={selectedMoassa} />
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <MyButton onClick={handleClose} color="primary">
+            Disagree
+          </MyButton>
+          <MyButton onClick={handleClose} color="primary" autoFocus>
+            Agree
+          </MyButton>
+        </DialogActions>
+      </DialogMui>
+    );
+  };
 
   /****************************body App*************************** */
   // const static = listMoassat.map((x)=>{
@@ -320,17 +332,18 @@ const DailogMui1 = () => {
         <Backdrop open={spinnersLoding} style={{ zIndex: 1301 }}>
           <ScaleLoader color="#dbdbdb" loading={spinnersLoding} size={50} />
         </Backdrop>
+        <FormInfoInterested/>
 
         <DataTable
           ref={dt}
-          value={myChoise?selectedMoassa:listMoassat || []}
+          value={myChoise ? selectedMoassa : listMoassat || []}
           selectionMode="checkbox"
           selection={selectedMoassa}
           onSelectionChange={onSelected}
-         
-          
           dataKey="moassa.EtabMatricule"
-          emptyMessage={myChoise?"لم تختر أي مؤسسة بعد":"لا توجد بيانات لعرضها"}
+          emptyMessage={
+            myChoise ? "لم تختر أي مؤسسة بعد" : "لا توجد بيانات لعرضها"
+          }
           paginator
           rows={10}
           rowsPerPageOptions={[5, 10, 25]}
@@ -348,9 +361,10 @@ const DailogMui1 = () => {
           <Column
             columnKey="multiple"
             selectionMode="multiple"
+            
+            
             style={{ width: 50 }}
             frozen
-            
           ></Column>
           <Column
             columnKey="index"
@@ -428,27 +442,26 @@ const DailogMui1 = () => {
             {/*body={ratingBodyTemplate}*/}
           </Column>
         </DataTable>
-       
       </Container>
     </>
   );
 };
 
-export async function getServerSideProps(ctx) {
-  const urlBass = await process.env.URL_BASE;
+// export async function getServerSideProps(ctx) {
+//   const urlBass = await process.env.URL_BASE;
+//   const query = new URLSearchParams(ctx.query).toString()
+//   const res = await fetch(`${urlBass}/api/schools?${query}`);
 
-  const res = await fetch(`${urlBass}/api/schools?Year=${ctx.query.Year}`);
+//   if (res.status === 404) {
+//     return {
+//       notFound: true,
+//     };
+//   }
 
-  if (res.status === 404) {
-    return {
-      notFound: true,
-    };
-  }
+//   const data = await res.json();
 
-  const data = await res.json();
-
-  return {
-    props: { data }, // will be passed to the page component as props
-  };
-}
+//   return {
+//     props: { data }, // will be passed to the page component as props
+//   };
+// }
 export default DataTableCrud2;

@@ -12,12 +12,12 @@ handler.put(async (req, res) => {
 
   /*^^^^التاكد من ان المعومات المرسلة موجودة في الداتا^^^^*/
   const simple_query = {
-    year: req.query.Year,"schools.moassa.EtabMatricule": +req.body.moassa.EtabMatricule 
+    ...req.query,"schools.moassa.EtabMatricule": req.body.moassa.EtabMatricule 
   };
 
 
   const updateDocument = {
-    $pull: { schools:{"moassa.EtabMatricule": +req.body.moassa.EtabMatricule }}
+    $pull: { schools:{"moassa.EtabMatricule": req.body.moassa.EtabMatricule }}
   };
   const sample_collection = await req.db.collection("sample");
   const sample_post = await sample_collection.updateOne(

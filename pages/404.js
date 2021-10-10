@@ -5,7 +5,7 @@ import {
   Typography,
   makeStyles
 } from '@material-ui/core';
-
+import Router from 'next/router';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NotFoundView = () => {
+    console.log(Router);
   const classes = useStyles();
 
   return (
@@ -60,7 +61,7 @@ const NotFoundView = () => {
           >
           للأسف لم يتم العثور على الصفحة التي طلبتها. قد يكون الرابط خاطئ أو الصفحة حذفت.
           </Typography >
-         
+          <div onClick={() => Router.back()}>Go Back</div>
         </Container>
       </Box>
     

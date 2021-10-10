@@ -11,12 +11,8 @@ handler.put(async (req, res) => {
   /*التاكد من ان المعومات المرسلة موجودة في الداتا*** */
 
   /*^^^^التاكد من ان المعومات المرسلة موجودة في الداتا^^^^*/
-  const simple_query = {
-    year: req.query.Year,
-    "schools.moassa.bladia": req.body.moassa.bladia,
-    "schools.moassa.EtabMatricule": req.body.moassa.EtabMatricule,
-    "schools.moassa.EtabNom": req.body.moassa.EtabNom,
-  };
+   const simple_query = { ...req.query ,"schools": { $all: [{"$elemMatch":{"moassa.bladia":req.body.moassa.bladia,"moassa.EtabMatricule":req.body.moassa.EtabMatricule,"moassa.EtabNom":req.body.moassa.EtabNom}}] } }
+ 
 
   const updateDocument = {
     $set: {
@@ -30,7 +26,7 @@ handler.put(async (req, res) => {
   const sample_collection = await req.db.collection("sample");
   const sample_post = await sample_collection.updateOne(
     simple_query,
-    updateDocument
+    updateDocument,false,true
   );
   const { modifiedCount, upsertedCount, matchedCount } = sample_post;
   console.log(

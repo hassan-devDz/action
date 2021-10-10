@@ -8,7 +8,7 @@ handler.get(async (req, res) => {
   console.log(req.query);
   const data_collection = await req.db.collection("sample");
   const data = await data_collection.findOne(
-    { "year": req.query.Year },
+    req.query ,
    {_id:0,"schools":1}
  )
   

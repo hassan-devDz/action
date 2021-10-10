@@ -154,7 +154,7 @@ const DataTableCrud = (res) => {
   const putData = (method, url, values,query='') => {
     const response = axios({
       method: method,
-      url: url+'?Year='+query,
+      url: url+'?year='+query,
       data: values
       
           
@@ -174,7 +174,7 @@ const DataTableCrud = (res) => {
   const dt = useRef(null);
 
   useEffect(() => {
-    fetcher("api/schools",{ Year: new Date().getFullYear() }).then((res) => {
+    fetcher("api/schools",{ year: new Date().getFullYear() }).then((res) => {
       setListMoassat(res);
       setLoading(false);
     });
@@ -527,7 +527,7 @@ const [Message, setMessage] = useState(false)
    setYear(e)
   
    setLoading(true);
-  fetcher(`api/schools`,{ Year: e }).then((res) => {
+  fetcher(`api/schools`,{ year: e }).then((res) => {
     setListMoassat(res);
     setSpinnersLoding(false)
     setLoading(false);
@@ -713,6 +713,7 @@ const [Message, setMessage] = useState(false)
                         <Controls.Textfield
                           name={"surplus"}
                           label={"فائض"}
+                          type="number"
                           InputProps={{
                             inputComponent: Controls.NumberFormatCustom,
                           }}

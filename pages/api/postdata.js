@@ -8,13 +8,15 @@ const handler = nextConnect();
 
 handler.use(middleware);
 handler.post(async (req, res) => {
+  console.log(req.body.moassa.bladia);
   /****التاكد من ان المعومات المرسلة موجودة في الداتا*** */
   const Hassan_collection_query = await req.db.collection("Hassan");
+  // { "year": "2021" ,"schools": { $all: [{"$elemMatch":{"moassa.bladia":"عين معبد","moassa.EtabMatricule":17051002}}] } }
+  
   const Hassan_query = await Hassan_collection_query.findOne({
-    "daira.daira_name": req.body.daira,
-    "daira.commune_name.bladia": req.body.moassa.bladia,
-    "daira.commune_name.moassata.EtabMatricule": `${req.body.moassa.EtabMatricule}`,
-    "daira.commune_name.moassata.EtabNom": req.body.moassa.EtabNom,
+    "daira": { $all: [{"$elemMatch":{"daira_name":req.body.daira,
+    "commune_name": { $all: [{"$elemMatch":{"bladia":req.body.moassa.bladia,"moassata":{ $all: [{"$elemMatch":{"EtabMatricule":`${req.body.moassa.EtabMatricule}`,"EtabNom":req.body.moassa.EtabNom}}] }}}] },
+  }}] }
   });
    if (!Hassan_query) {
     return res.status(400).json({ error: "بيانات غير صحيحة" });
@@ -26,13 +28,13 @@ handler.post(async (req, res) => {
 
   
   const isExt = await sample_collection.findOne({
-    year: req.query.Year,
-    "schools.moassa.EtabMatricule": { $eq: +req.body.moassa.EtabMatricule },
+    ... req.query,
+    "schools.moassa.EtabMatricule": { $eq: req.body.moassa.EtabMatricule },
   });
 
   if ( !isExt ) {
     const sample_post = await sample_collection.updateOne(
-      { year: req.query.Year },
+      { ... req.query },
       { $addToSet: { schools: req.body } },
       { upsert: true }
     );
