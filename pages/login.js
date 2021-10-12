@@ -101,7 +101,7 @@ export default function SignIn() {
             </Button>
           </Grid>
         </Grid>
-        <DividerWithText>أو يمكنك الدخول عبر البريد الإلكتروني</DividerWithText>
+        <DividerWithText> أو يمكنك الدخول عبر البريد الإلكتروني</DividerWithText>
         <Grid item container >
           <Formik
             initialValues={{
