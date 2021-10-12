@@ -26,23 +26,25 @@ const FormInfoInterested = () => {
   >
     <Form>
     <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Controls.Textfield name="firstName" label="الاسم" />
+      <Grid item xs={12} sm={6} md={4}>
+        <Controls.Textfield type='text' name="firstName" label="الاسم" />
       </Grid>
-      <Grid item xs={12}>
-        <Controls.Textfield name="lastName" label="اللقب" />
+      <Grid item xs={12} sm={6} md={4}>
+        <Controls.Textfield type='text' name="lastName" label="اللقب" />
       </Grid>
-      <Grid item xs={12}>
-        <Controls.Textfield name="baldia" label="البلدية" />
+      <Grid item xs={12} sm={6} md={4}>
+        <Controls.Textfield  name="baldia" label="البلدية" />
       </Grid>
 
-      <Grid item xs={12}>
-        <Controls.Textfield name="workSchool" label="مؤسسة العمل" />
+      <Grid item xs={12} sm={6} md={4}>
+        <Controls.Textfield  name="workSchool" label="مؤسسة العمل" />
       </Grid>
-      <Grid item xs={12}>
-        <Controls.Textfield name="points" label="النقطة" />
+      <Grid item xs={12} sm={6} md={4}>
+        <Controls.Textfield type='number' name="points" label="النقطة" InputProps={{
+                            inputComponent: Controls.NumberFormatCustom,
+                          }} />
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} sm={6} md={4}>
         <Controls.Textfield name="situation" label="الوضعية" />
       </Grid>
     </Grid></Form></Formik>

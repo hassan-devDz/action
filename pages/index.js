@@ -14,7 +14,7 @@ import AddTwoToneIcon from "@material-ui/icons/AddTwoTone";
 
 import AutocompleteMui from "../Components/Autocmplemoassat";
 import Controls from "../Components/FormsUi/Control";
-import ButtonWrapper from "../Components/FormsUi/Button/ButtonNorm";
+import {ButtonWrapper,ButtonRed} from "../Components/FormsUi/Button/ButtonNorm";
 import Typography from "@material-ui/core/Typography";
 import { Container, Grid, Paper } from "@material-ui/core";
 
@@ -57,10 +57,9 @@ import replaceStrIcon from "../Components/IconReplaceTxt/IconRepTxt";
 import DateP from '../Components/date';
 import TransferList from '../Components/TransferList/indexTransfert.js';
 import Drogble from '../Components/TransferList/drag';
-const MyButton = styled(ButtonWrapper)({
-  minWidth: 40,
-  padding: "5px 6px",
-});
+
+import ConfirmProvider from '../Components/UiDialog/ConfirmProvider';
+
 
 function PaperComponent(props) {
   return (
@@ -73,32 +72,6 @@ function PaperComponent(props) {
   );
 }
 
-const themebutton = createTheme({
-  direction: "rtl",
-  palette: {
-    secondary: {
-      main: red.A700,
-    },
-  },
-
-  typography: {
-    fontFamily: '"Cairo" ,"Roboto", "Helvetica", "Arial", "sans-serif"',
-    h6: {
-      fontFamily: '"Cairo" ,"Roboto", "Helvetica", "Arial", "sans-serif""',
-      fontWeight: 500,
-      fontSize: "1.25rem",
-      lineHeight: 1.6,
-      letterSpacing: "0.0075em",
-    },
-    body1: {
-      fontFamily: '"Cairo" ,"Roboto", "Helvetica", "Arial", "sans-serif""',
-      fontWeight: 400,
-      fontSize: "1rem",
-      lineHeight: 1.5,
-      letterSpacing: "0.00938em",
-    },
-  },
-});
 
 
 
@@ -114,6 +87,8 @@ const INITIAL_FORM_STATE = {daira: null,
 
 let originalRows = {};
 const DataTableCrud = (res) => {
+  
+  
   /**----------------all useState----------------------- */
   
   const [loading, setLoading] = useState(true), //جاري التحميل للجدول الرئيسي و احصائيات المدارس
@@ -305,7 +280,8 @@ const [Message, setMessage] = useState(false)
   /**-******************************************Submit************************************************************** */
 
 
-  const handelSubmit = async (values) => {
+  const handelSubmit = async (values,...arg) => {
+    console.log(values,arg);
     const isInlistMoassat = listMoassat.findIndex(
       (ele) => ele.moassa.EtabMatricule == values.moassa.EtabMatricule
     );
@@ -472,19 +448,19 @@ const [Message, setMessage] = useState(false)
         <>
           <Grid container justifyContent="center" spacing={2}>
             <Grid item xs={6}>
-              <ThemeProvider theme={themebutton}>
-                <MyButton
+              
+                <ButtonRed
                   variant="outlined"
                   color="secondary"
                   aria-label="move back"
                   onClick={onRowEditInitconsol}
                 >
                   <ClearTwoToneIcon />
-                </MyButton>
-              </ThemeProvider>
+                </ButtonRed>
+              
             </Grid>
             <Grid item xs={6}>
-              <MyButton
+              <ButtonWrapper
                 variant="outlined"
                 color="secondary"
                 aria-label="save edits "
@@ -495,7 +471,7 @@ const [Message, setMessage] = useState(false)
                 )}
               >
                 <CheckTwoToneIcon />
-              </MyButton>
+              </ButtonWrapper>
             </Grid>
           </Grid>
         </>
@@ -504,19 +480,24 @@ const [Message, setMessage] = useState(false)
     return (
       <Grid container justifyContent="center" spacing={2}>
         <Grid item xs={6}>
-          <MyButton
+          <ButtonWrapper
             variant="outlined"
             color="primary"
             aria-label="information update "
             onClick={onRowEditInitCh}
           >
             <EditTwoToneIcon />
-          </MyButton>
+          </ButtonWrapper>
         </Grid>
         <Grid item xs={6}>
-          <ThemeProvider theme={themebutton}>
+        {/* <ThemeProvider><ButtonWrapper variant="outlined"
+              color="secondary"
+              aria-label="information Delete " onClick={handleDelete}>
+        <DeleteTwoToneIcon/>
+      </ButtonWrapper> */}
+          <ConfirmProvider  >
             <AlertDialog rowData={rowData} onDeleteProduct={deleteProduct} message={Message} />
-          </ThemeProvider>
+          </ConfirmProvider>
         </Grid>
       </Grid>
     );
@@ -544,8 +525,8 @@ const [Message, setMessage] = useState(false)
       >
         <Grid item container xs={12} sm={12} md={5} lg={4} spacing={1}>
           <Grid item xs={12} sm={6}>
-            <ThemeProvider theme={themebutton}>
-              <MyButton
+            
+              <ButtonRed
                 variant="outlined"
                 color="secondary"
                 onClick={handleDeleteSelected}
@@ -553,26 +534,26 @@ const [Message, setMessage] = useState(false)
                 startIcon={<DeleteTwoToneIcon />}
               >
                 حذف من القائمة
-              </MyButton>
-            </ThemeProvider>
+              </ButtonRed>
+            
           </Grid>
           <Grid item xs={12} sm={6}>
             
-            <MyButton
+            <ButtonWrapper
               variant="outlined"
               color="primary"
               onClick={handleClickOpen}
               startIcon={<AddTwoToneIcon />}
             >
               أضف الى القائمة
-            </MyButton>
+            </ButtonWrapper>
           </Grid>
          
         </Grid>
         <Grid item container xs={12} sm={6} md={3} lg={3} spacing={1}>
           <Grid item xs={6}>
-            <ThemeProvider theme={themebutton}>
-              <MyButton
+            
+              <ButtonRed
                 variant="outlined"
                 color="secondary"
                 //onClick={}
@@ -580,18 +561,18 @@ const [Message, setMessage] = useState(false)
                 startIcon={<CloudUploadTwoToneIcon />}
               >
                 تصدير
-              </MyButton>
-            </ThemeProvider>
+              </ButtonRed>
+            
           </Grid>
           <Grid item xs={6}>
-            <MyButton
+            <ButtonWrapper
               variant="outlined"
               color="primary"
               onClick={handleClickOpen}
               startIcon={<CloudDownloadTwoToneIcon />}
             >
               إستراد
-            </MyButton>
+            </ButtonWrapper>
           </Grid>
         </Grid>
         <Grid item xs={12} sm={6}md={4} lg={2}>
@@ -680,6 +661,7 @@ const [Message, setMessage] = useState(false)
                         <Controls.Textfield
                           name={"potentialVacancy"}
                           label={"محتمل الشغور"}
+                          type="number"
                           InputProps={{
                             inputComponent: Controls.NumberFormatCustom,
                           }}
@@ -691,6 +673,7 @@ const [Message, setMessage] = useState(false)
                         <Controls.Textfield
                           name={"forced"}
                           label={"مجبر"}
+                          type="number"
                           InputProps={{
                             inputComponent: Controls.NumberFormatCustom,
                           }}
@@ -702,6 +685,7 @@ const [Message, setMessage] = useState(false)
                         <Controls.Textfield
                           name={"vacancy"}
                           label={"شاغر"}
+                          type="number"
                           InputProps={{
                             inputComponent: Controls.NumberFormatCustom,
                           }}
@@ -754,17 +738,18 @@ const [Message, setMessage] = useState(false)
                     </Grid>
                   </DialogContent>
                   <DialogActions>
-                    <ThemeProvider theme={themebutton}>
-                      <MyButton
+                    
+                      <ButtonRed
                         onClick={handleClose}
                         color="secondary"
                         size="large"
+                        label="gggg"
                         variant="outlined"
                         startIcon={<ClearTwoToneIcon />}
                       >
                         الغاء
-                      </MyButton>
-                    </ThemeProvider>
+                      </ButtonRed>
+                    
 
                     <Controls.Button
                       color="primary"

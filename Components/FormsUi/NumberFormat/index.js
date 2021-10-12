@@ -16,6 +16,7 @@ export const NumberFormatCustom=(props)=> {
         allowNegative={false}
         getInputRef={inputRef}
         onValueChange={(values) => {
+         
           onChange({
             target: {
               name: props.name,

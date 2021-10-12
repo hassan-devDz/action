@@ -1,16 +1,22 @@
-import {useState,useEffect} from 'react';
-import { Dialog ,DialogContent,DialogTitle,DialogActions,DialogContentText} from "@material-ui/core";
-import ButtonWrapper from "../FormsUi/Button/ButtonNorm";
-import Drogble from '../TransferList/drag';
+import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+  DialogContentText,
+} from "@material-ui/core";
+import {ButtonWrapper,ButtonRed} from "../FormsUi/Button/ButtonNorm";
+import Drogble from "../TransferList/drag";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { List, ListItem, ListItemText, Paper } from "@material-ui/core";
-import { withStyles } from '@material-ui/core/styles';
-import {useRouter} from 'next/router';
+import { withStyles } from "@material-ui/core/styles";
+import { useRouter } from "next/router";
 import axios from "axios";
-import Badge from '@material-ui/core/Badge'
+import Badge from "@material-ui/core/Badge";
 
-import AutorenewIcon from '@material-ui/icons/Autorenew';
-import FormatListNumberedRtlIcon from '@material-ui/icons/FormatListNumberedRtl';
+import AutorenewIcon from "@material-ui/icons/Autorenew";
+import FormatListNumberedRtlIcon from "@material-ui/icons/FormatListNumberedRtl";
 // a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -26,8 +32,8 @@ const StyledBadge = withStyles((theme) => ({
     right: 34,
     top: 13,
     border: `2px solid ${theme.palette.background.paper}`,
-    padding: '0 4px',
-    fontFamily:"Roboto"
+    padding: "0 4px",
+    fontFamily: "Roboto",
   },
 }))(Badge);
 const getItemStyle = (isDragging, draggableStyle) => ({
@@ -55,127 +61,130 @@ const getListStyle = (isDraggingOver) => ({
 //       );
 //     };
 const DailogMui1 = (props) => {
-  const router = useRouter()
-    const [open, setOpen] = useState(false)
-    const [items, setitems] = useState(props.selectedMoassa);
-    const putData = (method, url, values,query='') => {
-      const response = axios({
-        method: method,
-        url: url+'?'+query,
-        data: values
-        
-            
-          
-        
-      });
-    
-      return response;
-    };
-    useEffect(() => {
-      setitems(props.selectedMoassa);
-      
-    }, [props.selectedMoassa]);
-  
-    //this.onDragEnd = this.onDragEnd.bind(this);
-  
-    const onDragEnd = (result) => {
-      if (!result.destination) {
-        return;
-      }
-  
-      const item = reorder(items, result.source.index, result.destination.index);
-  
-      setitems(item);
-    };
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [items, setitems] = useState(props.selectedMoassa);
+  const putData = (method, url, values, query = "") => {
+    const response = axios({
+      method: method,
+      url: url + "?" + query,
+      data: values,
+    });
+
+    return response;
+  };
+  useEffect(() => {
+    setitems(props.selectedMoassa);
+  }, [props.selectedMoassa]);
+
+  //this.onDragEnd = this.onDragEnd.bind(this);
+
+  const onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const item = reorder(items, result.source.index, result.destination.index);
+
+    setitems(item);
+  };
   const handleClose = (e) => {
-      console.log(items);
-    setOpen(false)
-  }
-  const query = new URLSearchParams( router.query).toString()
+    console.log(items);
+    setOpen(false);
+  };
+  const query = new URLSearchParams(router.query).toString();
   console.log(query);
   const postData = (e) => {
-    putData('post',"/api/choise",{items:items},query)
-  setOpen(false)
-}
+    putData("post", "/api/choise", { items: items }, query);
+    setOpen(false);
+  };
 
-  return ( 
-      <>
-       <ButtonWrapper
-            color="secondary"
-            disabled={props.selectedMoassa == false}
-            onClick={(e) => setOpen(true)}
-            startIcon={<StyledBadge badgeContent={props.selectedMoassa.length} color="error"><FormatListNumberedRtlIcon /></StyledBadge>}
-          > 
-{"رتب الرغبات"}
-         
+  return (
+    <>
+      <ButtonWrapper
+        color="secondary"
+        disabled={props.selectedMoassa == false}
+        onClick={(e) => setOpen(true)}
+        startIcon={
+          <StyledBadge badgeContent={props.selectedMoassa.length} color="error">
+            <FormatListNumberedRtlIcon />
+          </StyledBadge>
+        }
+      >
+        {"رتب الرغبات"}
+      </ButtonWrapper>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"رتب رغباتك عن طريق السحب والافلات "}
+        </DialogTitle>
+       
+          <DialogContent id="alert-dialog-description" >
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="droppable">
+                {(provided, snapshot) => (
+                  <Paper
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    style={getListStyle(snapshot.isDraggingOver)}
+                  >
+                    <List>
+                      {items.map((item, index) => (
+                        <Draggable
+                          key={item.moassa.EtabMatricule}
+                          draggableId={`${item.moassa.EtabMatricule}`}
+                          index={index}
+                        >
+                          {(provided, snapshot) => (
+                            <Paper
+                              elevation={4}
+                              style={{ margin: "6px 0" }}
+                              component="li"
+                            >
+                              <ListItem
+                                button
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={getItemStyle(
+                                  snapshot.isDragging,
+                                  provided.draggableProps.style
+                                )}
+                              >
+                                <span
+                                  style={{ padding: "0 0 0 24px" }}
+                                >{`الرغبة رقم ${index + 1} `}</span>
+                                <ListItemText
+                                  style={{ color: "#000" }}
+                                  primary={item.moassa.EtabNom}
+                                ></ListItemText>
+                              </ListItem>
+                            </Paper>
+                          )}
+                        </Draggable>
+                      ))}
+                    </List>
+                    {provided.placeholder}
+                  </Paper>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </DialogContent>
         
-                     </ButtonWrapper>
-    <Dialog
-    open={open}
-    onClose={handleClose}
-    aria-labelledby="alert-dialog-title"
-    aria-describedby="alert-dialog-description"
-  >
-    <DialogTitle id="alert-dialog-title">{"رتب رغباتك عن طريق السحب والافلات "}</DialogTitle>
-    <DialogContent>
-      <DialogContentText id="alert-dialog-description" component="div">
-      <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppable">
-        {(provided, snapshot) => (
-          <Paper
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            style={getListStyle(snapshot.isDraggingOver)}
-          >
-            <List>
-              {items.map((item, index) => (
-                <Draggable
-                  key={item.moassa.EtabMatricule}
-                  draggableId={`${item.moassa.EtabMatricule}`}
-                  index={index}
-                >
-                  {(provided, snapshot) => (
-                    <Paper elevation={4} style={{ margin: "6px 0" }} component="li">
-                      <ListItem
-                        button
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        style={getItemStyle(
-                          snapshot.isDragging,
-                          provided.draggableProps.style
-                        )}
-                      >
-                        <span style={{ padding: "0 0 0 24px" }}>{`الرغبة رقم ${
-                          index + 1
-                        } `}</span>
-                        <ListItemText
-                          style={{ color: "#000" }}
-                          primary={item.moassa.EtabNom}
-                        ></ListItemText>
-                      </ListItem>
-                    </Paper>
-                  )}
-                </Draggable>
-              ))}
-            </List>
-            {provided.placeholder}
-          </Paper>
-        )}
-      </Droppable>
-    </DragDropContext>
-      
-      </DialogContentText>
-    </DialogContent>
-    <DialogActions>
-      <ButtonWrapper onClick={handleClose} color="primary">
-        اغلاق
-      </ButtonWrapper>
-      <ButtonWrapper onClick={postData} color="primary" autoFocus>
-        موافقة وارسال
-      </ButtonWrapper>
-    </DialogActions>
-  </Dialog></>
-   );
-}
+        <DialogActions>
+          <ButtonRed onClick={handleClose} color="secondary">
+            اغلاق
+          </ButtonRed>
+          <ButtonWrapper onClick={postData} color="secondary" autoFocus>
+            موافقة وارسال
+          </ButtonWrapper>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+};
 export default DailogMui1;

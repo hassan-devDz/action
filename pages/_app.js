@@ -10,13 +10,11 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import theme from "../Components/Theme";
 import { create } from 'jss';
 import rtl from 'jss-rtl';
-import { StylesProvider, jssPreset ,createGenerateClassName} from '@material-ui/core/styles';
+import { StylesProvider, jssPreset } from '@material-ui/core/styles';
 
 // Configure JSS
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
-const generateClassName = createGenerateClassName({
-  productionPrefix: 'c',
-});
+
 
 function MyApp({ Component, pageProps }) {
   React.useEffect(() => {
@@ -29,7 +27,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <React.Fragment>
       <ThemeProvider theme={theme}>
-      <StylesProvider jss={jss} generateClassName={generateClassName}>
+      <StylesProvider jss={jss} >
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         

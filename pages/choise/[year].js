@@ -14,9 +14,9 @@ import AddTwoToneIcon from "@material-ui/icons/AddTwoTone";
 
 import AutocompleteMui from "../../Components/Autocmplemoassat";
 import Controls from "../../Components/FormsUi/Control";
-import ButtonWrapper from "../../Components/FormsUi/Button/ButtonNorm";
+import { ButtonWrapper } from "../../Components/FormsUi/Button/ButtonNorm";
 import Typography from "@material-ui/core/Typography";
-import { Container, Grid, Paper } from "@material-ui/core";
+import { Container, FormControl, Grid, OutlinedInput, Paper ,InputLabel} from "@material-ui/core";
 
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import CheckTwoToneIcon from "@material-ui/icons/CheckTwoTone";
@@ -34,12 +34,12 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import { red } from "@material-ui/core/colors";
-import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+
 import Backdrop from "@material-ui/core/Backdrop";
 import axios from "axios";
 import Draggable from "react-draggable";
 import AutorenewIcon from '@material-ui/icons/Autorenew';
-import { styled } from "@material-ui/core/styles";
+import { styled,withStyles } from "@material-ui/core/styles";
 
 import IconButton from "@material-ui/core/IconButton";
 import IntegrationNotistack from "../../Components/Notification/Alert";
@@ -62,21 +62,8 @@ import replaceStrIcon from "../../Components/IconReplaceTxt/IconRepTxt";
 import DateP from "../../Components/date";
 import TransferList from "../../Components/TransferList/indexTransfert.js";
 import Drogble from "../../Components/TransferList/drag";
-const MyButton = styled(ButtonWrapper)({
-  //minWidth: 40,
-  padding: "5px 6px",
-});
 
-function PaperComponent() {
-  return (
-    <Draggable
-      handle="#form-dialog-title"
-      cancel={'[class*="MuiDialogContent-root"]'}
-    >
-      <Paper {...props} />
-    </Draggable>
-  );
-}
+
 
 const DataTableCrud2 = (props) => {
   console.log(props);
@@ -243,19 +230,19 @@ const DataTableCrud2 = (props) => {
         alignItems="center"
       >
         <Grid item xs={12} sm={6} md={4} lg={2}>
-          <MyButton
+          <ButtonWrapper
             color="secondary"
             disabled={selectedMoassa == false}
             onClick={(e) => setSelectedMoassa([])}
             startIcon={<AutorenewIcon />}
           >
             إعادة اختيار
-          </MyButton>
+          </ButtonWrapper>
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={2}>
-          <MyButton color="secondary" onClick={(e) => setMyChoise(!myChoise)}startIcon={<VisibilityIcon />}>
+          <ButtonWrapper color="secondary" onClick={(e) => setMyChoise(!myChoise)}startIcon={<VisibilityIcon />}>
             {!myChoise ? "مشاهدة اختياراتي" : "مشاهدة الكل"}
-          </MyButton>
+          </ButtonWrapper>
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={2}>
           <DialogOrderOfDesires
@@ -264,13 +251,26 @@ const DataTableCrud2 = (props) => {
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={3}>
-          <TextField
+        <FormControl fullWidth variant="outlined">
+        <InputLabel htmlFor="component-outlined">بحــث</InputLabel>
+        <OutlinedInput 
+        
+        id="component-outlined"  
+        onInput={(e) => setGlobalFilter(e.target.value)}
+        label="بحــث" 
+        
+              endAdornment={<IconButton aria-label="search ">
+              <SearchIcon />
+            </IconButton>}
+              />
+      </FormControl>
+          {/* <TextField
             fullWidth
             label="بحــث"
             variant="outlined"
-            color="primary"
+            color="secondary"
             style={{ backgroundColor: "#fff" }}
-            id="standard-start-adornment"
+            id="start-adornment"
             onInput={(e) => setGlobalFilter(e.target.value)}
             //className={clsx(classes.margin, classes.textField)}
             InputProps={{
@@ -282,7 +282,7 @@ const DataTableCrud2 = (props) => {
                 </InputAdornment>
               ),
             }}
-          />
+          /> */}
         </Grid>
       </Grid></Grid>
     </>
@@ -298,22 +298,23 @@ const DataTableCrud2 = (props) => {
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        style={{padding:0}}
       >
         <DialogTitle id="alert-dialog-title">
           {"رتب رغباتك عن طريق السحب والافلات "}
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description" component="div">
+        <DialogContent >
+          
             <Drogble selectedMoassa={selectedMoassa} />
-          </DialogContentText>
+         
         </DialogContent>
         <DialogActions>
-          <MyButton onClick={handleClose} color="primary">
+          <ButtonWrapper onClick={handleClose} color="primary">
             Disagree
-          </MyButton>
-          <MyButton onClick={handleClose} color="primary" autoFocus>
+          </ButtonWrapper>
+          <ButtonWrapper onClick={handleClose} color="primary" autoFocus>
             Agree
-          </MyButton>
+          </ButtonWrapper>
         </DialogActions>
       </DialogMui>
     );
@@ -447,21 +448,21 @@ const DataTableCrud2 = (props) => {
   );
 };
 
-// export async function getServerSideProps(ctx) {
-//   const urlBass = await process.env.URL_BASE;
-//   const query = new URLSearchParams(ctx.query).toString()
-//   const res = await fetch(`${urlBass}/api/schools?${query}`);
+export async function getServerSideProps(ctx) {
+  const urlBass = await process.env.URL_BASE;
+  const query = new URLSearchParams(ctx.query).toString()
+  const res = await fetch(`${urlBass}/api/schools?${query}`);
 
-//   if (res.status === 404) {
-//     return {
-//       notFound: true,
-//     };
-//   }
+  if (res.status === 404) {
+    return {
+      notFound: true,
+    };
+  }
 
-//   const data = await res.json();
+  const data = await res.json();
 
-//   return {
-//     props: { data }, // will be passed to the page component as props
-//   };
-// }
+  return {
+    props: { data }, // will be passed to the page component as props
+  };
+}
 export default DataTableCrud2;

@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   buttonPapersubmit: {
-      
+    
     //margin: theme.spacing(3, 0, 2),
     backgroundColor:theme.palette.background.default,
    
@@ -15,7 +15,8 @@ const useStyles = makeStyles((theme) => ({
   }
 ,
   submit: {
-    fontWeight:700
+    fontWeight:700,
+    minWidth: 40,
     
   }
   }));
