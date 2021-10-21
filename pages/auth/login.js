@@ -10,7 +10,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import Link from '../Components/Ui/Link';
+import Link from '../../Components/Ui/Link';
 import Grid from "@material-ui/core/Grid";
 import Icon from "@material-ui/core/Icon";
 import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
@@ -24,11 +24,11 @@ import Container from "@material-ui/core/Container";
 import Divider from "@material-ui/core/Divider";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import DividerWithText from "../Components/Ui/DividerWithText";
-import Controls from "../Components/FormsUi/Control";
-import { ButtonWrapper } from "../Components/FormsUi/Button/ButtonNorm";
-import { messages } from "../Components/Ui/Message/AllMssage";
-import useStyles from "../Components/Ui/Css/Csslogin";
+import DividerWithText from "../../Components/Ui/DividerWithText";
+import Controls from "../../Components/FormsUi/Control";
+import { ButtonWrapper } from "../../Components/FormsUi/Button/ButtonNorm";
+import { messages } from "../../Components/Ui/Message/AllMssage";
+import useStyles from "../../Components/Ui/Css/Csslogin";
 
 const INITIAL_FORM_STATE = {
   email: "",
@@ -178,7 +178,7 @@ export default function SignIn() {
                   <Link href="/login/resetpassword">نسيت كلمة السر ؟ </Link>
                 </Grid>
                 <Grid item>
-                  <Link href="/login/signup">
+                  <Link href="/signup">
                     ليس لديك حساب ؟ تسجيل حساب جديد
                   </Link>
                 </Grid>

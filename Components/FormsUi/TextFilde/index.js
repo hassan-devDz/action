@@ -2,24 +2,24 @@ import React from "react";
 import { TextField } from "@material-ui/core";
 import { useField, useFormikContext } from "formik";
 
-const TextfieldWrapper = ({ name, type, ...otherProps }) => {
+const TextfieldWrapper = ({ name,  ...otherProps }) => {
   const { setFieldValue } = useFormikContext();
   const [field, mata] = useField(name);
   const handleChange = (evt) => {
-    console.log(evt);
+    
     const onlyNums = evt.target.value;
     const { value } = evt.target;
-    console.log(type);
-    if (type === "number") {
+    console.log(value);
+    if (otherProps.type === "number") {
       setFieldValue(name, +value);
     } else {
-      setFieldValue(name, value.replace(/\s+/g, " "));
+      setFieldValue(name, value.replace(/\s+/g, " ").trim());
     }
-  };
+  }
 
   const configTextfield = {
     ...field,
-
+    
     onBlur: handleChange,
     ...otherProps,
     fullWidth: true,

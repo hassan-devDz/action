@@ -6,8 +6,8 @@ import {
   DialogActions,
   DialogContentText,
 } from "@material-ui/core";
-import {ButtonWrapper,ButtonRed} from "../FormsUi/Button/ButtonNorm";
-import Drogble from "../TransferList/drag";
+import { ButtonWrapper, ButtonRed } from "../FormsUi/Button/ButtonNorm";
+
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { List, ListItem, ListItemText, Paper } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
@@ -92,11 +92,18 @@ const DailogMui1 = (props) => {
     console.log(items);
     setOpen(false);
   };
+ 
   const query = new URLSearchParams(router.query).toString();
   console.log(query);
   const postData = (e) => {
     putData("post", "/api/choise", { items: items }, query);
     setOpen(false);
+  };
+  const results = (arr1, arr2) => {
+    return arr1.filter(
+      ({ moassa: id1 }) =>
+        !arr2.some(({ moassa: id2 }) => id2.EtabMatricule === id1.EtabMatricule)
+    );
   };
 
   return (
@@ -122,59 +129,59 @@ const DailogMui1 = (props) => {
         <DialogTitle id="alert-dialog-title">
           {"رتب رغباتك عن طريق السحب والافلات "}
         </DialogTitle>
-       
-          <DialogContent id="alert-dialog-description" >
-            <DragDropContext onDragEnd={onDragEnd}>
-              <Droppable droppableId="droppable">
-                {(provided, snapshot) => (
-                  <Paper
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    style={getListStyle(snapshot.isDraggingOver)}
-                  >
-                    <List>
-                      {items.map((item, index) => (
-                        <Draggable
-                          key={item.moassa.EtabMatricule}
-                          draggableId={`${item.moassa.EtabMatricule}`}
-                          index={index}
-                        >
-                          {(provided, snapshot) => (
-                            <Paper
-                              elevation={4}
-                              style={{ margin: "6px 0" }}
-                              component="li"
+
+        <DialogContent id="alert-dialog-description">
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="droppable">
+              {(provided, snapshot) => (
+                <Paper
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  style={getListStyle(snapshot.isDraggingOver)}
+                >
+                  <List>
+                    {items.map((item, index) => (
+                      <Draggable
+                        key={item.moassa.EtabMatricule}
+                        draggableId={`${item.moassa.EtabMatricule}`}
+                        index={index}
+                      >
+                        {(provided, snapshot) => (
+                          <Paper
+                            elevation={4}
+                            style={{ margin: "6px 0" }}
+                            component="li"
+                          >
+                            <ListItem
+                              button
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={getItemStyle(
+                                snapshot.isDragging,
+                                provided.draggableProps.style
+                              )}
                             >
-                              <ListItem
-                                button
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={getItemStyle(
-                                  snapshot.isDragging,
-                                  provided.draggableProps.style
-                                )}
-                              >
-                                <span
-                                  style={{ padding: "0 0 0 24px" }}
-                                >{`الرغبة رقم ${index + 1} `}</span>
-                                <ListItemText
-                                  style={{ color: "#000" }}
-                                  primary={item.moassa.EtabNom}
-                                ></ListItemText>
-                              </ListItem>
-                            </Paper>
-                          )}
-                        </Draggable>
-                      ))}
-                    </List>
-                    {provided.placeholder}
-                  </Paper>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </DialogContent>
-        
+                              <span
+                                style={{ padding: "0 0 0 24px" }}
+                              >{`الرغبة رقم ${index + 1} `}</span>
+                              <ListItemText
+                                style={{ color: "#000" }}
+                                primary={item.moassa.EtabNom}
+                              ></ListItemText>
+                            </ListItem>
+                          </Paper>
+                        )}
+                      </Draggable>
+                    ))}
+                  </List>
+                  {provided.placeholder}
+                </Paper>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </DialogContent>
+
         <DialogActions>
           <ButtonRed onClick={handleClose} color="secondary">
             اغلاق

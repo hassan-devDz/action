@@ -12,38 +12,86 @@ handler.post(async (req, res) => {
   /****التاكد من ان المعومات المرسلة موجودة في الداتا*** */
   const Hassan_collection_query = await req.db.collection("Hassan");
   // { "year": "2021" ,"schools": { $all: [{"$elemMatch":{"moassa.bladia":"عين معبد","moassa.EtabMatricule":17051002}}] } }
-  
-  const Hassan_query = await Hassan_collection_query.findOne({
-    "daira": { $all: [{"$elemMatch":{"daira_name":req.body.daira,
-    "commune_name": { $all: [{"$elemMatch":{"bladia":req.body.moassa.bladia,"moassata":{ $all: [{"$elemMatch":{"EtabMatricule":`${req.body.moassa.EtabMatricule}`,"EtabNom":req.body.moassa.EtabNom}}] }}}] },
-  }}] }
-  });
-   if (!Hassan_query) {
+  const Djelfa = {
+    daira: {
+      //[]
+      $all: [
+        {
+          $elemMatch: {
+            daira_name: req.body.daira,
+
+            "commune_name.bladia": req.body.moassa.bladia,
+            "commune_name.moassata": {
+              $all: [
+                {
+                  $elemMatch: {
+                    EtabMatricule: `${req.body.moassa.EtabMatricule}`,
+                    EtabNom: req.body.moassa.EtabNom,
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ],
+    },
+  };
+  const NotDjelfa = {
+    daira: {
+      $all: [
+        {
+          $elemMatch: {
+            daira_name: req.body.daira,
+            commune_name: {
+              $all: [
+                {
+                  $elemMatch: {
+                    bladia: req.body.moassa.bladia,
+                    moassata: {
+                      $all: [
+                        {
+                          $elemMatch: {
+                            EtabMatricule: `${req.body.moassa.EtabMatricule}`,
+                            EtabNom: req.body.moassa.EtabNom,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ],
+    },
+  };
+  const data = req.body.daira==="الجلفة"?Djelfa:NotDjelfa;
+  const Hassan_query = await Hassan_collection_query.findOne(data);
+
+  if (!Hassan_query) {
     return res.status(400).json({ error: "بيانات غير صحيحة" });
   }
-  
- /****التاكد من ان المعومات المرسلة موجودة في الداتا*** */
+
+  /****التاكد من ان المعومات المرسلة موجودة في الداتا*** */
 
   const sample_collection = await req.db.collection("sample");
 
-  
   const isExt = await sample_collection.findOne({
-    ... req.query,
+    ...req.query,
     "schools.moassa.EtabMatricule": { $eq: req.body.moassa.EtabMatricule },
   });
 
-  if ( !isExt ) {
+  if (!isExt) {
     const sample_post = await sample_collection.updateOne(
-      { ... req.query },
+      { ...req.query },
       { $addToSet: { schools: req.body } },
       { upsert: true }
     );
-    return res.status(201).json({message:"تمت العملية بنجاح"})
-
+    return res.status(201).json({ message: "تمت العملية بنجاح" });
   }
   if (isExt) {
-    return res.status(422).json({message:"موجود بالفعل"});
-
+    return res.status(422).json({ message: "موجود بالفعل" });
   }
   return res.status(422).json({ message: "هناك خطأ ما" });
 

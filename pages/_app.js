@@ -11,7 +11,7 @@ import theme from "../Components/Theme";
 import { create } from 'jss';
 import rtl from 'jss-rtl';
 import { StylesProvider, jssPreset } from '@material-ui/core/styles';
-
+import { SessionProvider } from "next-auth/react"
 // Configure JSS
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 
@@ -25,7 +25,9 @@ function MyApp({ Component, pageProps }) {
     }
   }, []);
   return (
-    <React.Fragment>
+   
+      <SessionProvider session={pageProps.session}>
+      
       <ThemeProvider theme={theme}>
       <StylesProvider jss={jss} >
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
@@ -34,8 +36,8 @@ function MyApp({ Component, pageProps }) {
           
           <Component {...pageProps} />
           </StylesProvider>
-      </ThemeProvider>
-    </React.Fragment>
+      </ThemeProvider></SessionProvider>
+    
   );
 }
 

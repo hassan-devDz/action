@@ -6,14 +6,7 @@ import "primeflex/primeflex.css";
 
 import { DataTable } from "hassanreact/datatable";
 import { Column } from "hassanreact/column";
-import CloudDownloadTwoToneIcon from "@material-ui/icons/CloudDownloadTwoTone";
 
-import CloudUploadTwoToneIcon from "@material-ui/icons/CloudUploadTwoTone";
-
-import AddTwoToneIcon from "@material-ui/icons/AddTwoTone";
-
-import AutocompleteMui from "../../Components/Autocmplemoassat";
-import Controls from "../../Components/FormsUi/Control";
 import { ButtonWrapper } from "../../Components/FormsUi/Button/ButtonNorm";
 import Typography from "@material-ui/core/Typography";
 import { Container, FormControl, Grid, OutlinedInput, Paper ,InputLabel} from "@material-ui/core";
@@ -56,12 +49,10 @@ import {
   openToastError,
   openToastInfo,
 } from "../../Components/Notification/Alert";
-import { moassaSchema } from "../../schemas/schemas_moassa";
+
 import Router, { useRouter } from "next/router";
 import replaceStrIcon from "../../Components/IconReplaceTxt/IconRepTxt";
-import DateP from "../../Components/date";
-import TransferList from "../../Components/TransferList/indexTransfert.js";
-import Drogble from "../../Components/TransferList/drag";
+
 
 
 
@@ -112,19 +103,22 @@ const DataTableCrud2 = (props) => {
   };
   /********************* طلب تعديل أو حذف مؤسسة من الجدول *********************end */
   const results = (arr1, arr2) => {
-    return arr1.filter(
+    const newMoassa= arr1.filter(
       ({ moassa: elementArr1 }) =>
         !arr2.some(
           ({ moassa: elementArr2 }) =>
             elementArr2.EtabMatricule === elementArr1.EtabMatricule
         )
-    )[0].moassa.EtabNom;
+    )
+    
+    return newMoassa[0].moassa.EtabNom;
   };
 
   const onSelected = (e, d) => {
     console.log(e);
     if (e.value.length > selectedMoassa.length) {
       openToastSuccess(`تمت اضافة ${results(e.value, selectedMoassa)}`);
+      
     }
     if (e.value.length < selectedMoassa.length) {
       openToastError(`تمت حذف ${results(selectedMoassa, e.value)}`);
@@ -291,34 +285,7 @@ const DataTableCrud2 = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-  const DailogMui1 = () => {
-    return (
-      <DialogMui
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        style={{padding:0}}
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"رتب رغباتك عن طريق السحب والافلات "}
-        </DialogTitle>
-        <DialogContent >
-          
-            <Drogble selectedMoassa={selectedMoassa} />
-         
-        </DialogContent>
-        <DialogActions>
-          <ButtonWrapper onClick={handleClose} color="primary">
-            Disagree
-          </ButtonWrapper>
-          <ButtonWrapper onClick={handleClose} color="primary" autoFocus>
-            Agree
-          </ButtonWrapper>
-        </DialogActions>
-      </DialogMui>
-    );
-  };
+
 
   /****************************body App*************************** */
   // const static = listMoassat.map((x)=>{
@@ -333,7 +300,8 @@ const DataTableCrud2 = (props) => {
         <Backdrop open={spinnersLoding} style={{ zIndex: 1301 }}>
           <ScaleLoader color="#dbdbdb" loading={spinnersLoding} size={50} />
         </Backdrop>
-        <FormInfoInterested/>
+        
+        
 
         <DataTable
           ref={dt}

@@ -78,7 +78,7 @@ export const itemsSchema = Yup.object().shape({
       Yup.object().shape(
         {
           potentialVacancy: Yup.number()
-            .required()
+             .required("حقل الزامي")
             .integer()
             .when(["forced", "vacancy"], {
               is: (forced, vacancy) => forced === 0 && vacancy === 0,
@@ -88,7 +88,7 @@ export const itemsSchema = Yup.object().shape({
                 .required("حقل الزامي"),
             }),
           forced: Yup.number()
-            .required()
+             .required("حقل الزامي")
             .integer()
             .when(["potentialVacancy", "vacancy"], {
               is: (potentialVacancy, vacancy) =>
@@ -99,7 +99,7 @@ export const itemsSchema = Yup.object().shape({
                 .required("حقل الزامي"),
             }),
           vacancy: Yup.number()
-            .required()
+             .required("حقل الزامي")
             .integer()
             .when(["potentialVacancy", "forced"], {
               is: (potentialVacancy, forced) =>
@@ -109,7 +109,7 @@ export const itemsSchema = Yup.object().shape({
                 .positive("يجب أن يكون أحد الحقول أكبر من الصفر")
                 .required("حقل الزامي"),
             }),
-          surplus: Yup.number().required().integer(),
+          surplus: Yup.number() .required("حقل الزامي").integer(),
           moassa: Yup.object({
             EtabMatricule: Yup.string().required("حقل الزامي"),
             EtabNom: Yup.string().required("حقل الزامي"),
@@ -126,7 +126,7 @@ export const itemsSchema = Yup.object().shape({
         ]
       )
     )
-    .required()
+     .required("حقل الزامي")
     .min(1)
     .max(5),
 });

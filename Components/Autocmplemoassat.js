@@ -10,7 +10,8 @@ import React, {
 } from "react";
 import PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+//import Autocomplete from "@material-ui/lab/Autocomplete";
+
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import { useTheme, makeStyles } from "@material-ui/core/styles";
@@ -21,6 +22,12 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { useField, useFormikContext } from "formik";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import dynamic from 'next/dynamic'
+
+const Autocomplete = dynamic(
+  () => import("@material-ui/lab/Autocomplete"),
+  { ssr: false }
+)
 
 const LISTBOX_PADDING = 8; // px
 
@@ -54,7 +61,6 @@ function useResetCache(data) {
 
 // Adapter for react-window
 const ListboxComponent = forwardRef(function ListboxComponent(props, ref) {
-  
   const { children, ...other } = props;
   const itemData = React.Children.toArray(children);
 
@@ -121,15 +127,14 @@ const checkedIcon = <CheckBoxIcon fontSize="medium" />;
 
 export default function Virtualize({ name, label, ...otherProps }) {
   const classes = useStyles();
-  const { setFieldValue } = useFormikContext(null);
+  const { setFieldValue} = useFormikContext(null);
 
   const [field, mata, helpers] = useField(name);
 
-  const clicked = (e, value, t) => {
-    
-    if (name === "daira") {
+  const handelChange = (e, value, t) => {
+    if (name === "baldia") {
       setFieldValue(name, value);
-      setFieldValue("moassa", null);
+      setFieldValue("workSchool", null);
     }
 
     setFieldValue(name, value);
@@ -144,7 +149,7 @@ export default function Virtualize({ name, label, ...otherProps }) {
     classes: classes,
     ListboxComponent: ListboxComponent,
     noOptionsText: "لا توجد خيارات",
-    onChange: clicked,
+    onChange: handelChange,
     renderOption: (option, { selected }) => (
       <React.Fragment>
         <Checkbox
@@ -177,3 +182,17 @@ export default function Virtualize({ name, label, ...otherProps }) {
 
   return <Autocomplete {...configAutoComple} />;
 }
+// <FormControl fullWidth variant="outlined">
+//   <InputLabel htmlFor="component-outlined">{label}</InputLabel>
+//   <OutlinedInput
+//     id="component-outlined"
+//     {...params}
+//     name={name}
+//     label={label}
+//     aria-describedby="component-text"
+//     placeholder="اختر من القائمة"
+//   />
+//   <FormHelperText id="component-text">
+//     {mata && mata.touched && mata.error}
+//   </FormHelperText>
+// </FormControl>;

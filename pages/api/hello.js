@@ -9,7 +9,7 @@ handler.get(async (req, res) => {
   
 
   const key_query = Object.keys(query)[0];
-  const dararIsTrue = [
+  const dairaIsTrue = [
     "حاسي بحبح",
     "عين الإبل",
     "الشارف",
@@ -24,7 +24,7 @@ handler.get(async (req, res) => {
     "عين وسارة",
   ];
   const data_collection = await req.db.collection("Hassan");
-  if (dararIsTrue.includes(query["daira_name"])) {
+  if (dairaIsTrue.includes(query["daira_name"])) {
     if (key_query === "daira_name" && query["daira_name"] != "الجلفة") {
       const data = await data_collection
         .aggregate([

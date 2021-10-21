@@ -9,7 +9,7 @@ const handler = nextConnect();
 handler.use(middleware);
 handler.put(async (req, res) => {
   /*التاكد من ان المعومات المرسلة موجودة في الداتا*** */
-
+console.log(req);
   /*^^^^التاكد من ان المعومات المرسلة موجودة في الداتا^^^^*/
   const simple_query = {
     ...req.query,"schools.moassa.EtabMatricule": req.body.moassa.EtabMatricule 

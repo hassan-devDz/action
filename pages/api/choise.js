@@ -5,12 +5,14 @@ import { validate } from "../../middleware/validate";
 import { itemsSchema } from "../../schemas/schemas_moassa";
 
 const result = (object1, object2) =>
+  //دالة تأخذ 2 اوبجكت وتقارن بينهما من حيث قيمة المفاتيح وترجع اما فولس او ترو
   Object.keys(object1).every((key) => object1[key] === object2[key]);
 
-const difference = (dataBase, Queri) =>
+const difference = (dataBase, dataFromUser) =>
+  //دالة تبحث في قاعدة المعطيات عن الداتا المرسلة من اليوزر وترجعها مفلترة ان كانت اداتا مكررة من اليوزر وفارغة ان كانت غير  موجودة
   dataBase.filter((db) => {
     const { moassa: moassaDb, ...dairaDb } = db;
-    return Queri.some((dataQueri) => {
+    return dataFromUser.some((dataQueri) => {
       const { moassa: moassaQueri, ...dairaQueri } = dataQueri;
       return result(moassaDb, moassaQueri) && result(dairaDb, dairaQueri);
     });
@@ -19,26 +21,32 @@ const handler = nextConnect();
 
 handler.use(middleware);
 handler.post(async (req, res) => {
-  const query = await req.body.items;
+  const dataFromUser = await req.body.items;
 
   /****التاكد من ان المعومات المرسلة موجودة في الداتا*** */
-  const Hassan_collection_query = await req.db.collection("sample");
-
-  const Hassan_query = await Hassan_collection_query.findOne({
-    ...req.query,
+  const sample_collection = await req.db.collection("sample");
+  
+  const sample_query = await sample_collection.findOne({
+    ...req.query,//البحث عن سنة الحركة
   });
-  if (!Hassan_query) {
+  if (!sample_query) {
     return res.status(404).send("notfound");
   }
   const choise_collection = await req.db.collection("choise");
-  const isEx = await difference(Hassan_query.schools, query);
-  if (query.length === isEx.length) {
+  const isEx = await difference(sample_query.schools, dataFromUser);
+  if (dataFromUser.length === isEx.length) {
+    const choiseMoassa = dataFromUser.reduce(
+      (obj, item, i) => ((obj[`choise${i + 1}`] = item.moassa), obj),
+      {}
+    );
+
     const choise_post = await choise_collection.updateOne(
-        { ... req.query },
-        { $addToSet:  req.body  },
-        { upsert: true }
-      );
-    return res.status(201).json({ message: "تم" });
+      { ...req.query },
+      { $addToSet: { choises: choiseMoassa } },
+      { upsert: true }
+    );
+    console.log(choise_post);
+    return res.status(201).json({ choises: choiseMoassa });
   } else {
     return res.status(422).json({ message: "بيانات غير صحيحة" });
   }

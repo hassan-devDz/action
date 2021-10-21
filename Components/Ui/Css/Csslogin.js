@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.primary.main,
     },
     form: {
-      width: "100%", // Fix IE 11 issue.
+      height: "100%", // Fix IE 11 issue.
       marginTop: theme.spacing(3),
     },
     submit: {
@@ -59,14 +59,13 @@ const useStyles = makeStyles((theme) => ({
     },
     dokhol:{
         marginBottom:theme.spacing(3),
-        
+        fontWeight:700
     },
     goolface:{
       marginBottom:theme.spacing(3)
     },
     selfAlin:{
-      alignSelf:"center",
-      placeSelf:"center",
+      height:"100vh"
     }
   }));
 

@@ -24,6 +24,8 @@ function YearPicker(props) {
         value={selectedDate}
         onChange={onChange}
         autoOk
+        inputVariant="outlined"
+        
         cancelLabel={"الغاء"}
         okLabel="موافق"
         id="date"
