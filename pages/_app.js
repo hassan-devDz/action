@@ -26,7 +26,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   }, []);
   const authComponent = ["SignIn", "verifyRequest", "error","resetpassword","NotFoundView"];
   const isAuthRequer = authComponent.includes(Component.name);
-  console.log(Component.name);
+  console.log(Component.name,authComponent);
   return (
     <ThemeProvider theme={theme}>
       <StylesProvider jss={jss}>
@@ -49,7 +49,7 @@ function Auth({ children }) {
   const { data: session, status } = useSession();
 
   const isUser = !!session?.user;
-  console.log(session, isUser);
+  console.log(session, isUser,status);
   React.useEffect(() => {
     if (status === "loading") return; // Do nothing while loading
     if (!isUser) {
