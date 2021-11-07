@@ -53,6 +53,7 @@ const FORM_VALIDATION = Yup.object().shape({
 
 export default function SignIn() {
   const { status } = useSession();
+  console.log(status);
   const redirect = useRouter();
   const classes = useStyles();
   const [showPassword, setShowPassword] = useState(false);
@@ -60,6 +61,7 @@ export default function SignIn() {
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
   const handelSubmit = async (values, actions) => {
+
     console.log(values, actions);
     //INITIAL_FORM_STATE.resetForm();
     const redUrl = await signIn("logup", {
