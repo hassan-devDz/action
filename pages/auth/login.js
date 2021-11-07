@@ -53,7 +53,7 @@ const FORM_VALIDATION = Yup.object().shape({
 
 export default function SignIn() {
   const { status } = useSession();
-  console.log(status);
+  console.log("status",status);
   const redirect = useRouter();
   const classes = useStyles();
   const [showPassword, setShowPassword] = useState(false);
