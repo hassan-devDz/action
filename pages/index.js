@@ -100,14 +100,14 @@ const DataTableCrud = (props) => {
   const { data: session ,status:status} = useSession();
 console.log(session,status);
 
-  if (!props.session) {
-    return (
-      <>
-        Not signed in <br />
-        <button onClick={() => signIn()}>Sign in</button>
-      </>
-    );
-  }
+  // if (!props.session) {
+  //   return (
+  //     <>
+  //       Not signed in <br />
+  //       <button onClick={() => signIn()}>Sign in</button>
+  //     </>
+  //   );
+  // }
 
   /**----------------all useState----------------------- */
 
@@ -581,13 +581,13 @@ console.log(session,status);
 
   // })
  
-  if (props.session) {
+ 
     return (
       <>
         {" "}
         <Container maxWidth="xl" style={{ marginBottom: 2, marginTop: 12 }}>
           <div>
-            
+            {session.user.email}
             <button onClick={()=>signOut()}>Sign out</button>
           </div>
           {/* <TransferList selectedMoassa={selectedMoassa}></TransferList> */}
@@ -863,7 +863,7 @@ console.log(session,status);
         </Container>
       </>
     );
-  }
+  
 };
 
 export async function getServerSideProps(ctx) {
@@ -872,17 +872,10 @@ export async function getServerSideProps(ctx) {
   const res = await fetch(`${urlBass}api/hello`);
 
   const data = await res.json();
-  const session = await getSession(ctx)
-  if (!session) {
-    return{
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    }
-  }
+  
   return {
-    props: { data, session: session }, // will be passed to the page component as props
+    props: { data}, // will be passed to the page component as props
   };
 }
 export default DataTableCrud;
+DataTableCrud.auth = true

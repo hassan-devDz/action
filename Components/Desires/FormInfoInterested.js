@@ -292,7 +292,7 @@ const FormInfoInterested = (props) => {
           </Grid>
           <Grid item container xs={12} justifyContent="flex-end">
             <Grid item>
-              <Link href="/login">لديك حساب؟ تسجيل الدخول</Link>
+              <Link href="/auth/login">لديك حساب؟ تسجيل الدخول</Link>
             </Grid>
           </Grid>
         </Grid>

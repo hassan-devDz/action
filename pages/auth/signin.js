@@ -40,15 +40,10 @@ const SignIn = (props) => {
   const [createUser, setCreateUser] = useState({});
   const [spinnersLoding, setSpinnersLoding] = useState(false);
   const {data:session}  = useSession();
- console.log(session,props.csrfToken,props.session);
+ 
   const sumbitUser = async (values, actions) => {
-    const gets= await getSession()
-    console.log(session,gets);
-    var data1 = await new URLSearchParams();
-    data1.append("csrfToken", props.csrfToken);
-    data1.append("id", "test@gmail.com");
-    data1.append("username", "test");
-    data1.append("password", "test1");
+    
+    
 
     // const response = await fetch("/api/auth/callback/credentials", {
     //   method: "POST",
@@ -58,17 +53,14 @@ const SignIn = (props) => {
     //   },
     // });
   
-    const redUrl = await signIn("credentials", {
+    const redUrl = await signIn("login", {
       redirect: false,
       callbackUrl: "/",
       username: "username",
       domain: "domain2",
     });
-    Router.push(redUrl.url)
+    //Router.push(redUrl.url)
     //await signIn('credentials', { redirect: false, phone: phone, password: password })
-
-    
-
     const { passwordConfirmation, ...INITIAL_FORM_STATE1 } = values;
     // setCreateUser({
     //   idUser: nanoid(),
@@ -125,17 +117,24 @@ const SignIn = (props) => {
     </>
   );
 };
-export async function getServerSideProps(context) {
-  const { req, res } = context;
-  const session = await getSession({ req });
+// export async function getServerSideProps(context) {
+//   const { req, res } = context;
+//   const session = await getSession({ req });
+//   if (session) {
+//     return{
+//       redirect: {
+//         destination: '/',
+//         permanent: false,
+//       },
+//     }
+//   }
 
-
-  return {
-    props: {
-      session: session,
-      providers: await getProviders(context),
-      csrfToken: await getCsrfToken(context),
-    },
-  };
-}
+//   return {
+//     props: {
+//       session: session,
+//       providers: await getProviders(context),
+//       csrfToken: await getCsrfToken(context),
+//     },
+//   };
+// }
 export default SignIn;

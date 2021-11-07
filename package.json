@@ -15,6 +15,7 @@
         "@material-ui/pickers": "^3.3.10",
         "@next-auth/mongodb-adapter": "^0.0.2-next.281",
         "axios": "^0.21.1",
+        "bcryptjs": "^2.4.3",
         "dayjs": "^1.10.7",
         "formik": "^2.2.9",
         "hassanreact": "^7.0.1",

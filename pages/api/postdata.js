@@ -3,11 +3,29 @@ import nextConnect from "next-connect";
 import middleware from "../../middleware/connectDb";
 import { validate } from "../../middleware/validate";
 import { moassaSchema } from "../../schemas/schemas_moassa";
+import { getSession } from "next-auth/react"
 
+// async function auth(req, res,next)  {
+//   const session = await getSession({ req })
+//   if (session) {
+//     // Signed in
+//     console.log("Session", JSON.stringify(session, null, 2))
+//   } else {
+//     // Not Signed in
+//    return res.status(401)
+//   }
+//   next()
+// }
 const handler = nextConnect();
 
 handler.use(middleware);
 handler.post(async (req, res) => {
+  
+  // const session = await getSession({req})
+  // if (!session) {
+  //   return res.status(403).json({ error: "غير مسموح" });
+
+  // }
   console.log(req.body.moassa.bladia);
   /****التاكد من ان المعومات المرسلة موجودة في الداتا*** */
   const Hassan_collection_query = await req.db.collection("Hassan");

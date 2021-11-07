@@ -434,3 +434,4 @@ export async function getServerSideProps(ctx) {
   };
 }
 export default DataTableCrud2;
+DataTableCrud2.auth=true

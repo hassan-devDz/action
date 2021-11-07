@@ -1,6 +1,7 @@
 import { MongoClient } from "mongodb";
 import nextConnect from "next-connect";
 import clientPromise from './mongo'
+
 const MONGODB_URI = process.env.MONGODB_URI_LOCAL;
 const MONGODB_DB = process.env.MONGODB_DB;
 
@@ -20,12 +21,7 @@ const middleware = nextConnect({
   onError(err,req,res){
     res.status(501).json({error:`sorry ${err.message}`})
   }
-}).use((req,res,next)=>{
-  const {authorization}=req.headers
-  if (!authorization) {
-   next()
-  }
-});
+})
 
 middleware.use(database);
 
