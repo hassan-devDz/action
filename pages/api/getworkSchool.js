@@ -1,10 +1,9 @@
-import middleware from "../../middleware/connectDb";
+import auth from "../../middleware/auth";
 import nextConnect from "next-connect";
 
 const handler = nextConnect();
 
-handler.use(middleware);
-handler.get(async (req, res) => {
+handler.use(auth).get(async (req, res) => {
     const query = await req.query;//اسم البلدية
   console.log({ "bladia": query["bladia"] });
     const data_collection = await req.db.collection("Hassan");

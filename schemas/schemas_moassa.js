@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-
+import { YupString, numStr, BasicStr ,YupDate} from "../Components/YupValidation/YupFun";
 export const moassaSchema = Yup.object().shape(
   {
     potentialVacancy: Yup.number()
@@ -132,18 +132,45 @@ export const itemsSchema = Yup.object().shape({
 });
 
 //FormInfoInterested
-const INITIAL_FORM_STATE = {
-  firstName: "", //الاسم
-  lastName: "", //اللقب
-  baldia: "", //البلدية
-  workSchool: { EtabMatricule: null, EtabNom: null, bladia: null }, //مؤسسة العمل
-  points: 0, //النقاط
-  situation: "", //الوضعية
-};
+
 export const FormInfoInterestedSchema = Yup.object().shape({
-  formInfoInterested: Yup.object()
-    .shape({
-      daira: Yup.string().required("حقل الزامي").nullable(),
-    })
-    .required(),
+  firstName: YupString(3).trim(), //الاسم
+  lastName: YupString(3).trim(), //اللقب
+  baldia: BasicStr().nullable(),
+  workSchool: Yup.object({
+    EtabMatricule: numStr(8),
+    EtabNom: BasicStr(),
+  })
+    .required("حقل الزامي")
+    .nullable(),
+  situation: BasicStr().nullable(),
+  employeeId: numStr(16),
+  email: Yup.string()
+    .email("صيغة البريد الإلكتروني غير صحيحة")
+    .required("هذا الحقل مطلوب"),
+
+  password: Yup.string()
+    .min(8, "يجب عليك ادخال 8 أحرف على الأقل")
+    .required("هذا الحقل مطلوب"),
+  passwordConfirmation: Yup.string()
+    .oneOf([Yup.ref("password"), null], "كلمة السر غير مطابقة")
+    .required("يرجى تأكيد كلمة السر"),
+  accept: Yup.boolean()
+    .oneOf([true], "بإنشائك لهذا الحساب أنت توافق على شروط استخدام المنصة .")
+    .required("بإنشائك لهذا الحساب أنت توافق على شروط استخدام المنصة ."),
+    captcha:Yup.string()
+    .required("هذا الحقل مطلوب"),
+
+    createdAt: Yup.date().required()
+});
+export const loginSchema = Yup.object().shape({
+  email: Yup.string()
+    .email("صيغة البريد الإلكتروني غير صحيحة")
+    .required("هذا الحقل مطلوب"),
+
+    password: Yup.string()
+    .min(8, "يجب عليك ادخال 8 أحرف على الأقل")
+    .required("هذا الحقل مطلوب"),
+    captcha:Yup.string()
+    .required("هذا الحقل مطلوب"),
 });

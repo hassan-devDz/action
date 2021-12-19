@@ -1,13 +1,13 @@
 import nextConnect from "next-connect";
 
-import middleware from "../../middleware/connectDb";
+import auth,{AuthIsRequired} from '../../middleware/auth'
 import { validate } from "../../middleware/validate";
 import { arrayMoassaSchema } from "../../schemas/schemas_moassa";
 
 const handler = nextConnect();
 
-handler.use(middleware);
-handler.put(async (req, res) => {
+handler.use(auth).use(AuthIsRequired)
+.put(async (req, res) => {
   const simple_query = {
      ...req.query
   };

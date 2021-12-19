@@ -22,10 +22,11 @@ export function YupString(minlength = 1,maxlength = 20) {//الكتابة بال
 }
 export function numStr(length = 16) {//رقم سترينغ محدد طول الاحرف
   return Yup.string()
-    .matches(/^[0-9]*$/, Messages.digits)
+    .matches(/^[0-9]*$/, Messages.digits).trim()
     .length(length, Messages.equalToNum(length))
     .required(Messages.required);
 }
+
 export function numStrMinMax(min = 1, max = 16) {//رقم سترينغ محدد ادنى واقصى الاحرف
   return Yup.string()
     .matches(/^[0-9]*$/, Messages.digits)

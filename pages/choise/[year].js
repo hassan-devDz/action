@@ -9,7 +9,14 @@ import { Column } from "hassanreact/column";
 
 import { ButtonWrapper } from "../../Components/FormsUi/Button/ButtonNorm";
 import Typography from "@material-ui/core/Typography";
-import { Container, FormControl, Grid, OutlinedInput, Paper ,InputLabel} from "@material-ui/core";
+import {
+  Container,
+  FormControl,
+  Grid,
+  OutlinedInput,
+  Paper,
+  InputLabel,
+} from "@material-ui/core";
 
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import CheckTwoToneIcon from "@material-ui/icons/CheckTwoTone";
@@ -31,17 +38,17 @@ import { red } from "@material-ui/core/colors";
 import Backdrop from "@material-ui/core/Backdrop";
 import axios from "axios";
 import Draggable from "react-draggable";
-import AutorenewIcon from '@material-ui/icons/Autorenew';
-import { styled,withStyles } from "@material-ui/core/styles";
+import AutorenewIcon from "@material-ui/icons/Autorenew";
+import { styled, withStyles } from "@material-ui/core/styles";
 
 import IconButton from "@material-ui/core/IconButton";
 import IntegrationNotistack from "../../Components/Notification/Alert";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityIcon from "@material-ui/icons/Visibility";
 import SearchIcon from "@material-ui/icons/Search";
 import { withSnackbar } from "notistack";
 import Static from "../../Components/static";
-import FormInfoInterested from '../../Components/Desires/FormInfoInterested';
+import FormInfoInterested from "../../Components/Desires/FormInfoInterested";
 import AlertDialog from "../../Components/Notification/ConfiremDeleteDialog";
 import DialogOrderOfDesires from "../../Components/Desires/OrderOfDesires";
 import {
@@ -53,10 +60,7 @@ import {
 import Router, { useRouter } from "next/router";
 import replaceStrIcon from "../../Components/IconReplaceTxt/IconRepTxt";
 
-
-
-
-const DataTableCrud2 = (props) => {
+const choiseScools = (props) => {
   console.log(props);
 
   /**----------------all useState----------------------- */
@@ -103,14 +107,14 @@ const DataTableCrud2 = (props) => {
   };
   /********************* طلب تعديل أو حذف مؤسسة من الجدول *********************end */
   const results = (arr1, arr2) => {
-    const newMoassa= arr1.filter(
+    const newMoassa = arr1.filter(
       ({ moassa: elementArr1 }) =>
         !arr2.some(
           ({ moassa: elementArr2 }) =>
             elementArr2.EtabMatricule === elementArr1.EtabMatricule
         )
-    )
-    
+    );
+
     return newMoassa[0].moassa.EtabNom;
   };
 
@@ -118,7 +122,6 @@ const DataTableCrud2 = (props) => {
     console.log(e);
     if (e.value.length > selectedMoassa.length) {
       openToastSuccess(`تمت اضافة ${results(e.value, selectedMoassa)}`);
-      
     }
     if (e.value.length < selectedMoassa.length) {
       openToastError(`تمت حذف ${results(selectedMoassa, e.value)}`);
@@ -204,61 +207,66 @@ const DataTableCrud2 = (props) => {
   const [myChoise, setMyChoise] = useState(false);
 
   const headarTable = (
-    <><Grid
-    container
-        spacing={2}
-        justifyContent="center"
-        alignItems="center"
-    >
-      <Grid item xs={12} ><Typography variant="h4" component="h3" style={{textAlign:"center",fontWeight:700}}>
-        إختـــر الرغبـــات
-        </Typography></Grid>
-      
-    
-      <Grid
-      item
-      xs={12}
-        container
-        spacing={2}
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Grid item xs={12} sm={6} md={4} lg={2}>
-          <ButtonWrapper
-            color="secondary"
-            disabled={selectedMoassa == false}
-            onClick={(e) => setSelectedMoassa([])}
-            startIcon={<AutorenewIcon />}
+    <>
+      <Grid container spacing={2} justifyContent="center" alignItems="center">
+        <Grid item xs={12}>
+          <Typography
+            variant="h4"
+            component="h3"
+            style={{ textAlign: "center", fontWeight: 700 }}
           >
-            إعادة اختيار
-          </ButtonWrapper>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={2}>
-          <ButtonWrapper color="secondary" onClick={(e) => setMyChoise(!myChoise)}startIcon={<VisibilityIcon />}>
-            {!myChoise ? "مشاهدة اختياراتي" : "مشاهدة الكل"}
-          </ButtonWrapper>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={2}>
-          <DialogOrderOfDesires
-            selectedMoassa={selectedMoassa}
-          ></DialogOrderOfDesires>
+            إختـــر الرغبـــات
+          </Typography>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={4} lg={3}>
-        <FormControl fullWidth variant="outlined">
-        <InputLabel htmlFor="component-outlined">بحــث</InputLabel>
-        <OutlinedInput 
-        
-        id="component-outlined"  
-        onInput={(e) => setGlobalFilter(e.target.value)}
-        label="بحــث" 
-        
-              endAdornment={<IconButton aria-label="search ">
-              <SearchIcon />
-            </IconButton>}
+        <Grid
+          item
+          xs={12}
+          container
+          spacing={2}
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Grid item xs={12} sm={6} md={4} lg={2}>
+            <ButtonWrapper
+              color="secondary"
+              disabled={selectedMoassa == false}
+              onClick={(e) => setSelectedMoassa([])}
+              startIcon={<AutorenewIcon />}
+            >
+              إعادة اختيار
+            </ButtonWrapper>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={2}>
+            <ButtonWrapper
+              color="secondary"
+              onClick={(e) => setMyChoise(!myChoise)}
+              startIcon={<VisibilityIcon />}
+            >
+              {!myChoise ? "مشاهدة اختياراتي" : "مشاهدة الكل"}
+            </ButtonWrapper>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4} lg={2}>
+            <DialogOrderOfDesires
+              selectedMoassa={selectedMoassa}
+            ></DialogOrderOfDesires>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel htmlFor="component-outlined">بحــث</InputLabel>
+              <OutlinedInput
+                id="component-outlined"
+                onInput={(e) => setGlobalFilter(e.target.value)}
+                label="بحــث"
+                endAdornment={
+                  <IconButton aria-label="search ">
+                    <SearchIcon />
+                  </IconButton>
+                }
               />
-      </FormControl>
-          {/* <TextField
+            </FormControl>
+            {/* <TextField
             fullWidth
             label="بحــث"
             variant="outlined"
@@ -277,15 +285,15 @@ const DataTableCrud2 = (props) => {
               ),
             }}
           /> */}
+          </Grid>
         </Grid>
-      </Grid></Grid>
+      </Grid>
     </>
   );
   const [open, setOpen] = useState(false);
   const handleClose = () => {
     setOpen(false);
   };
-
 
   /****************************body App*************************** */
   // const static = listMoassat.map((x)=>{
@@ -300,8 +308,6 @@ const DataTableCrud2 = (props) => {
         <Backdrop open={spinnersLoding} style={{ zIndex: 1301 }}>
           <ScaleLoader color="#dbdbdb" loading={spinnersLoding} size={50} />
         </Backdrop>
-        
-        
 
         <DataTable
           ref={dt}
@@ -330,8 +336,6 @@ const DataTableCrud2 = (props) => {
           <Column
             columnKey="multiple"
             selectionMode="multiple"
-            
-            
             style={{ width: 50 }}
             frozen
           ></Column>
@@ -418,10 +422,15 @@ const DataTableCrud2 = (props) => {
 
 export async function getServerSideProps(ctx) {
   const urlBass = await process.env.URL_BASE;
-  const query = new URLSearchParams(ctx.query).toString()
-  const res = await fetch(`${urlBass}/api/schools?${query}`);
-
-  if (res.status === 404) {
+  const query = new URLSearchParams(ctx.query).toString();
+  const cookie = await ctx.req?.headers.cookie;
+  const res = await fetch(`${urlBass}/api/schools?${query}`, {
+    headers: {
+      cookie: cookie,
+    },
+  });
+  console.log(res);
+  if (!res.ok) {
     return {
       notFound: true,
     };
@@ -433,5 +442,5 @@ export async function getServerSideProps(ctx) {
     props: { data }, // will be passed to the page component as props
   };
 }
-export default DataTableCrud2;
-DataTableCrud2.auth=true
+export default choiseScools;
+choiseScools.auth = true;

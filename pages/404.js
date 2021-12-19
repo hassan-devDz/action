@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const NotFoundView = () => {
+export default function NotFoundView  ()  {
     console.log(Router);
   const classes = useStyles();
 
@@ -68,4 +68,3 @@ const NotFoundView = () => {
   );
 };
 
-export default NotFoundView;

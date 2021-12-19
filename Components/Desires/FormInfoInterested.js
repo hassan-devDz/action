@@ -11,19 +11,21 @@ import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
 import Link from "../Ui/Link";
 import axios from "axios";
 import ReCAPTCHA from "react-google-recaptcha";
-import { getProviders, signIn, getSession, getCsrfToken } from "next-auth/react";
+import {FormInfoInterestedSchema} from '../../schemas/schemas_moassa'
+
 const INITIAL_FORM_STATE = {
   firstName: "", //الاسم
   lastName: "", //اللقب
-  baldia: null, //البلدية
+   employeeId: "",
+   baldia: null, //البلدية
   workSchool: null, //مؤسسة العمل
   situation: null, //الوضعية
-  EmployeeId: "",
+ 
   email: "",
   password: "",
   passwordConfirmation: "",
   accept: false,
-  points: 0, //النقاط
+  //points: 0, //النقاط
 };
 const FORM_VALIDATION = Yup.object().shape({
   firstName: YupString(3).trim(), //الاسم
@@ -36,7 +38,7 @@ const FORM_VALIDATION = Yup.object().shape({
     .required("حقل الزامي")
     .nullable(),
   situation: BasicStr().nullable(),
-  EmployeeId: numStr(),
+  employeeId: numStr(),
   email: Yup.string()
     .email("صيغة البريد الإلكتروني غير صحيحة")
     .required("هذا الحقل مطلوب"),
@@ -112,50 +114,15 @@ const FormInfoInterested = (props) => {
   // },
     
   //   });
-    console.log(response);
-   
+    
   };
-  const onReCAPTCHAChange = async (captchaCode) => {
-    // If the hCaptcha code is null or undefined indicating that
-    // the hCaptcha was expired then return early
-    //const token = await recaptchaRef.current.executeAsync()
-    //console.log(token,captchaCode);
-    if (!captchaCode) {
-      return;
-    }
-    try {
-      const response = await fetch("/api/auth/callback/credentials", {
-        method: "POST",
-        body: JSON.stringify({ captcha: captchaCode }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(response);
-      if (response.ok) {
-        // If the response is ok than show the success alert
-        //router.push("/form");
-        //setOpen(true);
-      } else {
-        // Else throw an error with the message returned
-        // from the API
-        const error = await response.json();
-        throw new Error(error.message);
-      }
-    } catch (error) {
-      alert(`${error?.message} هناك خطأ ما` || "هناك خطأ ما");
-    } finally {
-      // Reset the hCaptcha when the request has failed or succeeeded
-      // so that it can be executed again if user submits another email.
-      console.log(captchaCode);
-    }
-  };
+
   return (
     <Formik
       initialValues={{
         ...INITIAL_FORM_STATE,
       }}
-      //validationSchema={FORM_VALIDATION}
+      //validationSchema={FormInfoInterestedSchema}
       onSubmit={props.onSubmit}
     >
       <Form >
@@ -168,7 +135,7 @@ const FormInfoInterested = (props) => {
             <Controls.Textfield name="lastName" label="اللقب" />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Controls.Textfield name="EmployeeId" label="رقم التعريف الوظيفي" />
+            <Controls.Textfield name="employeeId" label="رقم التعريف الوظيفي" />
           </Grid>
           <Grid item xs={12} sm={6} elevation={6}>
             <Controls.AutocompleteMui
@@ -270,14 +237,7 @@ const FormInfoInterested = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <ReCAPTCHA
-              ref={recaptchaRef}
-              size="invisible"
-              hl="ar"
-              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
-              onChange={onReCAPTCHAChange}
-              badge="bottomleft"
-            />
+      
             <Controls.CheckboxWrapper name="accept" />
           </Grid>
           <Grid item xs={12}>

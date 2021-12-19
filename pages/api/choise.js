@@ -1,6 +1,6 @@
 import nextConnect from "next-connect";
 
-import middleware from "../../middleware/connectDb";
+import auth ,{AuthIsRequired} from "../../middleware/auth";
 import { validate } from "../../middleware/validate";
 import { itemsSchema } from "../../schemas/schemas_moassa";
 
@@ -19,8 +19,8 @@ const difference = (dataBase, dataFromUser) =>
   });
 const handler = nextConnect();
 
-handler.use(middleware);
-handler.post(async (req, res) => {
+handler.use(auth).use(AuthIsRequired)
+.post(async (req, res) => {
   const dataFromUser = await req.body.items;
 
   /****التاكد من ان المعومات المرسلة موجودة في الداتا*** */
@@ -30,7 +30,7 @@ handler.post(async (req, res) => {
     ...req.query,//البحث عن سنة الحركة
   });
   if (!sample_query) {
-    return res.status(404).send("notfound");
+    return res.status(404).send("not found");
   }
   const choise_collection = await req.db.collection("choise");
   const isEx = await difference(sample_query.schools, dataFromUser);

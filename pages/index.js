@@ -69,11 +69,11 @@ import { moassaSchema } from "../schemas/schemas_moassa";
 
 import replaceStrIcon from "../Components/IconReplaceTxt/IconRepTxt";
 import DateP from "../Components/date";
-
+import {useUser} from '../middleware/Hooks/fetcher'
 import ConfirmProvider from "../Components/UiDialog/ConfirmProvider";
-import { useSession, signIn, signOut } from "next-auth/react";
-import { getSession } from "next-auth/react";
-import { useRouter } from "next/router";
+
+import router, { useRouter } from "next/router";
+import Link from "../Components/Ui/Link";
 function PaperComponent(props) {
   return (
     <Draggable
@@ -97,8 +97,8 @@ const INITIAL_FORM_STATE = {
 let originalRows = {};
 const DataTableCrud = (props) => {
   console.log(props);
-  const { data: session ,status:status} = useSession();
-console.log(session,status);
+  //const { data: session ,status:status} = useSession();
+//console.log(session,status);
 
   // if (!props.session) {
   //   return (
@@ -110,7 +110,7 @@ console.log(session,status);
   // }
 
   /**----------------all useState----------------------- */
-
+  const [user, { mutate }] = useUser()
   const [loading, setLoading] = useState(true), //جاري التحميل للجدول الرئيسي و احصائيات المدارس
     [dataServer, setServer] = useState([...props.data]), //قائمة الدوائر بالولاية
     [listMoassat, setListMoassat] = useState([]), //قائمة المؤسسات المعنية بالحركة
@@ -138,7 +138,17 @@ console.log(session,status);
 
     return data;
   };
-
+/** **************************** دالة الخروج ********************* */
+const signOut = async () => {
+  const res = await fetch('/api/authusers/logout')
+    
+   
+   
+    if (res.status===204) { 
+      mutate({ user: null })
+       router.push('/auth/login')
+    }
+}
   // const { data, error } = useSWR('/api/user', fetcher)
   /********************* طلب إضافة مؤسسة للجدول *********************start */
 
@@ -587,8 +597,11 @@ console.log(session,status);
         {" "}
         <Container maxWidth="xl" style={{ marginBottom: 2, marginTop: 12 }}>
           <div>
-            {session.user.email}
-            <button onClick={()=>signOut()}>Sign out</button>
+            
+            <button onClick={signOut}>Sign out</button>
+            <Link color="primary"  href="/auth/login"><button>login</button> </Link>
+            <Link color="primary"  href="/choise/2021">choise</Link>
+            
           </div>
           {/* <TransferList selectedMoassa={selectedMoassa}></TransferList> */}
 

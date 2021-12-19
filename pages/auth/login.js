@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState ,useCallback,useRef,useEffect} from "react";
 
 import Image from "next/image";
 import Avatar from "@material-ui/core/Avatar";
@@ -31,13 +31,8 @@ import Controls from "../../Components/FormsUi/Control";
 import { ButtonWrapper } from "../../Components/FormsUi/Button/ButtonNorm";
 import { messages } from "../../Components/Ui/Message/AllMssage";
 import useStyles from "../../Components/Ui/Css/Csslogin";
-import {
-  getProviders,
-  signIn,
-  getSession,
-  useSession,
-  getCsrfToken,
-} from "next-auth/react";
+import {useUser} from '../../middleware/Hooks/fetcher';
+import ReCAPTCHA from "react-google-recaptcha";
 const INITIAL_FORM_STATE = {
   email: "",
   password: "",
@@ -51,41 +46,82 @@ const FORM_VALIDATION = Yup.object().shape({
     .required(messages.required),
 });
 
-export default function SignIn() {
-  const { status } = useSession();
-  console.log("status",status);
-  const redirect = useRouter();
+export default function logIn() {
+  //const { status } = useSession();
+  const [user, { mutate }] = useUser()
+const router = useRouter()
+  
   const classes = useStyles();
+  const [bodyUser, setBodyUser] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const recaptchaRef = useRef({});
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
-
-  const handelSubmit = async (values, actions) => {
-
-    console.log(values, actions);
-    //INITIAL_FORM_STATE.resetForm();
-    const redUrl = await signIn("logup", {
-      redirect: false,
-      callbackUrl: "/",
-      email: values.email,
-      password: values.password,
-      //domain: JSON.stringify(values),
-    }).then((res) => {
-      console.log(res);
-      if (res.ok && !res.error) {
-        redirect.push("/auth/verify-request");
-      }
-      if (res.error) {
-        alert(res.error)
-      }
-    });
-    //Router.push(redUrl.url)
+  const handleSubmit =  useCallback(async(values) => {
+    
+    setBodyUser(values)
+    recaptchaRef.current.reset()
+    recaptchaRef.current.execute()
+  //INITIAL_FORM_STATE.resetForm();
+  
     //   actions.resetForm();
-  };
-  if (status === "authenticated") {
-    redirect.push("/");
+   
   }
-  if (status === "unauthenticated") {
+  , [])
+
+  const onReCAPTCHAChange = async (captchaCode) => {
+    // If the hCaptcha code is null or undefined indicating that
+    // the hCaptcha was expired then return early
+    //recaptchaRef.current.execute()
+    //const token = await recaptchaRef.current.executeAsync()
+ 
+    if (!captchaCode) {
+      return;
+    }
+    try {
+    
+      const response = await fetch("/api/authusers/login", {
+        method: "POST",
+        body: JSON.stringify({ ...bodyUser, captcha: captchaCode }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+       
+      
+      
+      if (response.ok) {
+      const userObj = await response.json()
+      console.log(response,userObj);
+      mutate(userObj)
+      router.push('/')
+       console.log(userObj);
+        // If the response is ok than show the success alert
+        //router.push("/form");
+        //setOpen(true);
+      } else{
+        
+       
+      }
+    } catch (error) {
+     
+      console.log(response);
+      console.log(`${error?.message} هناك خطأ ما` || "هناك خطأ ما");
+      
+    } finally {
+      
+      // Reset the hCaptcha when the request has failed or succeeeded
+      // so that it can be executed again if user submits another email.
+      //recaptchaRef.current.reset()
+      //console.log(recaptchaRef);
+    }
+  };
+useEffect(() => {
+if (user) {
+  router.push("/")
+}
+}, [user])
+  
     return (
       <Container component="section" className={classes.selfAlin}>
         <Grid
@@ -116,7 +152,7 @@ export default function SignIn() {
             container
             justifyContent="space-between"
             className={classes.goolface}
-          >
+          ><Link color="primary"  href="/choise/2021">choise</Link>
             <Grid item xs={12} sm={5} md={5}>
               <Button
                 variant="outlined"
@@ -157,7 +193,7 @@ export default function SignIn() {
                 ...INITIAL_FORM_STATE,
               }}
               validationSchema={FORM_VALIDATION}
-              onSubmit={handelSubmit}
+              onSubmit={handleSubmit}
             >
               <Form className={classes.form}>
                 <Grid item container spacing={2}>
@@ -205,6 +241,7 @@ export default function SignIn() {
                       }}
                     />
                   </Grid>
+
                   <Grid item xs={12}>
                     <FormControlLabel
                       control={
@@ -213,6 +250,17 @@ export default function SignIn() {
                       label="تذكرني ."
                     />
                   </Grid>
+                  <Grid item xs={12}>
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              size="invisible"
+              hl="ar"
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+              onChange={onReCAPTCHAChange}
+              badge="bottomleft"
+            />
+           
+          </Grid>
                   <Grid item xs={12}>
                     <Controls.Button
                       type="submit"
@@ -227,7 +275,7 @@ export default function SignIn() {
                       <Link href="/auth/resetpassword">نسيت كلمة السر ؟ </Link>
                     </Grid>
                     <Grid item>
-                      <Link href="/auth/signin">
+                      <Link href="/auth/signup">
                         ليس لديك حساب ؟ تسجيل حساب جديد
                       </Link>
                     </Grid>
@@ -239,10 +287,5 @@ export default function SignIn() {
         </Grid>
       </Container>
     );
-  }
-  return (
-    <Backdrop open>
-      <CircularProgress color="inherit" />
-    </Backdrop>
-  );
+ 
 }

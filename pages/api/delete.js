@@ -1,13 +1,13 @@
 import nextConnect from "next-connect";
 
-import middleware from "../../middleware/connectDb";
+import auth ,{AuthIsRequired} from "../../middleware/auth";
 import { validate } from "../../middleware/validate";
 import { moassaSchema } from "../../schemas/schemas_moassa";
 
 const handler = nextConnect();
 
-handler.use(middleware);
-handler.put(async (req, res) => {
+handler.use(auth).use(AuthIsRequired)
+.put(async (req, res) => {
   /*التاكد من ان المعومات المرسلة موجودة في الداتا*** */
 console.log(req);
   /*^^^^التاكد من ان المعومات المرسلة موجودة في الداتا^^^^*/

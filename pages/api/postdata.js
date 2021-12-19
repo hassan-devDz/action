@@ -1,9 +1,9 @@
 import nextConnect from "next-connect";
 
-import middleware from "../../middleware/connectDb";
+import auth,{AuthIsRequired} from "../../middleware/auth";
 import { validate } from "../../middleware/validate";
 import { moassaSchema } from "../../schemas/schemas_moassa";
-import { getSession } from "next-auth/react"
+
 
 // async function auth(req, res,next)  {
 //   const session = await getSession({ req })
@@ -18,8 +18,7 @@ import { getSession } from "next-auth/react"
 // }
 const handler = nextConnect();
 
-handler.use(middleware);
-handler.post(async (req, res) => {
+handler.use(auth).use(AuthIsRequired).post(async (req, res) => {
   
   // const session = await getSession({req})
   // if (!session) {

@@ -1,11 +1,11 @@
-import middleware from "../../middleware/connectDb";
+import auth ,{AuthIsRequired}from "../../middleware/auth";
 import nextConnect from "next-connect";
 
 const handler = nextConnect();
 
-handler.use(middleware);
-handler.get(async (req, res) => {
-  console.log(req.query);
+handler.use(auth).use(AuthIsRequired).get(async (req, res) => {
+  
+
   const data_collection = await req.db.collection("sample");
   const data = await data_collection.findOne(
     req.query ,
