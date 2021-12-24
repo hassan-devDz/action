@@ -52,5 +52,8 @@
         "use-timer": "^2.0.1",
         "validator": "^13.7.0",
         "yup": "^0.32.9"
+    },
+    "devDependencies": {
+        "prettier": "2.5.1"
     }
 }

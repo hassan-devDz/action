@@ -1,6 +1,11 @@
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import { insertUserVerificationTokens, findUserByEmail } from "../lib/dbRely";
+import {
+  insertUserVerificationTokens,
+  findUserByEmail,
+  findAndUpdate,
+  insertPasswordVerificationTokens,
+} from "../lib/dbRely";
 
 function text({ url, host }) {
   return `Sign in to ${host}\n${url}\n\n`;
@@ -84,16 +89,13 @@ export const sendEmail = async (email, subject, url, host, res) => {
 export default async function sendVerificationEmail(req, res) {
   try {
     // Save the verification token
-    
+
     const emailExisted = await findUserByEmail(
       req.db,
       req.body.email,
       "verification_tokens"
     );
-    const emailExistedUserCol = await findUserByEmail(
-      req.db,
-      req.body.email
-    );
+    const emailExistedUserCol = await findUserByEmail(req.db, req.body.email);
 
     if (emailExisted || emailExistedUserCol) {
       return res.status(409).send("تم استخدام البريد الإلكتروني بالفعل ");
@@ -104,7 +106,7 @@ export default async function sendVerificationEmail(req, res) {
     let to = await req.body.email;
     //let from = process.env.FROM_EMAIL;
     let link =
-      (await "http://") + req.headers.host + "/auth/verify-email/?token=" + token;
+      (await "http://") + req.headers.host + "/auth/verify-email/" + token;
     //let htmls = html(link,req.headers.host,to)
 
     const resSendEmail = await sendEmail(
@@ -129,24 +131,25 @@ export default async function sendVerificationEmail(req, res) {
 }
 
 export async function reSendVerificationEmail(req, res) {
+  const token = await crypto.randomBytes(32).toString("hex");
   try {
     // Save the verification token
-    const emailExisted = await findUserByEmail(
-      req.db,
-      req.body.email,
+    const emailExisted = await findAndUpdate(
+      req,
+      { email: req.body.email },
+      { confirmationCode: token, expires: Date.now() + 3600000 },
       "verification_tokens"
     );
 
-    if (emailExisted) {
-      return res.status(409).send("The email has already been used");
+    if (!emailExisted) {
+      return res.status(201).json({ message: emailExisted });
     }
-    const token = await crypto.randomBytes(32).toString("hex");
 
     let subject = await "Account Verification Token";
     let to = await req.body.email;
     //let from = process.env.FROM_EMAIL;
     let link =
-      (await "http://") + req.headers.host + "/auth/verify-email/?token=" + token;
+      (await "http://") + req.headers.host + "/auth/verify-email/" + token;
     //let htmls = html(link,req.headers.host,to)
 
     const resSendEmail = await sendEmail(
@@ -160,7 +163,6 @@ export async function reSendVerificationEmail(req, res) {
     if (resSendEmail !== "OK") {
       return res.status(500).json({ message: "email not sent" });
     }
-    const user = await insertUserVerificationTokens(req, token);
 
     return res
       .status(201)
@@ -172,22 +174,17 @@ export async function reSendVerificationEmail(req, res) {
 export async function reSetPassword(req, res) {
   try {
     // Save the verification token
-    const emailExisted = await findUserByEmail(
-      req.db,
-      req.body.email,
-      "verification_tokens"
-    );
+    const emailExisted = await findUserByEmail(req.db, req.body.email, "users");
 
-    if (emailExisted) {
-      return res.status(409).send("The email has already been used");
+    if (!emailExisted) {
+      return res.status(200).json({ message: emailExisted });
     }
     const token = await crypto.randomBytes(32).toString("hex");
 
     let subject = await "Account Verification Token";
     let to = await req.body.email;
     //let from = process.env.FROM_EMAIL;
-    let link =
-      (await "http://") + req.headers.host + "/verify-email/?token=" + token;
+    let link = (await "http://") + req.headers.host + "/resetpassword/" + token;
     //let htmls = html(link,req.headers.host,to)
 
     const resSendEmail = await sendEmail(
@@ -201,7 +198,7 @@ export async function reSetPassword(req, res) {
     if (resSendEmail !== "OK") {
       return res.status(500).json({ message: "email not sent" });
     }
-    const user = await insertUserVerificationTokens(req, token);
+    const user = await insertPasswordVerificationTokens(req, token);
 
     return res
       .status(201)

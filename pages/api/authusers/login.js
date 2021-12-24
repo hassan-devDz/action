@@ -1,5 +1,8 @@
 import nextConnect from "next-connect";
-import auth, { AuthNotRequired ,AuthIsRequired} from "../../../middleware/auth";
+import auth, {
+  AuthNotRequired,
+  AuthIsRequired,
+} from "../../../middleware/auth";
 import passport from "../../../lib/passport";
 import verifycaptcha from "../../../middleware/verifyCaptcha";
 import { validate } from "../../../middleware/validate";
@@ -17,11 +20,12 @@ const handler = nextConnect();
 // }
 
 handler
-  
   .use(verifycaptcha)
-  .use(auth).use(AuthNotRequired)
+  .use(auth)
+  .use(AuthNotRequired)
   .post(passport.authenticate("local"), (req, res) => {
-    return res.status(200).json({ user: req.user });
+    const { email } = req.user;
+    return res.status(200).json({ user: email });
   });
 
 export default validate(loginSchema, handler);

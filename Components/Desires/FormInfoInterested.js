@@ -11,22 +11,25 @@ import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
 import Link from "../Ui/Link";
 import axios from "axios";
 import ReCAPTCHA from "react-google-recaptcha";
-import {FormInfoInterestedSchema} from '../../schemas/schemas_moassa'
+import { FormInfoInterestedSchema } from "../../schemas/schemas_moassa";
 
 const INITIAL_FORM_STATE = {
   firstName: "", //الاسم
   lastName: "", //اللقب
-   employeeId: "",
-   baldia: null, //البلدية
+  employeeId: "",
+  baldia: null, //البلدية
   workSchool: null, //مؤسسة العمل
   situation: null, //الوضعية
- 
+  educationalPhase: null, //الطور
   email: "",
   password: "",
   passwordConfirmation: "",
   accept: false,
+
   //points: 0, //النقاط
 };
+const { captcha, ...valide } = FormInfoInterestedSchema;
+
 const FORM_VALIDATION = Yup.object().shape({
   firstName: YupString(3).trim(), //الاسم
   lastName: YupString(3).trim(), //اللقب
@@ -38,6 +41,7 @@ const FORM_VALIDATION = Yup.object().shape({
     .required("حقل الزامي")
     .nullable(),
   situation: BasicStr().nullable(),
+  educationalPhase: BasicStr().nullable(),
   employeeId: numStr(),
   email: Yup.string()
     .email("صيغة البريد الإلكتروني غير صحيحة")
@@ -65,19 +69,23 @@ const fetcher = async (url, param = "") => {
   return data;
 };
 const postionChoise = ["راغب", "مجبر", "فائض"];
+const _educationalPhase = ["ابتدائي", "متوسط", "ثانوي"];
 const FormInfoInterested = (props) => {
+  console.log(FormInfoInterestedSchema);
   const [baldiaList, setBaldiaList] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [moassaList, setMoassaList] = useState([]);
   const [inputValueMoassa, setInputValueMoassa] = useState("");
   const [inputValueBaldia, setInputValueBaldia] = useState(""); //ادخال اسم البلدية
   const [postion, setPostion] = useState("");
+  const [educationalPhase, setEducationalPhase] = useState("");
   const recaptchaRef = useRef({});
   useEffect(() => {
     fetcher(`/api/getbaldia`) //طلب قائمة المؤسسات من خلال اختيار البلدية المعنية
       .then(function (response) {
         setBaldiaList(response);
-      }).catch((err)=>{
+      })
+      .catch((err) => {
         console.log(err);
       });
   }, []);
@@ -101,20 +109,26 @@ const FormInfoInterested = (props) => {
   const getValuePostion = (event, newInputValue) => {
     setPostion(newInputValue);
   };
+  const getValueEducationalPhase = (event, newInputValue) => {
+    setEducationalPhase(newInputValue);
+  };
   const handleClickShowPassword = (e) => {
     setShowPassword(!showPassword);
   };
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
-  const handelSubmit =async (valusForm,fun) => {
-  //   const response = await fetch("/api/auth/callback/credentials", {
-  //     method: "POST",
-  //     body:  valusForm ,
-  //    headers: {
-  //   'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-  // },
-    
-  //   });
-    
+  const handelSubmit = async (valusForm, fun) => {
+    recaptchaRef.current.reset();
+    recaptchaRef.current.execute();
+    console.log(valusForm);
+    props.onSubmit(valusForm);
+    //   const response = await fetch("/api/auth/callback/credentials", {
+    //     method: "POST",
+    //     body:  valusForm ,
+    //    headers: {
+    //   'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    // },
+
+    //   });
   };
 
   return (
@@ -122,11 +136,10 @@ const FormInfoInterested = (props) => {
       initialValues={{
         ...INITIAL_FORM_STATE,
       }}
-      //validationSchema={FormInfoInterestedSchema}
-      onSubmit={props.onSubmit}
+      validationSchema={FORM_VALIDATION}
+      onSubmit={handelSubmit}
     >
-      <Form >
-      
+      <Form>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <Controls.Textfield name="firstName" label="الاسم" />
@@ -145,6 +158,16 @@ const FormInfoInterested = (props) => {
               inputValue={postion}
               onInputChange={getValuePostion}
               options={postionChoise}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} elevation={6}>
+            <Controls.AutocompleteMui
+              name="educationalPhase"
+              label="الطور"
+              variant="outlined"
+              inputValue={educationalPhase}
+              onInputChange={getValueEducationalPhase}
+              options={_educationalPhase}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -237,7 +260,16 @@ const FormInfoInterested = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-      
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              size="invisible"
+              hl="ar"
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+              onChange={props.onReCAPTCHAChange}
+              badge="bottomleft"
+            />
+          </Grid>
+          <Grid item xs={12}>
             <Controls.CheckboxWrapper name="accept" />
           </Grid>
           <Grid item xs={12}>

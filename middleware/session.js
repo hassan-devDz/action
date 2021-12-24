@@ -1,6 +1,6 @@
 import MongoStore from "connect-mongo";
 import { getMongoClient } from "./database";
-import { promisifyStore } from 'next-session/lib/compat';
+import { promisifyStore } from "next-session/lib/compat";
 import nextSession from "next-session";
 
 const mongoStore = MongoStore.create({

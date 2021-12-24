@@ -69,7 +69,7 @@ import { moassaSchema } from "../schemas/schemas_moassa";
 
 import replaceStrIcon from "../Components/IconReplaceTxt/IconRepTxt";
 import DateP from "../Components/date";
-import {useUser} from '../middleware/Hooks/fetcher'
+import { useUser } from "../middleware/Hooks/fetcher";
 import ConfirmProvider from "../Components/UiDialog/ConfirmProvider";
 
 import router, { useRouter } from "next/router";
@@ -98,7 +98,7 @@ let originalRows = {};
 const DataTableCrud = (props) => {
   console.log(props);
   //const { data: session ,status:status} = useSession();
-//console.log(session,status);
+  //console.log(session,status);
 
   // if (!props.session) {
   //   return (
@@ -110,7 +110,7 @@ const DataTableCrud = (props) => {
   // }
 
   /**----------------all useState----------------------- */
-  const [user, { mutate }] = useUser()
+  const [user, { mutate }] = useUser();
   const [loading, setLoading] = useState(true), //جاري التحميل للجدول الرئيسي و احصائيات المدارس
     [dataServer, setServer] = useState([...props.data]), //قائمة الدوائر بالولاية
     [listMoassat, setListMoassat] = useState([]), //قائمة المؤسسات المعنية بالحركة
@@ -138,17 +138,15 @@ const DataTableCrud = (props) => {
 
     return data;
   };
-/** **************************** دالة الخروج ********************* */
-const signOut = async () => {
-  const res = await fetch('/api/authusers/logout')
-    
-   
-   
-    if (res.status===204) { 
-      mutate({ user: null })
-       router.push('/auth/login')
+  /** **************************** دالة الخروج ********************* */
+  const signOut = async () => {
+    const res = await fetch("/api/authusers/logout");
+
+    if (res.status === 204) {
+      mutate({ user: null });
+      router.push("/auth/login");
     }
-}
+  };
   // const { data, error } = useSWR('/api/user', fetcher)
   /********************* طلب إضافة مؤسسة للجدول *********************start */
 
@@ -504,6 +502,7 @@ const signOut = async () => {
 
     setLoading(true);
     fetcher(`api/schools`, { year: e }).then((res) => {
+      console.log(res);
       setListMoassat(res);
       setSpinnersLoding(false);
       setLoading(false);
@@ -590,293 +589,293 @@ const signOut = async () => {
   // const static = listMoassat.map((x)=>{
 
   // })
- 
- 
-    return (
-      <>
-        {" "}
-        <Container maxWidth="xl" style={{ marginBottom: 2, marginTop: 12 }}>
-          <div>
-            
-            <button onClick={signOut}>Sign out</button>
-            <Link color="primary"  href="/auth/login"><button>login</button> </Link>
-            <Link color="primary"  href="/choise/2021">choise</Link>
-            
-          </div>
-          {/* <TransferList selectedMoassa={selectedMoassa}></TransferList> */}
 
-          <Backdrop open={spinnersLoding} style={{ zIndex: 1301 }}>
-            <ScaleLoader color="#dbdbdb" loading={spinnersLoding} size={50} />
-          </Backdrop>
+  return (
+    <>
+      {" "}
+      <Container maxWidth="xl" style={{ marginBottom: 2, marginTop: 12 }}>
+        <div>
+          <button onClick={signOut}>Sign out</button>
+          <Link color="primary" href="/auth/login">
+            <button>login</button>{" "}
+          </Link>
+          <Link color="primary" href="/choise/2021">
+            choise
+          </Link>
+        </div>
+        {/* <TransferList selectedMoassa={selectedMoassa}></TransferList> */}
 
-          <Grid container spacing={2} justifyContent="center">
-            <Grid item xs={12} sm={9}>
-              <Paper elevation={3} style={{ padding: 10 }}>
-                <Typography variant="h4" component="h1" align="center">
-                  جدول الحركة التنقلية للموسم 2021/2022
-                </Typography>
-              </Paper>
-            </Grid>
-            <Grid item xs={12}>
-              <DialogMui
-                fullScreen={fullScreen}
-                open={open}
-                onClose={handleClose}
-                PaperComponent={PaperComponent}
-                aria-labelledby="form-dialog-title"
+        <Backdrop open={spinnersLoding} style={{ zIndex: 1301 }}>
+          <ScaleLoader color="#dbdbdb" loading={spinnersLoding} size={50} />
+        </Backdrop>
+
+        <Grid container spacing={2} justifyContent="center">
+          <Grid item xs={12} sm={9}>
+            <Paper elevation={3} style={{ padding: 10 }}>
+              <Typography variant="h4" component="h1" align="center">
+                جدول الحركة التنقلية للموسم 2021/2022
+              </Typography>
+            </Paper>
+          </Grid>
+          <Grid item xs={12}>
+            <DialogMui
+              fullScreen={fullScreen}
+              open={open}
+              onClose={handleClose}
+              PaperComponent={PaperComponent}
+              aria-labelledby="form-dialog-title"
+            >
+              <Formik
+                initialValues={{
+                  ...INITIAL_FORM_STATE,
+                }}
+                validationSchema={moassaSchema}
+                onSubmit={handelSubmit}
               >
-                <Formik
-                  initialValues={{
-                    ...INITIAL_FORM_STATE,
-                  }}
-                  validationSchema={moassaSchema}
-                  onSubmit={handelSubmit}
-                >
-                  <Form>
-                    <DialogTitle id="form-dialog-title">
-                      {" "}
-                      أضف الى القائمة
-                    </DialogTitle>
-                    <DialogContent>
-                      <Grid container item spacing={2}>
-                        <Grid item xs={12}>
-                          <DialogContentText>
-                            اختر الدائرة ثم المؤسسة
-                          </DialogContentText>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Controls.Textfield
-                            name={"potentialVacancy"}
-                            label={"محتمل الشغور"}
-                            type="number"
-                            InputProps={{
-                              inputComponent: Controls.NumberFormatCustom,
-                            }}
+                <Form>
+                  <DialogTitle id="form-dialog-title">
+                    {" "}
+                    أضف الى القائمة
+                  </DialogTitle>
+                  <DialogContent>
+                    <Grid container item spacing={2}>
+                      <Grid item xs={12}>
+                        <DialogContentText>
+                          اختر الدائرة ثم المؤسسة
+                        </DialogContentText>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Controls.Textfield
+                          name={"potentialVacancy"}
+                          label={"محتمل الشغور"}
+                          type="number"
+                          InputProps={{
+                            inputComponent: Controls.NumberFormatCustom,
+                          }}
 
-                            // InputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-                          />
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Controls.Textfield
-                            name={"forced"}
-                            label={"مجبر"}
-                            type="number"
-                            InputProps={{
-                              inputComponent: Controls.NumberFormatCustom,
-                            }}
+                          // InputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+                        />
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Controls.Textfield
+                          name={"forced"}
+                          label={"مجبر"}
+                          type="number"
+                          InputProps={{
+                            inputComponent: Controls.NumberFormatCustom,
+                          }}
 
-                            // InputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-                          />
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Controls.Textfield
-                            name={"vacancy"}
-                            label={"شاغر"}
-                            type="number"
-                            InputProps={{
-                              inputComponent: Controls.NumberFormatCustom,
-                            }}
+                          // InputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+                        />
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Controls.Textfield
+                          name={"vacancy"}
+                          label={"شاغر"}
+                          type="number"
+                          InputProps={{
+                            inputComponent: Controls.NumberFormatCustom,
+                          }}
 
-                            // InputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-                          />
-                        </Grid>
-                        <Grid item xs={3}>
-                          <Controls.Textfield
-                            name={"surplus"}
-                            label={"فائض"}
-                            type="number"
-                            InputProps={{
-                              inputComponent: Controls.NumberFormatCustom,
-                            }}
+                          // InputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+                        />
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Controls.Textfield
+                          name={"surplus"}
+                          label={"فائض"}
+                          type="number"
+                          InputProps={{
+                            inputComponent: Controls.NumberFormatCustom,
+                          }}
 
-                            // InputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-                          />
-                        </Grid>
+                          // InputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+                        />
+                      </Grid>
 
-                        {/* <div className="p-field">
+                      {/* <div className="p-field">
                   <Virtualize data={data} onChange={getDaira} />
                 </div> */}
 
-                        <Grid item xs={12}>
-                          <AutocompleteMui
-                            name="daira"
-                            label="الدائرة"
-                            inputValue={inputValueDaira}
-                            onInputChange={getValueDaira}
-                            options={dataServer}
-                          />
-                        </Grid>
-                        <Grid item xs={12}>
-                          <AutocompleteMui
-                            name="moassa"
-                            label="المؤسسة"
-                            loading
-                            loadingText={"في الانتظار"}
-                            inputValue={inputValueMoassa}
-                            onInputChange={getValueMoassa}
-                            options={
-                              gobalOptions[inputValueDaira]?.moassata || []
-                            }
-                            getOptionLabel={(option) => {
-                              return option.EtabNom || "";
-                            }}
-                          />
-                        </Grid>
+                      <Grid item xs={12}>
+                        <AutocompleteMui
+                          name="daira"
+                          label="الدائرة"
+                          inputValue={inputValueDaira}
+                          onInputChange={getValueDaira}
+                          options={dataServer}
+                        />
                       </Grid>
-                    </DialogContent>
-                    <DialogActions>
-                      <ButtonRed
-                        onClick={handleClose}
-                        color="secondary"
-                        size="large"
-                        label="gggg"
-                        variant="outlined"
-                        startIcon={<ClearTwoToneIcon />}
-                      >
-                        الغاء
-                      </ButtonRed>
+                      <Grid item xs={12}>
+                        <AutocompleteMui
+                          name="moassa"
+                          label="المؤسسة"
+                          loading
+                          loadingText={"في الانتظار"}
+                          inputValue={inputValueMoassa}
+                          onInputChange={getValueMoassa}
+                          options={
+                            gobalOptions[inputValueDaira]?.moassata || []
+                          }
+                          getOptionLabel={(option) => {
+                            return option.EtabNom || "";
+                          }}
+                        />
+                      </Grid>
+                    </Grid>
+                  </DialogContent>
+                  <DialogActions>
+                    <ButtonRed
+                      onClick={handleClose}
+                      color="secondary"
+                      size="large"
+                      label="gggg"
+                      variant="outlined"
+                      startIcon={<ClearTwoToneIcon />}
+                    >
+                      الغاء
+                    </ButtonRed>
 
-                      <Controls.Button
-                        color="primary"
-                        startIcon={<CheckTwoToneIcon />}
-                        variant="outlined"
-                      >
-                        حفظ
-                      </Controls.Button>
-                    </DialogActions>
-                  </Form>
-                </Formik>
-              </DialogMui>
-            </Grid>
+                    <Controls.Button
+                      color="primary"
+                      startIcon={<CheckTwoToneIcon />}
+                      variant="outlined"
+                    >
+                      حفظ
+                    </Controls.Button>
+                  </DialogActions>
+                </Form>
+              </Formik>
+            </DialogMui>
           </Grid>
+        </Grid>
 
-          <Static data={listMoassat} loading={loading} />
-          <DataTable
-            ref={dt}
-            value={listMoassat || []}
-            selectionMode="checkbox"
-            selection={selectedMoassa}
-            onSelectionChange={onSelected}
-            dataKey="moassa.EtabMatricule"
-            emptyMessage="لا توجد بيانات لعرضها"
-            paginator
-            rows={10}
-            rowsPerPageOptions={[5, 10, 25]}
-            editMode="row"
-            onRowEditInit={onRowEditInit}
-            onRowEditCancel={onRowEditCancel}
-            onRowEditSave={onRowEditSave}
-            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            currentPageReportTemplate="عرض {first} الى {last} من اصل {totalRecords}"
-            editingRows={editingRows}
-            onRowEditChange={onRowEditChange}
-            globalFilter={globalFilter}
-            header={headarTable}
-            stripedRows
-            removableSort
-            loading={loading}
-            scrollable
-            scrollHeight="500px"
-            frozenWidth="204px"
-          >
-            <Column
-              columnKey="multiple"
-              selectionMode="multiple"
-              style={{ width: 50 }}
-              frozen
-            ></Column>
-            <Column
-              columnKey="index"
-              field="index"
-              header="الرقم"
-              body={indexOfValueInDataList}
-              headerStyle={{ width: 40, padding: 0 }}
-              style={{}}
-              frozen
-            ></Column>
-            <Column
-              columnKey="moassa.EtabNom"
-              field="moassa.EtabNom"
-              header="المؤسسة"
-              sortable
-              style={{ width: 300 }}
-              body={replaceStrIcon}
-            ></Column>
+        <Static data={listMoassat} loading={loading} />
+        <DataTable
+          ref={dt}
+          value={listMoassat || []}
+          selectionMode="checkbox"
+          selection={selectedMoassa}
+          onSelectionChange={onSelected}
+          dataKey="moassa.EtabMatricule"
+          emptyMessage="لا توجد بيانات لعرضها"
+          paginator
+          rows={10}
+          rowsPerPageOptions={[5, 10, 25]}
+          editMode="row"
+          onRowEditInit={onRowEditInit}
+          onRowEditCancel={onRowEditCancel}
+          onRowEditSave={onRowEditSave}
+          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+          currentPageReportTemplate="عرض {first} الى {last} من اصل {totalRecords}"
+          editingRows={editingRows}
+          onRowEditChange={onRowEditChange}
+          globalFilter={globalFilter}
+          header={headarTable}
+          stripedRows
+          removableSort
+          loading={loading}
+          scrollable
+          scrollHeight="500px"
+          frozenWidth="204px"
+        >
+          <Column
+            columnKey="multiple"
+            selectionMode="multiple"
+            style={{ width: 50 }}
+            frozen
+          ></Column>
+          <Column
+            columnKey="index"
+            field="index"
+            header="الرقم"
+            body={indexOfValueInDataList}
+            headerStyle={{ width: 40, padding: 0 }}
+            style={{}}
+            frozen
+          ></Column>
+          <Column
+            columnKey="moassa.EtabNom"
+            field="moassa.EtabNom"
+            header="المؤسسة"
+            sortable
+            style={{ width: 300 }}
+            body={replaceStrIcon}
+          ></Column>
 
-            <Column
-              columnKey="daira"
-              field="daira"
-              header="الدائرة"
-              headerStyle={{ width: 114 }}
-              style={{ padding: 7, height: 81 }}
-              sortable
-              frozen
-            ></Column>
+          <Column
+            columnKey="daira"
+            field="daira"
+            header="الدائرة"
+            headerStyle={{ width: 114 }}
+            style={{ padding: 7, height: 81 }}
+            sortable
+            frozen
+          ></Column>
 
-            <Column
-              columnKey="moassa.bladia"
-              field="moassa.bladia"
-              header="البلدية"
-              sortable
-              headerStyle={{ width: 114, padding: 7 }}
-            ></Column>
-            {/* <Column
+          <Column
+            columnKey="moassa.bladia"
+            field="moassa.bladia"
+            header="البلدية"
+            sortable
+            headerStyle={{ width: 114, padding: 7 }}
+          ></Column>
+          {/* <Column
             field="moassa.EtabMatricule"
             header="رقم المؤسسة"
             sortable
           ></Column> */}
-            <Column
-              columnKey="potentialVacancy"
-              field="potentialVacancy"
-              header="محتمل الشغور"
-              editor={inputTextEditor}
-              headerStyle={{ width: 120, padding: 7 }}
-            >
-              {/* body={imageBodyTemplate}*/}
-            </Column>
-            <Column
-              columnKey="forced"
-              field="forced"
-              header="مجبر"
-              sortable
-              editor={inputTextEditor}
-              headerStyle={{ width: 120 }}
-            >
-              {/*body={priceBodyTemplate}*/}
-            </Column>
-            <Column
-              columnKey="vacancy"
-              field="vacancy"
-              header="شاغر"
-              sortable
-              headerStyle={{ width: 120 }}
-              editor={inputTextEditor}
-            ></Column>
-            <Column
-              columnKey="surplus"
-              field="surplus"
-              header="فائض"
-              sortable
-              headerStyle={{ width: 120 }}
-              editor={inputTextEditor}
-            >
-              {/*body={ratingBodyTemplate}*/}
-            </Column>
+          <Column
+            columnKey="potentialVacancy"
+            field="potentialVacancy"
+            header="محتمل الشغور"
+            editor={inputTextEditor}
+            headerStyle={{ width: 120, padding: 7 }}
+          >
+            {/* body={imageBodyTemplate}*/}
+          </Column>
+          <Column
+            columnKey="forced"
+            field="forced"
+            header="مجبر"
+            sortable
+            editor={inputTextEditor}
+            headerStyle={{ width: 120 }}
+          >
+            {/*body={priceBodyTemplate}*/}
+          </Column>
+          <Column
+            columnKey="vacancy"
+            field="vacancy"
+            header="شاغر"
+            sortable
+            headerStyle={{ width: 120 }}
+            editor={inputTextEditor}
+          ></Column>
+          <Column
+            columnKey="surplus"
+            field="surplus"
+            header="فائض"
+            sortable
+            headerStyle={{ width: 120 }}
+            editor={inputTextEditor}
+          >
+            {/*body={ratingBodyTemplate}*/}
+          </Column>
 
-            <Column
-              columnKey="actionBodyTemplate1"
-              rowEditor
-              bodyStyle={{ textAlign: "center", height: 81 }}
-              body={actionBodyTemplate1}
-              headerStyle={{ width: 170 }}
-            >
-              {/**/}
-            </Column>
-          </DataTable>
-        </Container>
-      </>
-    );
-  
+          <Column
+            columnKey="actionBodyTemplate1"
+            rowEditor
+            bodyStyle={{ textAlign: "center", height: 81 }}
+            body={actionBodyTemplate1}
+            headerStyle={{ width: 170 }}
+          >
+            {/**/}
+          </Column>
+        </DataTable>
+      </Container>
+    </>
+  );
 };
 
 export async function getServerSideProps(ctx) {
@@ -885,10 +884,10 @@ export async function getServerSideProps(ctx) {
   const res = await fetch(`${urlBass}api/hello`);
 
   const data = await res.json();
-  
+
   return {
-    props: { data}, // will be passed to the page component as props
+    props: { data }, // will be passed to the page component as props
   };
 }
 export default DataTableCrud;
-DataTableCrud.auth = true
+DataTableCrud.auth = true;

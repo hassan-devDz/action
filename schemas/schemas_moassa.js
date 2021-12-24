@@ -1,5 +1,10 @@
 import * as Yup from "yup";
-import { YupString, numStr, BasicStr ,YupDate} from "../Components/YupValidation/YupFun";
+import {
+  YupString,
+  numStr,
+  BasicStr,
+  YupDate,
+} from "../Components/YupValidation/YupFun";
 export const moassaSchema = Yup.object().shape(
   {
     potentialVacancy: Yup.number()
@@ -78,7 +83,7 @@ export const itemsSchema = Yup.object().shape({
       Yup.object().shape(
         {
           potentialVacancy: Yup.number()
-             .required("حقل الزامي")
+            .required("حقل الزامي")
             .integer()
             .when(["forced", "vacancy"], {
               is: (forced, vacancy) => forced === 0 && vacancy === 0,
@@ -88,7 +93,7 @@ export const itemsSchema = Yup.object().shape({
                 .required("حقل الزامي"),
             }),
           forced: Yup.number()
-             .required("حقل الزامي")
+            .required("حقل الزامي")
             .integer()
             .when(["potentialVacancy", "vacancy"], {
               is: (potentialVacancy, vacancy) =>
@@ -99,7 +104,7 @@ export const itemsSchema = Yup.object().shape({
                 .required("حقل الزامي"),
             }),
           vacancy: Yup.number()
-             .required("حقل الزامي")
+            .required("حقل الزامي")
             .integer()
             .when(["potentialVacancy", "forced"], {
               is: (potentialVacancy, forced) =>
@@ -109,7 +114,7 @@ export const itemsSchema = Yup.object().shape({
                 .positive("يجب أن يكون أحد الحقول أكبر من الصفر")
                 .required("حقل الزامي"),
             }),
-          surplus: Yup.number() .required("حقل الزامي").integer(),
+          surplus: Yup.number().required("حقل الزامي").integer(),
           moassa: Yup.object({
             EtabMatricule: Yup.string().required("حقل الزامي"),
             EtabNom: Yup.string().required("حقل الزامي"),
@@ -126,7 +131,7 @@ export const itemsSchema = Yup.object().shape({
         ]
       )
     )
-     .required("حقل الزامي")
+    .required("حقل الزامي")
     .min(1)
     .max(5),
 });
@@ -144,6 +149,7 @@ export const FormInfoInterestedSchema = Yup.object().shape({
     .required("حقل الزامي")
     .nullable(),
   situation: BasicStr().nullable(),
+  educationalPhase: BasicStr().nullable(),
   employeeId: numStr(16),
   email: Yup.string()
     .email("صيغة البريد الإلكتروني غير صحيحة")
@@ -158,19 +164,17 @@ export const FormInfoInterestedSchema = Yup.object().shape({
   accept: Yup.boolean()
     .oneOf([true], "بإنشائك لهذا الحساب أنت توافق على شروط استخدام المنصة .")
     .required("بإنشائك لهذا الحساب أنت توافق على شروط استخدام المنصة ."),
-    captcha:Yup.string()
-    .required("هذا الحقل مطلوب"),
+  captcha: Yup.string().required("هذا الحقل مطلوب"),
 
-    createdAt: Yup.date().required()
+  createdAt: Yup.date().required(),
 });
 export const loginSchema = Yup.object().shape({
   email: Yup.string()
     .email("صيغة البريد الإلكتروني غير صحيحة")
     .required("هذا الحقل مطلوب"),
 
-    password: Yup.string()
+  password: Yup.string()
     .min(8, "يجب عليك ادخال 8 أحرف على الأقل")
     .required("هذا الحقل مطلوب"),
-    captcha:Yup.string()
-    .required("هذا الحقل مطلوب"),
+  captcha: Yup.string().required("هذا الحقل مطلوب"),
 });

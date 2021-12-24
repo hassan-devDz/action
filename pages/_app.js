@@ -20,9 +20,11 @@ import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 // Configure JSS
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
+export function reportWebVitals(metric) {
+  console.log(metric);
+}
 
 export default function MyApp({ Component, pageProps, user }) {
-  
   useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");
@@ -32,9 +34,7 @@ export default function MyApp({ Component, pageProps, user }) {
   }, []);
 
   return (
-    
     <ThemeProvider theme={theme}>
-     
       <StylesProvider jss={jss}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
@@ -45,14 +45,14 @@ export default function MyApp({ Component, pageProps, user }) {
             </Auth>
           ) : (
             <Component {...pageProps} />
-          )}</AppContext.Provider>
-       
+          )}
+        </AppContext.Provider>
       </StylesProvider>
     </ThemeProvider>
   );
 }
 MyApp.getInitialProps = async (appContext) => {
-  
+  //console.log(appContext);
   const appProps = await App.getInitialProps(appContext);
 
   const cookie = await appContext.ctx.req?.headers.cookie;
@@ -85,9 +85,8 @@ MyApp.getInitialProps = async (appContext) => {
         appContext.ctx.res.writeHead(302, { Location: "/auth/login" }).end();
       }
     }
-    
   }
-  
+
   return { ...appProps, user };
 };
 export function Auth({ children }) {
@@ -104,7 +103,7 @@ export function Auth({ children }) {
   }, [isUser, loading]);
 
   if (isUser) {
-    return children
+    return children;
   }
 
   // Session is being fetched, or no user.
