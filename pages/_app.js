@@ -56,8 +56,8 @@ MyApp.getInitialProps = async (appContext) => {
   const appProps = await App.getInitialProps(appContext);
 
   const cookie = await appContext.ctx.req?.headers.cookie;
-
-  const res = await fetch(`http://localhost:3000/api/authusers/user`, {
+  const urlBass = await process.env.URL_BASE;
+  const res = await fetch(`${urlBass}api/authusers/user`, {
     headers: {
       cookie: cookie,
     },
