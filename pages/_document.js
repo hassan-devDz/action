@@ -50,14 +50,10 @@ MyDocument.getInitialProps = async (ctx) => {
   const sheets = new ServerStyleSheets();
 
   const originalRenderPage = ctx.renderPage;
-  const hassan = { 1: "hassan" };
+
   ctx.renderPage = () =>
     originalRenderPage({
       enhanceApp: (App) => (props) => {
-        console.log(
-          props,
-          "const cookie = await appContext.ctx.req?.headers.cookie;"
-        );
         return sheets.collect(<App {...props} />);
       },
     });
@@ -66,7 +62,7 @@ MyDocument.getInitialProps = async (ctx) => {
 
   return {
     ...initialProps,
-    hassan,
+
     // Styles fragment is rendered after the app and page rendering finish.
     styles: [
       ...React.Children.toArray(initialProps.styles),

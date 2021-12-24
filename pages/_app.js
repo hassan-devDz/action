@@ -18,13 +18,12 @@ import AppContext from "../middleware/appContext";
 import "../styles/globals.css";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import router from "next/router";
 // Configure JSS
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
-export function reportWebVitals(metric) {
-  console.log(metric);
-}
 
 export default function MyApp({ Component, pageProps, user }) {
+  console.log(user, "rrrrr");
   useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");
@@ -38,7 +37,7 @@ export default function MyApp({ Component, pageProps, user }) {
       <StylesProvider jss={jss}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <AppContext.Provider value={user?.user}>
+        <AppContext.Provider value={user}>
           {Component.auth ? (
             <Auth>
               <Component {...pageProps} />
@@ -57,44 +56,45 @@ MyApp.getInitialProps = async (appContext) => {
 
   const cookie = await appContext.ctx.req?.headers.cookie;
   const urlBass = await process.env.URL_BASE;
-  const res = await fetch(`${urlBass}/api/authusers/user`, {
+  console.log(appContext);
+  const res = await fetch(`https://action-six.vercel.app/api/authusers/user`, {
     headers: {
       cookie: cookie,
     },
   });
-
-  const user = await res.json();
+  console.log(res);
+  const data = await res.json();
 
   if (
     (await appContext.ctx.res?.statusCode) !== 404 &&
     (await appContext.ctx.res?.statusCode) !== 500
   ) {
-    if (!appContext.Component.auth && !!user.user) {
+    if (!appContext.Component.auth && !!data.user) {
       if (!appContext.ctx.req) {
-        Router.push("/");
+        router.replace("/");
       }
       if (appContext.ctx.req) {
         appContext.ctx.res.writeHead(302, { Location: "/" }).end();
       }
     }
-    if (appContext.Component.auth && !user.user) {
+    if (appContext.Component.auth && !data.user) {
       if (!appContext.ctx.req) {
-        Router.push("/auth/login");
+        router.replace("/auth/login");
       }
       if (appContext.ctx.req) {
         appContext.ctx.res.writeHead(302, { Location: "/auth/login" }).end();
       }
     }
   }
-
-  return { ...appProps, user };
+  console.log(data);
+  return { ...appProps, ...data };
 };
 export function Auth({ children }) {
   const [user, { mutate, loading }] = useUser();
 
   const router = useRouter();
   const isUser = !!user;
-  console.log(isUser);
+  console.log(isUser, user);
   useEffect(() => {
     if (loading) return; // Do nothing while loading
     if (!isUser) {
@@ -118,5 +118,4 @@ export function Auth({ children }) {
 MyApp.propTypes = {
   Component: PropTypes.elementType.isRequired,
   pageProps: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
 };

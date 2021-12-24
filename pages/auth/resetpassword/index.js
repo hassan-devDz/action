@@ -27,7 +27,7 @@ const INITIAL_FORM_STATE = {
 const FORM_VALIDATION = Yup.object().shape({
   email: Yup.string().email(messages.email).required(messages.required),
 });
-export default function resend() {
+export default function ResetPassword() {
   const [user, { mutate }] = useUser();
   const router = useRouter();
 
