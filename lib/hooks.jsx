@@ -5,7 +5,9 @@ import AppContext from "../middleware/appContext";
 export const fetcher = (url) => fetch(url).then((r) => r.json());
 
 export function useUser() {
-  const { data, mutate } = useSWR("/api/authusers/user", fetcher);
+  const urlBass = await process.env.URL_BASE;
+
+  const { data, mutate } = useSWR(`${urlBass}/api/authusers/user`, fetcher);
   // if data is not defined, the query has not completed
 
   const loading = !data;
