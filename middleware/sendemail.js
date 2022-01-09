@@ -184,7 +184,8 @@ export async function reSetPassword(req, res) {
     let subject = await "Account Verification Token";
     let to = await req.body.email;
     //let from = process.env.FROM_EMAIL;
-    let link = (await "http://") + req.headers.host + "/resetpassword/" + token;
+    let link =
+      (await "http://") + req.headers.host + "/auth/resetpassword/" + token;
     //let htmls = html(link,req.headers.host,to)
 
     const resSendEmail = await sendEmail(

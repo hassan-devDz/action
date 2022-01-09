@@ -4,18 +4,17 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import SchoolTwoToneIcon from "@material-ui/icons/SchoolTwoTone";
-import useStyle from "../Components/FormsUi/StyleForm";
+import useStyle from "./FormsUi/StyleForm";
 import Image from "next/image";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import Kids from "../public/cards/kids_school.svg";
 import Icon from "@material-ui/core/Icon";
 import SchoolOutlinedIcon from "@material-ui/icons/SchoolOutlined";
 import Skeleton from "@material-ui/lab/Skeleton";
-
+import Divider from "@material-ui/core/Divider";
 const Static = (prpos) => {
   const classe = useStyle();
   const [sum, setsum] = useState(prpos.data);
-  console.log(prpos.data);
 
   const sumForced = prpos.data.reduce(function (acc, val) {
     return acc + val.forced;
@@ -64,8 +63,7 @@ const Static = (prpos) => {
                   color="secondary"
                   style={{ fontFamily: "Helvetica", fontWeight: 700 }}
                 >
-                  {!prpos.loading?sumForced||0:<Skeleton width={'50%'} />}
-                  {console.log(prpos.loading)}
+                  {!prpos.loading ? sumForced || 0 : <Skeleton width={"50%"} />}
                 </Typography>
               </Grid>
               <Grid
@@ -88,7 +86,6 @@ const Static = (prpos) => {
         </Grid>
       );
     });
-  console.log();
 
   return (
     <Grid
@@ -119,17 +116,73 @@ const Static = (prpos) => {
               >
                 عدد المدارس
               </Typography>
-              <Typography
-                variant="h4"
-                component="h4"
-                align="left"
-                color="secondary"
-                style={{ fontFamily: "Helvetica", fontWeight: 700 }}
-              >
-                {!prpos.loading?prpos.data.length||0 : <Skeleton width={'50%'} />}
-              </Typography>
-            </Grid>
-
+              <Grid item container>
+                <Typography
+                  variant="h4"
+                  component="h4"
+                  align="left"
+                  color="secondary"
+                  style={{ fontFamily: "Helvetica", fontWeight: 700 }}
+                >
+                  {!prpos.loading ? (
+                    prpos.data.length || 0
+                  ) : (
+                    <Skeleton width={"50%"} />
+                  )}
+                </Typography>{" "}
+              </Grid>
+            </Grid>{" "}
+            <Divider
+              orientation="vertical"
+              flexItem
+              style={{ margin: "0px 4px" }}
+            />
+            {/* <Grid item xs={4} container direction="column">
+              <Grid item>
+                <Typography
+                  variant="body1"
+                  component="h6"
+                  align="left"
+                  color="secondary"
+                  style={{ fontFamily: "Helvetica", fontWeight: 700 }}
+                >
+                  {!prpos.loading ? (
+                    prpos.data.length || 0
+                  ) : (
+                    <Skeleton width={"50%"} />
+                  )}
+                  <span style={{ marginRight: 4 }}>ثانوية</span>
+                </Typography>{" "}
+              </Grid>
+              <Grid item>
+                <Typography
+                  variant="body1"
+                  component="h6"
+                  align="left"
+                  color="secondary"
+                  style={{ fontFamily: "Helvetica", fontWeight: 700 }}
+                >
+                  {!prpos.loading ? (
+                    prpos.data.length || 0
+                  ) : (
+                    <Skeleton width={"50%"} />
+                  )}
+                  <span style={{ marginRight: 4 }}>متوسطة</span>
+                </Typography>{" "}
+              </Grid>
+              <Grid item>
+                <Typography
+                  variant="body1"
+                  component="h6"
+                  align="left"
+                  color="secondary"
+                  style={{ fontFamily: "Helvetica", fontWeight: 700 }}
+                >
+                  100000
+                  <span style={{ marginRight: 4 }}>ابتدائية</span>
+                </Typography>{" "}
+              </Grid>
+            </Grid> */}
             <Grid
               item
               xs={4}

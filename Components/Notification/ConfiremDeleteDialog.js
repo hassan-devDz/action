@@ -3,12 +3,10 @@ import { useState } from "react";
 import CheckIcon from "@material-ui/icons/Check";
 
 import DeleteTwoToneIcon from "@material-ui/icons/DeleteTwoTone";
-import {ButtonWrapper,ButtonRed} from "../FormsUi/Button/ButtonNorm";
-
+import { ButtonWrapper, ButtonRed } from "../FormsUi/Button/ButtonNorm";
 
 import useConfirm from "../UiDialog/useConfirm";
 import { Typography } from "@material-ui/core";
-
 
 export default function AlertDialog(props) {
   const confirm = useConfirm();
@@ -29,15 +27,22 @@ export default function AlertDialog(props) {
     setOpen(false);
   };
   const handleDelete = (item) => {
-    console.log(item);
     confirm({
-      content: <Typography variant="body1" >سيتم حذف {item.moassa.EtabNom}.</Typography>,
+      content: (
+        <Typography variant="body1">
+          سيتم حذف{" "}
+          {item.workSchool
+            ? item?.workSchool.EtabNom
+            : `${item.firstName} ${item.lastName}`}
+          .
+        </Typography>
+      ),
       confirmationButtonProps: { startIcon: <CheckIcon /> },
     })
       .then(() => props.onDeleteProduct(item))
       .catch(() => console.log("Deletion cancelled."));
   };
-    return (
+  return (
     <>
       <ButtonRed
         variant="outlined"
@@ -47,7 +52,6 @@ export default function AlertDialog(props) {
       >
         <DeleteTwoToneIcon />
       </ButtonRed>
-      
     </>
   );
 }

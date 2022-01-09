@@ -22,7 +22,7 @@ body {
 
 h1 {
     font-size: 2em;
-    margin: .67em 0;
+    margin: 0.67em 0;
 }
 
 button,
@@ -44,24 +44,24 @@ select {
     text-transform: none;
 }
 
-[type=button],
+[type="button"],
 button {
     -webkit-appearance: button;
 }
 
-[type=button]::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
 button::-moz-focus-inner {
     border-style: none;
     padding: 0;
 }
 
-[type=button]:-moz-focusring,
+[type="button"]:-moz-focusring,
 button:-moz-focusring {
     outline: 1px dotted ButtonText;
 }
 
 fieldset {
-    padding: .35em .75em .625em;
+    padding: 0.35em 0.75em 0.625em;
 }
 
 legend {
@@ -102,7 +102,7 @@ legend {
 
 .p-disabled,
 .p-disabled * {
-    cursor: default!important;
+    cursor: default !important;
     pointer-events: none;
 }
 
@@ -288,7 +288,7 @@ button {
 
 .p-component:disabled,
 .p-disabled {
-    opacity: .6;
+    opacity: 0.6;
 }
 
 .p-link,
@@ -304,8 +304,8 @@ button {
 .p-link:focus {
     outline: 0 none;
     outline-offset: 0;
-    -webkit-box-shadow: 0 0 0 .2rem #a6d5fa;
-    box-shadow: 0 0 0 .2rem #a6d5fa;
+    -webkit-box-shadow: 0 0 0 0.2rem #a6d5fa;
+    box-shadow: 0 0 0 0.2rem #a6d5fa;
 }
 
 .p-checkbox {
@@ -320,17 +320,17 @@ button {
     height: 20px;
     color: #495057;
     border-radius: 3px;
-    -webkit-transition: background-color .2s, color .2s, border-color .2s, -webkit-box-shadow .2s;
-    transition: background-color .2s, color .2s, border-color .2s, -webkit-box-shadow .2s;
-    -moz-transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s;
-    transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s;
-    transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s, -webkit-box-shadow .2s;
+    -webkit-transition: background-color 0.2s, color 0.2s, border-color 0.2s, -webkit-box-shadow 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, -webkit-box-shadow 0.2s;
+    -moz-transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, -webkit-box-shadow 0.2s;
 }
 
 .p-checkbox .p-checkbox-box .p-checkbox-icon {
-    -webkit-transition-duration: .2s;
-    -moz-transition-duration: .2s;
-    transition-duration: .2s;
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
     color: #fff;
     font-size: 14px;
 }
@@ -359,11 +359,11 @@ button {
 .p-dropdown {
     background: #fff;
     border: 1px solid #ced4da;
-    -webkit-transition: background-color .2s, color .2s, border-color .2s, -webkit-box-shadow .2s;
-    transition: background-color .2s, color .2s, border-color .2s, -webkit-box-shadow .2s;
-    -moz-transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s;
-    transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s;
-    transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s, -webkit-box-shadow .2s;
+    -webkit-transition: background-color 0.2s, color 0.2s, border-color 0.2s, -webkit-box-shadow 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, -webkit-box-shadow 0.2s;
+    -moz-transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, -webkit-box-shadow 0.2s;
     border-radius: 3px;
 }
 
@@ -395,13 +395,13 @@ button {
     font-size: 1rem;
     color: #495057;
     background: #fff;
-    padding: .5rem;
+    padding: 0.5rem;
     border: 1px solid #ced4da;
-    -webkit-transition: background-color .2s, color .2s, border-color .2s, -webkit-box-shadow .2s;
-    transition: background-color .2s, color .2s, border-color .2s, -webkit-box-shadow .2s;
-    -moz-transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s;
-    transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s;
-    transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s, -webkit-box-shadow .2s;
+    -webkit-transition: background-color 0.2s, color 0.2s, border-color 0.2s, -webkit-box-shadow 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, -webkit-box-shadow 0.2s;
+    -moz-transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, -webkit-box-shadow 0.2s;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -415,8 +415,8 @@ button {
 .p-inputtext:enabled:focus {
     outline: 0 none;
     outline-offset: 0;
-    -webkit-box-shadow: 0 0 0 .2rem #a6d5fa;
-    box-shadow: 0 0 0 .2rem #a6d5fa;
+    -webkit-box-shadow: 0 0 0 0.2rem #a6d5fa;
+    box-shadow: 0 0 0 0.2rem #a6d5fa;
     border-color: #2b50ed;
 }
 
@@ -458,16 +458,16 @@ button {
 
 .p-datatable .p-datatable-thead>tr>th {
     text-align: right;
-    -webkit-transition: -webkit-box-shadow .2s;
-    transition: -webkit-box-shadow .2s;
-    -moz-transition: box-shadow .2s;
-    transition: box-shadow .2s;
-    transition: box-shadow .2s, -webkit-box-shadow .2s;
+    -webkit-transition: -webkit-box-shadow 0.2s;
+    transition: -webkit-box-shadow 0.2s;
+    -moz-transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s, -webkit-box-shadow 0.2s;
 }
 
 .p-datatable .p-sortable-column .p-sortable-column-icon {
     color: #6c757d;
-    margin-left: .5rem;
+    margin-left: 0.5rem;
 }
 
 .p-datatable .p-sortable-column:not(.p-highlight):not(.p-sortable-disabled):hover {
@@ -498,19 +498,19 @@ button {
 }
 
 .p-datatable .p-sortable-column:focus {
-    -webkit-box-shadow: inset 0 0 0 .15rem #a6d5fa;
-    box-shadow: inset 0 0 0 .15rem #a6d5fa;
+    -webkit-box-shadow: inset 0 0 0 0.15rem #a6d5fa;
+    box-shadow: inset 0 0 0 0.15rem #a6d5fa;
     outline: 0 none;
 }
 
 .p-datatable .p-datatable-tbody>tr {
     background: #fff;
     color: #495057;
-    -webkit-transition: -webkit-box-shadow .2s;
-    transition: -webkit-box-shadow .2s;
-    -moz-transition: box-shadow .2s;
-    transition: box-shadow .2s;
-    transition: box-shadow .2s, -webkit-box-shadow .2s;
+    -webkit-transition: -webkit-box-shadow 0.2s;
+    transition: -webkit-box-shadow 0.2s;
+    -moz-transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s, -webkit-box-shadow 0.2s;
     outline-color: #a6d5fa;
 }
 
@@ -550,7 +550,7 @@ button {
     background: #fff;
     color: #6c757d;
     border: 0 solid #e9ecef;
-    padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
     border-radius: 3px;
 }
 
@@ -563,12 +563,12 @@ button {
     color: #6c757d;
     min-width: 2.357rem;
     height: 2.357rem;
-    margin: .143rem;
-    -webkit-transition: -webkit-box-shadow .2s;
-    transition: -webkit-box-shadow .2s;
-    -moz-transition: box-shadow .2s;
-    transition: box-shadow .2s;
-    transition: box-shadow .2s, -webkit-box-shadow .2s;
+    margin: 0.143rem;
+    -webkit-transition: -webkit-box-shadow 0.2s;
+    transition: -webkit-box-shadow 0.2s;
+    -moz-transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s, -webkit-box-shadow 0.2s;
     border-radius: 3px;
 }
 
@@ -583,7 +583,7 @@ button {
 }
 
 .p-paginator .p-dropdown {
-    margin-left: .5rem;
+    margin-left: 0.5rem;
     height: 2.357rem;
 }
 
@@ -592,7 +592,7 @@ button {
 }
 
 .p-paginator .p-paginator-current {
-    padding: 0 .5rem;
+    padding: 0 0.5rem;
 }
 
 .p-paginator .p-paginator-current,
@@ -602,15 +602,15 @@ button {
     color: #6c757d;
     min-width: 2.357rem;
     height: 2.357rem;
-    margin: .143rem;
+    margin: 0.143rem;
 }
 
 .p-paginator .p-paginator-pages .p-paginator-page {
-    -webkit-transition: -webkit-box-shadow .2s;
-    transition: -webkit-box-shadow .2s;
-    -moz-transition: box-shadow .2s;
-    transition: box-shadow .2s;
-    transition: box-shadow .2s, -webkit-box-shadow .2s;
+    -webkit-transition: -webkit-box-shadow 0.2s;
+    transition: -webkit-box-shadow 0.2s;
+    -moz-transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s, -webkit-box-shadow 0.2s;
     border-radius: 3px;
 }
 
@@ -738,7 +738,7 @@ button {
 }
 
 .p-component:disabled {
-    opacity: .6;
+    opacity: 0.6;
 }
 
 .p-dropdown-panel {
@@ -746,25 +746,25 @@ button {
     color: #495057;
     border: 0;
     border-radius: 3px;
-    -webkit-box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .2), 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12);
-    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .2), 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12);
+    -webkit-box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
 .p-dropdown-panel .p-dropdown-items {
-    padding: .5rem 0;
+    padding: 0.5rem 0;
 }
 
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
     margin: 0;
-    padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
     border: 0;
     color: #495057;
     background: transparent;
-    -webkit-transition: -webkit-box-shadow .2s;
-    transition: -webkit-box-shadow .2s;
-    -moz-transition: box-shadow .2s;
-    transition: box-shadow .2s;
-    transition: box-shadow .2s, -webkit-box-shadow .2s;
+    -webkit-transition: -webkit-box-shadow 0.2s;
+    transition: -webkit-box-shadow 0.2s;
+    -moz-transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s, -webkit-box-shadow 0.2s;
     border-radius: 0;
 }
 
@@ -822,6 +822,14 @@ button {
 
 .p-datatable .p-datatable-loading-icon {
     font-size: 2rem;
+}
+
+.row-mojbar {
+    background-color: rgba(255, 239, 6, 0.15) !important;
+}
+
+.row-raghib {
+    background-color: rgba(243, 142, 124, 0.15) !important;
 }
 
 

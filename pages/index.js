@@ -3,7 +3,7 @@ import { Formik, Form } from "formik";
 import "primeicons/primeicons.css";
 
 import "primeflex/primeflex.css";
-
+import { nanoid } from "nanoid";
 import { DataTable } from "hassanreact/datatable";
 import { Column } from "hassanreact/column";
 import CloudDownloadTwoToneIcon from "@material-ui/icons/CloudDownloadTwoTone";
@@ -22,6 +22,7 @@ import Typography from "@material-ui/core/Typography";
 import {
   Container,
   Grid,
+  Button,
   Paper,
   FormControl,
   InputLabel,
@@ -33,6 +34,7 @@ import CheckTwoToneIcon from "@material-ui/icons/CheckTwoTone";
 import ClearTwoToneIcon from "@material-ui/icons/ClearTwoTone";
 
 import ScaleLoader from "react-spinners/ScaleLoader";
+import dynamic from "next/dynamic";
 
 import DeleteTwoToneIcon from "@material-ui/icons/DeleteTwoTone";
 import TextField from "@material-ui/core/TextField";
@@ -66,14 +68,18 @@ import {
   openToastInfo,
 } from "../Components/Notification/Alert";
 import { moassaSchema } from "../schemas/schemas_moassa";
-
+import { subjects, getKeyByValue, loop } from "../middleware/StudySubjects";
 import replaceStrIcon from "../Components/IconReplaceTxt/IconRepTxt";
+import replaceWilayaBody from "../Components/IconReplaceTxt/WilayaBody";
 import DateP from "../Components/date";
-import { useUser } from "../middleware/Hooks/fetcher";
+import { useUser, useData } from "../middleware/Hooks/fetcher";
 import ConfirmProvider from "../Components/UiDialog/ConfirmProvider";
-
+import { Dropdown } from "hassanreact/dropdown";
 import router, { useRouter } from "next/router";
 import Link from "../Components/Ui/Link";
+const Autocomplete = dynamic(() => import("@material-ui/lab/Autocomplete"), {
+  ssr: false,
+});
 function PaperComponent(props) {
   return (
     <Draggable
@@ -86,17 +92,22 @@ function PaperComponent(props) {
 }
 
 const INITIAL_FORM_STATE = {
-  daira: null,
+  wilaya: null,
+  baldia: null, //البلدية
+  educationalPhase: null, //الطور
+  specialty: null,
+  workSchool: null, //مؤسسة العمل
   potentialVacancy: 0, //محتمل
   forced: 0, //مجبر
   vacancy: 0, //شاغر
   surplus: 0, //فائض
-  moassa: [{ EtabMatricule: null, EtabNom: null, bladia: null }],
 };
 
 let originalRows = {};
-const DataTableCrud = (props) => {
-  console.log(props);
+
+const _educationalPhase = ["ابتدائي", "متوسط", "ثانوي"];
+let arrt = [];
+const DataTableCrud = ({ newStructureData }) => {
   //const { data: session ,status:status} = useSession();
   //console.log(session,status);
 
@@ -111,23 +122,135 @@ const DataTableCrud = (props) => {
 
   /**----------------all useState----------------------- */
   const [user, { mutate }] = useUser();
+  const { data, isLoading, isError, isMutate } = useData();
   const [loading, setLoading] = useState(true), //جاري التحميل للجدول الرئيسي و احصائيات المدارس
-    [dataServer, setServer] = useState([...props.data]), //قائمة الدوائر بالولاية
     [listMoassat, setListMoassat] = useState([]), //قائمة المؤسسات المعنية بالحركة
     [selectedMoassa, setSelectedMoassa] = useState([]), //المؤسسات التي تم تحديدها للحذف
     [globalFilter, setGlobalFilter] = useState(null), //الكلمة التي سيتم البحث عنها في الجدول
-    [inputValueDaira, setInputValueDaira] = useState(""), //ادخال اسم الدائرة
-    [inputValueMoassa, setInputValueMoassa] = useState(""), //ادخال اسم المؤسسة
-    [gobalOptions, setGobalOptions] = useState([]), //اختيارات المؤسسات التابعة للدائرة
     [open, setOpen] = useState(false), //فتح النافذة المنبثقة لإضافة مدرسة في جدول الحركة
     [spinnersLoding, setSpinnersLoding] = useState(false), //سبينر في انتظار رد السرفر على طلب اضافة مدرسة
     [editingRows, setEditingRows] = useState({}); //تعديل الداتا في صف معين من الجدول
   const [year, setYear] = useState(new Date().getFullYear());
+  /**
+   * !!! *******************************new useState**********************************
+   */
+
+  const [wilayaList, setWilayaList] = useState([]); // قائمة كل المديريات
+  const [baldiaList, setBaldiaList] = useState([]); //قائمة البلديات التابعة للمديرية المختارة
+  const [specialtyList, setSpecialtyList] = useState([]); //قائمة مواد التدريس
+  const [moassaList, setMoassaList] = useState([]); //قائمة المؤسسات التابعة للبلدية
+  const [educationalPhaseList, setEducationalPhaseList] = useState([]); //قائمة الاطوار
+  const [inputValueWilaya, setInputValueWilaya] = useState(""); //اختيار المديرية
+  const [inputValueBaldia, setInputValueBaldia] = useState(""); //ادخال اسم البلدية
+  const [educationalValuePhase, setEducationalValuePhase] = useState(""); //الطور
+  const [inputValueSpecialty, setInputValueSpecialty] = useState(""); //مادة التدريس
+  const [inputValueMoassa, setInputValueMoassa] = useState(""); //اختيار المؤسسة
+  const [lastdata, setLastdata] = useState(newStructureData);
+  const updatedData = isLoading ? newStructureData : loop(data);
+
+  useEffect(() => {
+    setLastdata(isLoading ? newStructureData : loop(data));
+  }, [data]);
+
+  const getValueWilaya = (event, newInputValue) => {
+    /**
+     *!احتيار المديرية
+     */
+    setInputValueWilaya(newInputValue);
+    setInputValueBaldia("");
+    setInputValueMoassa("");
+    setInputValueSpecialty("");
+    setEducationalValuePhase("");
+    setBaldiaList([]);
+    setEducationalPhaseList([]);
+    setSpecialtyList([]);
+    setMoassaList([]);
+
+    const isChoiseOfWilayaInList = wilayaList.filter(
+      (ele) => ele.value == newInputValue
+    );
+
+    if (!!isChoiseOfWilayaInList.length) {
+      //طلب قائمة البلديات بعد اختيار المديرية المعنية
+      fetcher(`/api/getlistbaldia`, {
+        key: isChoiseOfWilayaInList[0].key,
+      }).then((response) => {
+        setBaldiaList(response.citys);
+      });
+    }
+  };
+
+  const getValueBaldia = (event, newInputValue) => {
+    //اختيار البلدية
+    setInputValueBaldia(newInputValue);
+    setInputValueMoassa("");
+    setInputValueSpecialty("");
+    setEducationalValuePhase("");
+    setEducationalPhaseList([]);
+    setSpecialtyList([]);
+    setMoassaList([]);
+    const isChoiseOfBaldiaInList = baldiaList.filter(
+      (elm) => elm.valeur == newInputValue
+    );
+    //         .cle
+
+    if (!!isChoiseOfBaldiaInList.length) {
+      //طلب قائمة الاطوار بعد اختيار البلدية
+      setEducationalPhaseList(_educationalPhase);
+    }
+  };
+  const getValueEducationalPhase = (event, newInputValue) => {
+    //اختيار الطور
+    /**
+     * ! التأكد من افراغ المدخلات
+     *
+     */
+    setInputValueMoassa("");
+    setInputValueSpecialty("");
+
+    setSpecialtyList([]);
+    setMoassaList([]);
+    //!انتهى التفريغ
+
+    setEducationalValuePhase(newInputValue);
+
+    if (newInputValue) {
+      const body = {
+        cle: baldiaList.filter((elm) => elm.valeur == inputValueBaldia)[0].cle,
+        value: newInputValue,
+      };
+      fetcher(`/api/getlistmoassat`, body).then((res) => {
+        setMoassaList(res);
+      });
+    }
+    if (newInputValue === "ابتدائي") {
+      //طلب قائمة المؤسسات و مواد التدريس بعد اختيار الطور
+      setSpecialtyList(subjects.primary);
+    }
+    if (newInputValue === "متوسط") {
+      //طلب قائمة المؤسسات و مواد التدريس بعد اختيار الطور
+      setSpecialtyList(subjects.middle);
+    }
+    if (newInputValue === "ثانوي") {
+      //طلب قائمة المؤسسات و مواد التدريس بعد اختيار الطور
+      setSpecialtyList(subjects.secondary);
+    }
+  };
+  const getValueMoassa = (event, newInputValue) => {
+    //اختيار مؤسسة العمل
+    setInputValueMoassa(newInputValue);
+  };
+
+  const getValueSpecialty = (event, newInputValue) => {
+    //مادة التدريس
+    setInputValueSpecialty(newInputValue);
+  };
+  //! ***************************/end new useState
   /**----------------all useState----------------------- */
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
-  /************************getMoassat********************************* */
+  /**!**********************getMoassat********************************* */
   const fetcher = async (url, param = "") => {
     const res = await axios.get(url, {
       params: {
@@ -166,48 +289,35 @@ const DataTableCrud = (props) => {
   /********************* طلب تعديل أو حذف مؤسسة من الجدول *********************end */
 
   const onSelected = (e, d) => {
-    console.log(e, d);
     setSelectedMoassa(e.value);
   };
 
   const dt = useRef(null);
 
-  useEffect(() => {
-    fetcher("api/schools", { year: new Date().getFullYear() }).then((res) => {
-      setListMoassat(res);
-      setLoading(false);
-    });
-  }, []);
   /*******************ازالة مؤسسة من القائمة**********start******** */
   const [Message, setMessage] = useState(false);
   const deleteProduct = (rowData, e, t) => {
-    console.log(rowData, e, t);
     setSpinnersLoding(true);
     putData("put", "/api/delete", rowData, year)
       .then((response) => {
         setSpinnersLoding(false);
 
-        const newlistMoassat = listMoassat.filter(
-          (element) => ![rowData].includes(element)
-        );
-        setListMoassat(newlistMoassat);
         openToastSuccess(response.data.message);
 
         //alert(response.data.message);
       })
       .catch((err) => {
-        fetcher("api/schools").then((res) => {
-          setListMoassat(res);
-          setSpinnersLoding(false);
-        });
         if (err.response) {
-          alert(err.response.data.message || err.response.data);
+          openToastError(err.response.data.message || err.response.data);
           // client received an error response (5xx, 4xx)
         } else if (err.request) {
           // client never received a response, or request never left
         } else {
           // anything else
         }
+      })
+      .finally(() => {
+        isMutate(data);
       });
 
     //setConfirmDeleteDailog(rowData);
@@ -217,34 +327,19 @@ const DataTableCrud = (props) => {
 
   /*------------------طلب قائمة المؤسسات من خلال اختيار الدائرة المعنية---------بداية----- */
 
-  const getValueDaira = (event, newInputValue) => {
-    setInputValueDaira(newInputValue);
-
-    if (dataServer.includes(newInputValue)) {
-      if (!gobalOptions[newInputValue]) {
-        fetcher(`/api/hello`, { daira_name: newInputValue }) //طلب قائمة المؤسسات من خلال اختيار الدائرة المعنية
-          .then(function (response) {
-            setGobalOptions((prev) => {
-              return {
-                ...prev,
-                [newInputValue]: prev[response.daira_name]
-                  ? { ...prev[response.daira_name] }
-                  : response,
-              };
-            });
-          });
-      }
-    }
-  };
   /*------------------طلب قائمة المؤسسات من خلال اختيار الدائرة المعنية---------نهاية------ */
-
-  const getValueMoassa = (event, newInputValue) => {
-    setInputValueMoassa(newInputValue);
-  };
 
   /************start**********فتح واغلاق  نافذة اضافة مؤسسة و نافذة تأكيد الحذف*********** */
 
   const handleClickOpen = () => {
+    if (wilayaList.length === 0) {
+      fetcher(`/api/getlistwilaya`) //طلب  المديرية  المعنية
+        .then(function (response) {
+          setWilayaList(response);
+        })
+        .catch((err) => {});
+    }
+
     setOpen(true);
   };
 
@@ -255,32 +350,34 @@ const DataTableCrud = (props) => {
 
   const handleDeleteSelected = () => {
     setSpinnersLoding(true);
-    let newlistMoassat = listMoassat.filter(
-      (val) => !selectedMoassa.includes(val)
-    );
 
-    let _listMoassat = listMoassat
+    let _lastdata = lastdata
       .filter((val) => selectedMoassa.includes(val))
-      .map((ele) => ele.moassa.EtabMatricule);
-    putData("put", "/api/deletMany", { arrayEtabMatricule: _listMoassat }, year)
+      .map((ele) => {
+        return {
+          EtabMatricule: ele.workSchool.EtabMatricule,
+          specialty: ele.specialty,
+          educationalPhase: ele.educationalPhase,
+          key: ele.wilaya.key,
+          cle: ele.baldia.cle,
+        };
+      });
+
+    putData("put", "/api/deletMany", { arrayEtabMatricule: _lastdata }, year)
       .then((response) => {
         setSpinnersLoding(false);
         setSelectedMoassa([]);
-        setListMoassat(newlistMoassat);
+
+        setLastdata(data);
 
         openToastSuccess(response.data.message);
         //alert(response.data.message);
       })
       .catch((err) => {
-        fetcher("api/schools")
-          .then((res) => {
-            setListMoassat(res);
-          })
-          .catch((err) => {
-            setSpinnersLoding(false);
-          });
         if (err.response) {
-          openToastError(err.response.data.message || err.response.data);
+          //openToastError(err.response.data.message || err.response.data);
+          setSpinnersLoding(false);
+          openToastError("حدث خطأ ما");
 
           // client received an error response (5xx, 4xx)
         } else if (err.request) {
@@ -292,28 +389,27 @@ const DataTableCrud = (props) => {
           setSpinnersLoding(false);
           openToastError("حدث خطأ ما");
         }
+      })
+      .finally(() => {
+        isMutate(data);
       });
   };
   /**-******************************************Submit************************************************************** */
-
-  const handelSubmit = async (values, ...arg) => {
-    console.log(values, arg);
-    const isInlistMoassat = listMoassat.findIndex(
-      (ele) => ele.moassa.EtabMatricule == values.moassa.EtabMatricule
+  const indexOfValue = (value) => {
+    return lastdata.findIndex(
+      (x) =>
+        x.workSchool.EtabMatricule === value.workSchool.EtabMatricule &&
+        x.specialty === value.specialty
     );
-
-    if (isInlistMoassat < 0) {
+  };
+  const handelSubmit = async (values, ...arg) => {
+    if (indexOfValue(values) < 0) {
       setSpinnersLoding(true);
-
-      putData("post", "/api/postdata", values, year)
+      putData("post", "/api/addtotable", values, year)
         .then((response) => {
           setSpinnersLoding(false);
           //alert(response.data);
           openToastSuccess(response.data.message);
-
-          setListMoassat((prev) => {
-            return [...prev, values];
-          });
         })
         .catch((err) => {
           setSpinnersLoding(false);
@@ -326,16 +422,14 @@ const DataTableCrud = (props) => {
           } else {
             // anything else
           }
-        });
+        })
+        .finally(() => isMutate(data));
     } else {
       openToastInfo("موجود بالفعل");
     }
   };
   /**********************indexOfValueInDataList************************ */
-  const indexOfValue = (value) =>
-    listMoassat.findIndex(
-      (x) => x.moassa.EtabMatricule === value.moassa.EtabMatricule
-    );
+
   const indexOfValueInDataList = (data, props) => {
     return <div>{indexOfValue(data) + 1}</div>;
   };
@@ -346,21 +440,19 @@ const DataTableCrud = (props) => {
   };
 
   const onRowEditChange = (event) => {
+    console.log(event);
     setEditingRows(event.data);
   };
   const onRowEditInit = (event) => {
     originalRows[indexOfValue(event.data)] = {
-      ...listMoassat[indexOfValue(event.data)],
+      ...lastdata[indexOfValue(event.data)],
     };
   };
 
   const onRowEditCancel = (event) => {
-    let _listMoassat = [...listMoassat];
-    _listMoassat[indexOfValue(event.data)] =
-      originalRows[indexOfValue(event.data)];
-    delete originalRows[indexOfValue(event.data)];
-
-    setListMoassat(_listMoassat);
+    isMutate(data);
+    setLastdata(updatedData);
+    console.log(data, updatedData);
   };
 
   const onRowEditSave = (event) => {
@@ -369,22 +461,17 @@ const DataTableCrud = (props) => {
       .then((response) => {
         setSpinnersLoding(false);
         openToastSuccess(response.data.message);
+
         //alert(response.data);
       })
       .catch((err) => {
+        setLastdata(updatedData);
         setSpinnersLoding(false);
         if (err.response) {
           if (err.response.data.name === "ValidationError") {
-            let _listMoassat = [...listMoassat];
-            _listMoassat[indexOfValue(event.data)] =
-              originalRows[indexOfValue(event.data)];
-            delete originalRows[indexOfValue(event.data)];
-
-            setListMoassat(_listMoassat);
-
-            alert(err.response.data.errors[0]);
+            openToastError(err.response.data.errors[0]);
           } else {
-            alert(err.response.data);
+            openToastError("حدث خطأ ما");
           }
 
           // client received an error response (5xx, 4xx)
@@ -393,17 +480,19 @@ const DataTableCrud = (props) => {
         } else {
           // anything else
         }
-      });
+      })
+      .finally(() => isMutate(data));
   };
 
   const onEditorValueChange = (props, value) => {
-    let updatedlistMoassat = [...listMoassat];
+    let updatedlastdata = [...lastdata];
 
     props.rowData[props.field] = value;
-    updatedlistMoassat[indexOfValue(props.rowData)][props.field] = value;
-    console.log(props.rowData.moassa.EtabMatricule);
-    //console.log(props,value,updatedlistMoassat[props.rowIndex][props.field],isEqual(props.rowData,originalRows[props.rowIndex]));
-    setListMoassat(updatedlistMoassat);
+    updatedlastdata[indexOfValue(props.rowData)][props.field] = value;
+
+    //console.log(props,value,updatedlastdata[props.rowIndex][props.field],isEqual(props.rowData,originalRows[props.rowIndex]));
+    console.log(updatedlastdata);
+    setLastdata(updatedlastdata);
   };
 
   const inputTextEditor = (props) => {
@@ -500,14 +589,7 @@ const DataTableCrud = (props) => {
   const onYearPicker = (e) => {
     setYear(e);
 
-    setLoading(true);
-    fetcher(`api/schools`, { year: e }).then((res) => {
-      console.log(res);
-      setListMoassat(res);
-      setSpinnersLoding(false);
-      setLoading(false);
-    });
-    console.log(e);
+    //setLoading(true);
   };
   const headarTable = (
     <>
@@ -546,7 +628,7 @@ const DataTableCrud = (props) => {
               variant="outlined"
               color="secondary"
               //onClick={}
-              disabled={listMoassat.length === 0 ? true : false}
+              disabled={lastdata.length === 0 ? true : false}
               startIcon={<CloudUploadTwoToneIcon />}
             >
               تصدير
@@ -586,10 +668,109 @@ const DataTableCrud = (props) => {
   );
 
   /****************************body App*************************** */
-  // const static = listMoassat.map((x)=>{
+  // const static = lastdata.map((x)=>{
 
   // })
+  // let headerGroup = (
+  //   <ColumnGroup>
+  //     <Row>
+  //       <Column header="Product" rowSpan={3} />
+  //       <Column header="Sale Rate" colSpan={4} />
+  //     </Row>
+  //     <Row>
+  //       {lastdata.map((elm) => {
+  //         <Column
+  //           header={`${elm.specialty}`}
+  //           field={`${elm.specialty}`}
+  //           colSpan={4}
+  //         />;
+  //       })}
+  //     </Row>
+  //     <Row>
+  //       <Column header="Last Year" sortable field="lastYearSale" />
+  //       <Column header="This Year" sortable field="thisYearSale" />
+  //       <Column header="Last Year" sortable field="lastYearProfit" />
+  //       <Column header="This Year" sortable field="thisYearProfit" />
+  //     </Row>
+  //   </ColumnGroup>
+  // );
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState(null);
+  const [selectedInputStatus, setSelectedInputStatus] = useState(null);
+  const statuses = ["ابتدائي", "ثانوي", "متوسط"];
+  const statusItemTemplate = (option) => {
+    return <span>{option}</span>;
+  };
+  const onStatusChange = (e) => {
+    dt.current.filter(e.value, "educationalPhase", "equals");
+    setSelectedStatus(e.value);
+  };
 
+  const statusFilter = (
+    <Autocomplete
+      value={selectedStatusFilter}
+      onChange={(event, newValue) => {
+        dt.current.filter(newValue, "educationalPhase", "equals");
+        setSelectedStatusFilter(newValue);
+      }}
+      //  inputValue={inputValue}
+      //  onInputChange={(event, newInputValue) => {
+      //    setInputValue(newInputValue);
+      //  }}
+      noOptionsText="لا توجد خيارات"
+      id="controllable-states-demo"
+      options={statuses}
+      sx={{ width: 300 }}
+      renderInput={(params) => <TextField {...params} label="اختر الطور" />}
+    />
+  );
+  const wilayaFilter = (
+    <Autocomplete
+      value={selectedInputStatus}
+      onChange={(event, newValue) => {
+        dt.current.filter(newValue?.value, "wilaya.value", "equals");
+        setSelectedInputStatus(newValue);
+      }}
+      //  inputValue={inputValue}
+      //  onInputChange={(event, newInputValue) => {
+      //    setInputValue(newInputValue);
+      //  }}
+      onOpen={() => {
+        if (wilayaList.length === 0) {
+          fetcher(`/api/getlistwilaya`) //طلب  المديرية  المعنية
+            .then(function (response) {
+              setWilayaList(response);
+            })
+            .catch((err) => {});
+        }
+      }}
+      noOptionsText="في الانتظار"
+      id="controllable-states-demo"
+      options={wilayaList}
+      getOptionLabel={(option) => {
+        if (option.value === "مديرية التربية للجزائر وسط") {
+          return (
+            option.value.replace("مديرية التربية للجزائر وسط", "الجزائر و") ||
+            ""
+          );
+        }
+        if (option.value === "مديرية التربية للجزائر غرب") {
+          return (
+            option.value.replace("مديرية التربية للجزائر غرب", "الجزائر غ") ||
+            ""
+          );
+        }
+        if (option.value === "مديرية التربية للجزائر شرق") {
+          return (
+            option.value.replace("مديرية التربية للجزائر شرق", "الجزائر ش") ||
+            ""
+          );
+        }
+        return option.value.replace("مديرية التربية لولاية", "") || "";
+      }}
+      sx={{ width: 300 }}
+      renderInput={(params) => <TextField {...params} label="المديرية" />}
+    />
+  );
   return (
     <>
       {" "}
@@ -600,7 +781,14 @@ const DataTableCrud = (props) => {
             <button>login</button>{" "}
           </Link>
           <Link color="primary" href="/choise/2021">
-            choise
+            <Button color="primary" variant="outlined">
+              choise
+            </Button>
+          </Link>
+          <Link color="primary" href="/users/2021">
+            <Button color="primary" variant="outlined">
+              users
+            </Button>
           </Link>
         </div>
         {/* <TransferList selectedMoassa={selectedMoassa}></TransferList> */}
@@ -613,7 +801,7 @@ const DataTableCrud = (props) => {
           <Grid item xs={12} sm={9}>
             <Paper elevation={3} style={{ padding: 10 }}>
               <Typography variant="h4" component="h1" align="center">
-                جدول الحركة التنقلية للموسم 2021/2022
+                جدول الحركة التنقلية للموسم {`${year} / ${year + 1}`}
               </Typography>
             </Paper>
           </Grid>
@@ -692,12 +880,73 @@ const DataTableCrud = (props) => {
                           // InputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                         />
                       </Grid>
+                      <Grid item xs={12}>
+                        <Controls.AutocompleteMui
+                          name="wilaya"
+                          label="مديرية التربية"
+                          variant="outlined"
+                          inputValue={inputValueWilaya}
+                          onInputChange={getValueWilaya}
+                          options={wilayaList}
+                          getOptionLabel={(option) => {
+                            return option.value || "";
+                          }}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Controls.AutocompleteMui
+                          name="baldia"
+                          label="البلدية"
+                          variant="outlined"
+                          inputValue={inputValueBaldia}
+                          onInputChange={getValueBaldia}
+                          options={baldiaList || []}
+                          getOptionLabel={(option) => {
+                            return option.valeur || "";
+                          }}
+                        />
+                      </Grid>
+                      <Grid item xs={12} elevation={6}>
+                        <Controls.AutocompleteMui
+                          name="educationalPhase"
+                          label="الطور"
+                          variant="outlined"
+                          inputValue={educationalValuePhase}
+                          onInputChange={getValueEducationalPhase}
+                          options={educationalPhaseList}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Controls.AutocompleteMui
+                          name="specialty"
+                          label="مادة التدريس"
+                          loading
+                          loadingText={"في الانتظار"}
+                          inputValue={inputValueSpecialty}
+                          onInputChange={getValueSpecialty}
+                          options={specialtyList || []}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Controls.AutocompleteMui
+                          name="workSchool"
+                          label="مؤسسة العمل"
+                          loading
+                          loadingText={"في الانتظار"}
+                          inputValue={inputValueMoassa}
+                          onInputChange={getValueMoassa}
+                          options={moassaList || []}
+                          getOptionLabel={(option) => {
+                            return option.EtabNom || "";
+                          }}
+                        />
+                      </Grid>
 
                       {/* <div className="p-field">
                   <Virtualize data={data} onChange={getDaira} />
                 </div> */}
 
-                      <Grid item xs={12}>
+                      {/* <Grid item xs={12}>
                         <AutocompleteMui
                           name="daira"
                           label="الدائرة"
@@ -721,7 +970,7 @@ const DataTableCrud = (props) => {
                             return option.EtabNom || "";
                           }}
                         />
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   </DialogContent>
                   <DialogActions>
@@ -750,14 +999,14 @@ const DataTableCrud = (props) => {
           </Grid>
         </Grid>
 
-        <Static data={listMoassat} loading={loading} />
+        <Static data={lastdata} loading={isLoading} />
         <DataTable
           ref={dt}
-          value={listMoassat || []}
+          value={lastdata || []}
           selectionMode="checkbox"
           selection={selectedMoassa}
           onSelectionChange={onSelected}
-          dataKey="moassa.EtabMatricule"
+          dataKey="id"
           emptyMessage="لا توجد بيانات لعرضها"
           paginator
           rows={10}
@@ -774,10 +1023,10 @@ const DataTableCrud = (props) => {
           header={headarTable}
           stripedRows
           removableSort
-          loading={loading}
+          loading={isLoading}
           scrollable
-          scrollHeight="500px"
-          frozenWidth="204px"
+          scrollHeight="490px"
+          frozenWidth="240px"
         >
           <Column
             columnKey="multiple"
@@ -790,13 +1039,29 @@ const DataTableCrud = (props) => {
             field="index"
             header="الرقم"
             body={indexOfValueInDataList}
-            headerStyle={{ width: 40, padding: 0 }}
-            style={{}}
+            headerStyle={{ width: 40, padding: 0, height: 57.38 }}
+            bodyStyle={{ height: 81 }}
             frozen
           ></Column>
           <Column
-            columnKey="moassa.EtabNom"
-            field="moassa.EtabNom"
+            columnKey="educationalPhase"
+            field="educationalPhase"
+            header="الطور"
+            filter
+            filterElement={statusFilter}
+            headerStyle={{ width: 150, padding: 7 }}
+            sortable
+          />
+          <Column
+            columnKey="specialty"
+            field="specialty"
+            header="مادة التدريس"
+            headerStyle={{ width: 150, padding: 7 }}
+            sortable
+          />
+          <Column
+            columnKey="workSchool.EtabNom"
+            field="workSchool.EtabNom"
             header="المؤسسة"
             sortable
             style={{ width: 300 }}
@@ -804,24 +1069,27 @@ const DataTableCrud = (props) => {
           ></Column>
 
           <Column
-            columnKey="daira"
-            field="daira"
-            header="الدائرة"
-            headerStyle={{ width: 114 }}
-            style={{ padding: 7, height: 81 }}
+            columnKey="wilaya.value"
+            field="wilaya.value"
+            header="الولاية"
+            body={replaceWilayaBody}
+            filter
+            filterElement={wilayaFilter}
+            headerStyle={{ width: 150 }}
+            bodyStyle={{ width: 150 }}
             sortable
             frozen
           ></Column>
 
           <Column
-            columnKey="moassa.bladia"
-            field="moassa.bladia"
+            columnKey="baldia.valeur"
+            field="baldia.valeur"
             header="البلدية"
             sortable
             headerStyle={{ width: 114, padding: 7 }}
           ></Column>
           {/* <Column
-            field="moassa.EtabMatricule"
+            field="workSchool.EtabMatricule"
             header="رقم المؤسسة"
             sortable
           ></Column> */}
@@ -880,14 +1148,25 @@ const DataTableCrud = (props) => {
 
 export async function getServerSideProps(ctx) {
   const urlBass = await process.env.URL_BASE;
+  const cookie = await ctx.req?.headers.cookie;
+  const co = await { ...ctx.req.cookies };
+  const res = await fetch(`${urlBass}/api/getNationalAnnualMovementData`, {
+    headers: {
+      cookie: cookie,
+    },
+  });
 
-  const res = await fetch(`${urlBass}api/hello`);
-
-  const data = await res.json();
-
+  if (!res.ok) {
+    return {
+      notFound: true,
+    };
+  }
+  const dataserver = await res.json();
+  const newStructureData = await loop(dataserver);
   return {
-    props: { data }, // will be passed to the page component as props
+    props: { newStructureData }, // will be passed to the page component as props
   };
 }
-export default DataTableCrud;
 DataTableCrud.auth = true;
+
+export default DataTableCrud;

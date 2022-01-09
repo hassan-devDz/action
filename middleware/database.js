@@ -6,8 +6,8 @@ import nextConnect from "next-connect";
  * during API Route usage.
  * https://github.com/vercel/next.js/pull/17666
  */
- const MONGODB_DB = process.env.MONGODB_DB;
- console.log(MONGODB_DB);
+const MONGODB_DB = process.env.MONGODB_DB;
+
 global.mongo = global.mongo || {};
 
 export async function getMongoClient() {
@@ -21,7 +21,7 @@ export async function getMongoClient() {
   return global.mongo.client;
 }
 
- async function database(req, res, next) {
+async function database(req, res, next) {
   if (!global.mongo.client) {
     global.mongo.client = new MongoClient(process.env.MONGODB_URI_LOCAL);
   }
@@ -31,11 +31,11 @@ export async function getMongoClient() {
   return next();
 }
 const middleware = nextConnect({
-    onError(err,req,res){
-      res.status(501).json({error:`sorry ${err.message}`})
-    }
-  })
-  
+  onError(err, req, res) {
+    res.status(501).json({ error: `sorry ${err.message}` });
+  },
+});
+
 middleware.use(database);
-  
+
 export default middleware;

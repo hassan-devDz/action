@@ -1,9 +1,8 @@
 import nextConnect from "next-connect";
 
-import auth,{AuthIsRequired} from "../../middleware/auth";
+import auth, { AuthIsRequired } from "../../middleware/auth";
 import { validate } from "../../middleware/validate";
 import { moassaSchema } from "../../schemas/schemas_moassa";
-
 
 // async function auth(req, res,next)  {
 //   const session = await getSession({ req })
@@ -18,102 +17,104 @@ import { moassaSchema } from "../../schemas/schemas_moassa";
 // }
 const handler = nextConnect();
 
-handler.use(auth).use(AuthIsRequired).post(async (req, res) => {
-  
-  // const session = await getSession({req})
-  // if (!session) {
-  //   return res.status(403).json({ error: "غير مسموح" });
+handler
+  .use(auth)
+  .use(AuthIsRequired)
+  .post(async (req, res) => {
+    // const session = await getSession({req})
+    // if (!session) {
+    //   return res.status(403).json({ error: "غير مسموح" });
 
-  // }
-  console.log(req.body.moassa.bladia);
-  /****التاكد من ان المعومات المرسلة موجودة في الداتا*** */
-  const Hassan_collection_query = await req.db.collection("Hassan");
-  // { "year": "2021" ,"schools": { $all: [{"$elemMatch":{"moassa.bladia":"عين معبد","moassa.EtabMatricule":17051002}}] } }
-  const Djelfa = {
-    daira: {
-      //[]
-      $all: [
-        {
-          $elemMatch: {
-            daira_name: req.body.daira,
+    // }
 
-            "commune_name.bladia": req.body.moassa.bladia,
-            "commune_name.moassata": {
-              $all: [
-                {
-                  $elemMatch: {
-                    EtabMatricule: `${req.body.moassa.EtabMatricule}`,
-                    EtabNom: req.body.moassa.EtabNom,
-                  },
-                },
-              ],
-            },
-          },
-        },
-      ],
-    },
-  };
-  const NotDjelfa = {
-    daira: {
-      $all: [
-        {
-          $elemMatch: {
-            daira_name: req.body.daira,
-            commune_name: {
-              $all: [
-                {
-                  $elemMatch: {
-                    bladia: req.body.moassa.bladia,
-                    moassata: {
-                      $all: [
-                        {
-                          $elemMatch: {
-                            EtabMatricule: `${req.body.moassa.EtabMatricule}`,
-                            EtabNom: req.body.moassa.EtabNom,
-                          },
-                        },
-                      ],
+    /****التاكد من ان المعومات المرسلة موجودة في الداتا*** */
+    const Hassan_collection_query = await req.db.collection("Hassan");
+    // { "year": "2021" ,"schools": { $all: [{"$elemMatch":{"moassa.bladia":"عين معبد","moassa.EtabMatricule":17051002}}] } }
+    const Djelfa = {
+      daira: {
+        //[]
+        $all: [
+          {
+            $elemMatch: {
+              daira_name: req.body.daira,
+
+              "commune_name.bladia": req.body.moassa.bladia,
+              "commune_name.moassata": {
+                $all: [
+                  {
+                    $elemMatch: {
+                      EtabMatricule: `${req.body.moassa.EtabMatricule}`,
+                      EtabNom: req.body.moassa.EtabNom,
                     },
                   },
-                },
-              ],
+                ],
+              },
             },
           },
-        },
-      ],
-    },
-  };
-  const data = req.body.daira==="الجلفة"?Djelfa:NotDjelfa;
-  const Hassan_query = await Hassan_collection_query.findOne(data);
+        ],
+      },
+    };
+    const NotDjelfa = {
+      daira: {
+        $all: [
+          {
+            $elemMatch: {
+              daira_name: req.body.daira,
+              commune_name: {
+                $all: [
+                  {
+                    $elemMatch: {
+                      bladia: req.body.moassa.bladia,
+                      moassata: {
+                        $all: [
+                          {
+                            $elemMatch: {
+                              EtabMatricule: `${req.body.moassa.EtabMatricule}`,
+                              EtabNom: req.body.moassa.EtabNom,
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    };
+    const data = req.body.daira === "الجلفة" ? Djelfa : NotDjelfa;
+    const Hassan_query = await Hassan_collection_query.findOne(data);
 
-  if (!Hassan_query) {
-    return res.status(400).json({ error: "بيانات غير صحيحة" });
-  }
+    if (!Hassan_query) {
+      return res.status(400).json({ error: "بيانات غير صحيحة" });
+    }
 
-  /****التاكد من ان المعومات المرسلة موجودة في الداتا*** */
+    /****التاكد من ان المعومات المرسلة موجودة في الداتا*** */
 
-  const sample_collection = await req.db.collection("sample");
+    const sample_collection = await req.db.collection("sample");
 
-  const isExt = await sample_collection.findOne({
-    ...req.query,
-    "schools.moassa.EtabMatricule": { $eq: req.body.moassa.EtabMatricule },
+    const isExt = await sample_collection.findOne({
+      ...req.query,
+      "schools.moassa.EtabMatricule": { $eq: req.body.moassa.EtabMatricule },
+    });
+
+    if (!isExt) {
+      const sample_post = await sample_collection.updateOne(
+        { ...req.query },
+        { $addToSet: { schools: req.body } },
+        { upsert: true }
+      );
+      return res.status(201).json({ message: "تمت العملية بنجاح" });
+    }
+    if (isExt) {
+      return res.status(422).json({ message: "موجود بالفعل" });
+    }
+    return res.status(422).json({ message: "هناك خطأ ما" });
+
+    //var url = new URL(req.headers.referer);
   });
-
-  if (!isExt) {
-    const sample_post = await sample_collection.updateOne(
-      { ...req.query },
-      { $addToSet: { schools: req.body } },
-      { upsert: true }
-    );
-    return res.status(201).json({ message: "تمت العملية بنجاح" });
-  }
-  if (isExt) {
-    return res.status(422).json({ message: "موجود بالفعل" });
-  }
-  return res.status(422).json({ message: "هناك خطأ ما" });
-
-  //var url = new URL(req.headers.referer);
-});
 
 export default validate(moassaSchema, handler);
 

@@ -19,11 +19,31 @@ import "../styles/globals.css";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import router from "next/router";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
+
+NProgress.configure({
+  showSpinner: false,
+  trickleRate: 0.1,
+  trickleSpeed: 300,
+});
+
+Router.events.on("routeChangeStart", () => {
+  NProgress.start();
+});
+
+Router.events.on("routeChangeComplete", () => {
+  NProgress.done();
+});
+
+Router.events.on("routeChangeError", () => {
+  NProgress.done();
+});
+
 // Configure JSS
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 
 export default function MyApp({ Component, pageProps, user }) {
-  console.log(user, "rrrrr");
   useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");
@@ -56,13 +76,19 @@ MyApp.getInitialProps = async (appContext) => {
 
   const cookie = await appContext.ctx.req?.headers.cookie;
   const urlBass = await process.env.URL_BASE;
-  console.log(appContext);
-  const res = await fetch(`https://action-six.vercel.app/api/authusers/user`, {
+  let url;
+  if (!appContext.ctx.req) {
+    url = window.location.origin + "/api/authusers/user";
+  } else {
+    url = urlBass + "api/authusers/user";
+  }
+
+  const res = await fetch(url, {
     headers: {
       cookie: cookie,
     },
   });
-  console.log(res);
+
   const data = await res.json();
 
   if (
@@ -71,7 +97,7 @@ MyApp.getInitialProps = async (appContext) => {
   ) {
     if (!appContext.Component.auth && !!data.user) {
       if (!appContext.ctx.req) {
-        router.replace("/");
+        router.push("/");
       }
       if (appContext.ctx.req) {
         appContext.ctx.res.writeHead(302, { Location: "/" }).end();
@@ -79,14 +105,14 @@ MyApp.getInitialProps = async (appContext) => {
     }
     if (appContext.Component.auth && !data.user) {
       if (!appContext.ctx.req) {
-        router.replace("/auth/login");
+        router.push("/auth/login");
       }
       if (appContext.ctx.req) {
         appContext.ctx.res.writeHead(302, { Location: "/auth/login" }).end();
       }
     }
   }
-  console.log(data);
+
   return { ...appProps, ...data };
 };
 export function Auth({ children }) {
@@ -94,7 +120,7 @@ export function Auth({ children }) {
 
   const router = useRouter();
   const isUser = !!user;
-  console.log(isUser, user);
+
   useEffect(() => {
     if (loading) return; // Do nothing while loading
     if (!isUser) {

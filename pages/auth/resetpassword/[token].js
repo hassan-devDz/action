@@ -4,7 +4,7 @@ import { messages } from "../../../Components/Ui/Message/AllMssage";
 import Link from "../../../Components/Ui/Link";
 import { ButtonWrapper } from "../../../Components/FormsUi/Button/ButtonNorm";
 import useStyles from "../../../Components/Ui/Css/Csslogin";
-
+import { useUser } from "../../../middleware/Hooks/fetcher";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -62,7 +62,7 @@ export function ErrorComp() {
 
 function getToken({ valid, token }) {
   const router = useRouter();
-
+  const [user, { mutate }] = useUser();
   const classes = useStyles();
   const [bodyUser, setBodyUser] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -81,7 +81,11 @@ function getToken({ valid, token }) {
     );
     //if (sendPassAndToken.ok) router.replace("/auth/login");
   }, []);
-
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [user]);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
   console.log(valid, token);
@@ -105,7 +109,7 @@ function getToken({ valid, token }) {
               >
                 <Grid item xs={12}>
                   <Image
-                    src="/signup/reset-password.svg"
+                    src="/signup/ok-animate.svg"
                     width={718}
                     height={458}
                   />

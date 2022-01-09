@@ -2,9 +2,9 @@ import { Grid, InputAdornment, IconButton, Container } from "@material-ui/core";
 import React from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { YupString, numStr, BasicStr } from "../YupValidation/YupFun";
+import { YupString, numStr, BasicStr, YupDate } from "../YupValidation/YupFun";
 import Controls from "../FormsUi/Control";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import AlternateEmailIcon from "@material-ui/icons/AlternateEmail";
@@ -12,15 +12,24 @@ import Link from "../Ui/Link";
 import axios from "axios";
 import ReCAPTCHA from "react-google-recaptcha";
 import { FormInfoInterestedSchema } from "../../schemas/schemas_moassa";
-
+import { subjects } from "../../middleware/StudySubjects";
 const INITIAL_FORM_STATE = {
   firstName: "", //الاسم
   lastName: "", //اللقب
+  dateOfBirth: Controls.dateFormaNow(new Date().getTime() - 567993600000),
+  //maritalStatus: null,
+  //phone: "",
+  //numberOfChildren: null, //عدد الاولاد
+  //degree: null, //اختيار الدرجة الحالية
   employeeId: "",
   baldia: null, //البلدية
+  wilaya: null,
   workSchool: null, //مؤسسة العمل
+
+  //movemenType: null,
   situation: null, //الوضعية
   educationalPhase: null, //الطور
+  specialty: null,
   email: "",
   password: "",
   passwordConfirmation: "",
@@ -33,15 +42,33 @@ const { captcha, ...valide } = FormInfoInterestedSchema;
 const FORM_VALIDATION = Yup.object().shape({
   firstName: YupString(3).trim(), //الاسم
   lastName: YupString(3).trim(), //اللقب
-  baldia: BasicStr().nullable(),
+  dateOfBirth: YupDate(true, new Date().getTime() - 567993600000),
+  //maritalStatus: BasicStr().nullable(),
+  //degree: Yup.number().integer().required("حقل الزامي").nullable(), //اختيار الدرجة الحالية
+  //numberOfChildren: Yup.number().integer().required("حقل الزامي").nullable(),
+  baldia: Yup.object({
+    cle: numStr(4),
+    valeur: BasicStr(),
+  })
+    .required("حقل الزامي")
+    .nullable(),
   workSchool: Yup.object({
     EtabMatricule: numStr(8),
     EtabNom: BasicStr(),
   })
     .required("حقل الزامي")
     .nullable(),
+  wilaya: Yup.object({
+    key: numStr(5),
+    value: BasicStr(),
+  })
+    .required("حقل الزامي")
+    .nullable(),
+  //movemenType: BasicStr().nullable(),
   situation: BasicStr().nullable(),
   educationalPhase: BasicStr().nullable(),
+  specialty: BasicStr().nullable(),
+  //phone: numStr(10),
   employeeId: numStr(),
   email: Yup.string()
     .email("صيغة البريد الإلكتروني غير صحيحة")
@@ -68,49 +95,171 @@ const fetcher = async (url, param = "") => {
 
   return data;
 };
-const postionChoise = ["راغب", "مجبر", "فائض"];
+async function putData(method, url, values) {
+  const response = await axios({
+    method: method,
+    url: url,
+    data: values,
+  });
+
+  return response;
+}
+const postionChoise = [
+  "راغب",
+  "مجبر",
+  "فائض",
+  "محال على الاستيداع",
+  "منتدب",
+  "تحت التصرف",
+  "عطلة طويلة الأمد",
+];
+const interOrExten = ["خارج الولاية", "داخل الولاية"];
 const _educationalPhase = ["ابتدائي", "متوسط", "ثانوي"];
+
+const maritalStatus = ["أعزب", "أرمل(ة)", "مطلق(ة)", "متزوج(ة)"];
+
 const FormInfoInterested = (props) => {
-  console.log(FormInfoInterestedSchema);
-  const [baldiaList, setBaldiaList] = useState([]);
-  const [showPassword, setShowPassword] = useState(false);
-  const [moassaList, setMoassaList] = useState([]);
-  const [inputValueMoassa, setInputValueMoassa] = useState("");
+  //console.log(FormInfoInterestedSchema);
+  const [inputValueMaritalStatus, setInputValueMaritalStatus] = useState(""); //اختيار الحالة العائلية
+  //اختيار الدرجة الحالية
+
+  const [wilayaList, setWilayaList] = useState([]); // قائمة كل المديريات
+  const [baldiaList, setBaldiaList] = useState([]); //قائمة البلديات التابعة للمديرية المختارة
+  const [specialtyList, setSpecialty] = useState([]); //قائمة مواد التدريس
+  const [moassaList, setMoassaList] = useState([]); //قائمة المؤسسات التابعة للبلدية
+  const [educationalPhaseList, setEducationalPhaseList] = useState([]); //قائمة الاطوار
+  const [inputValuePostion, setInputValuePostion] = useState(""); //اختيار الوضعية
+  //!const [inputMovemenType, setInputMovemenType] = useState(""); //اختيار نوع الحركة خارج او داخل الولاية
+  const [inputValueWilaya, setInputValueWilaya] = useState(""); //اختيار المديرية
   const [inputValueBaldia, setInputValueBaldia] = useState(""); //ادخال اسم البلدية
-  const [postion, setPostion] = useState("");
-  const [educationalPhase, setEducationalPhase] = useState("");
+  const [educationalValuePhase, setEducationalValuePhase] = useState(""); //الطور
+  const [inputValueSpecialty, setInputValueSpecialty] = useState(""); //مادة التدريس
+  const [inputValueMoassa, setInputValueMoassa] = useState(""); //اختيار المؤسسة
+  const [showPassword, setShowPassword] = useState(false);
   const recaptchaRef = useRef({});
   useEffect(() => {
-    fetcher(`/api/getbaldia`) //طلب قائمة المؤسسات من خلال اختيار البلدية المعنية
+    fetcher(`/api/getlistwilaya`) //طلب  المديرية  المعنية
       .then(function (response) {
-        setBaldiaList(response);
+        setWilayaList(response);
       })
       .catch((err) => {
         console.log(err);
       });
+    // fetcher(`/api/getbaldia`) //طلب  البلدية المعنية
+    //   .then(function (response) {
+    //     setBaldiaList(response);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
   }, []);
 
-  const getValueBaldia = (event, newInputValue) => {
-    console.log(newInputValue);
-    setInputValueBaldia(newInputValue);
+  const getValueWilaya = (event, newInputValue) => {
+    /**
+     *!احتيار المديرية
+     */
+    setInputValueWilaya(newInputValue);
+    setInputValueBaldia("");
     setInputValueMoassa("");
+    setInputValueSpecialty("");
+    setEducationalValuePhase("");
+    setBaldiaList([]);
+    setEducationalPhaseList([]);
+    setSpecialty([]);
     setMoassaList([]);
-    if (baldiaList.includes(newInputValue)) {
-      fetcher(`/api/getworkSchool`, { bladia: newInputValue }) //طلب قائمة المؤسسات من خلال اختيار البلدية المعنية
-        .then(function (response) {
-          console.log(response);
-          setMoassaList(response.bladia);
-        });
+
+    const isChoiseOfWilayaInList = wilayaList.filter(
+      (ele) => ele.value == newInputValue
+    );
+
+    if (!!isChoiseOfWilayaInList.length) {
+      //طلب قائمة البلديات بعد اختيار المديرية المعنية
+      fetcher(`/api/getlistbaldia`, {
+        key: isChoiseOfWilayaInList[0].key,
+      }).then((response) => {
+        setBaldiaList(response.citys);
+      });
     }
   };
+
+  const getValueBaldia = (event, newInputValue) => {
+    //اختيار البلدية
+    setInputValueBaldia(newInputValue);
+    setInputValueMoassa("");
+    setInputValueSpecialty("");
+    setEducationalValuePhase("");
+    setEducationalPhaseList([]);
+    setSpecialty([]);
+    setMoassaList([]);
+    const isChoiseOfBaldiaInList = baldiaList.filter(
+      (elm) => elm.valeur == newInputValue
+    );
+    //         .cle
+
+    console.log(isChoiseOfBaldiaInList);
+    if (!!isChoiseOfBaldiaInList.length) {
+      //طلب قائمة الاطوار بعد اختيار البلدية
+      setEducationalPhaseList(_educationalPhase);
+    }
+  };
+  const getValueEducationalPhase = (event, newInputValue) => {
+    //اختيار الطور
+    /**
+     * ! التأكد من افراغ المدخلات
+     *
+     */
+    console.log();
+    setInputValueMoassa("");
+    setInputValueSpecialty("");
+
+    setSpecialty([]);
+    setMoassaList([]);
+    //!انتهى التفريغ
+
+    setEducationalValuePhase(newInputValue);
+    console.log(inputValueBaldia);
+    if (newInputValue) {
+      const body = {
+        cle: baldiaList.filter((elm) => elm.valeur == inputValueBaldia)[0].cle,
+        value: newInputValue,
+      };
+      fetcher(`/api/getlistmoassat`, body).then((res) => {
+        setMoassaList(res);
+      });
+    }
+    if (newInputValue === "ابتدائي") {
+      //طلب قائمة المؤسسات و مواد التدريس بعد اختيار الطور
+      setSpecialty(subjects.primary);
+    }
+    if (newInputValue === "متوسط") {
+      //طلب قائمة المؤسسات و مواد التدريس بعد اختيار الطور
+      setSpecialty(subjects.middle);
+    }
+    if (newInputValue === "ثانوي") {
+      //طلب قائمة المؤسسات و مواد التدريس بعد اختيار الطور
+      setSpecialty(subjects.secondary);
+    }
+  };
+  const getValueMaritalStatus = (event, newInputValue) => {
+    //اختيار الحالة العائلية....الخ
+    setInputValueMaritalStatus(newInputValue);
+  };
+
   const getValueMoassa = (event, newInputValue) => {
+    //اختيار مؤسسة العمل
     setInputValueMoassa(newInputValue);
   };
   const getValuePostion = (event, newInputValue) => {
-    setPostion(newInputValue);
+    //اختيار الوضعية تجاه الحركة  راغب مجبر....الخ
+    setInputValuePostion(newInputValue);
   };
-  const getValueEducationalPhase = (event, newInputValue) => {
-    setEducationalPhase(newInputValue);
+  // const getMovemenType = (event, newInputValue) => {
+  //   //!اختيار نوع الحركة خارج او داحل الولاية....الخ
+  //   setInputMovemenType(newInputValue);
+  // };
+  const getValueSpecialty = (event, newInputValue) => {
+    //مادة التدريس
+    setInputValueSpecialty(newInputValue);
   };
   const handleClickShowPassword = (e) => {
     setShowPassword(!showPassword);
@@ -121,16 +270,24 @@ const FormInfoInterested = (props) => {
     recaptchaRef.current.execute();
     console.log(valusForm);
     props.onSubmit(valusForm);
-    //   const response = await fetch("/api/auth/callback/credentials", {
-    //     method: "POST",
-    //     body:  valusForm ,
-    //    headers: {
-    //   'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-    // },
-
-    //   });
   };
 
+  // useEffect(() => {
+  //   if (educationalPhase && inputValueBaldia && inputValueWilaya) {
+  //     const body = {
+  //       wilaya: wilayaList.filter((elm) => elm.value == inputValueWilaya)[0]
+  //         .key,
+  //       baldia: baldiaList.filter((elm) => elm.valeur == inputValueBaldia)[0]
+  //         .cle,
+  //       phase: educationalPhase,
+  //     };
+  //     putData("post", "/api/getmoassat", body).then((res) => {
+  //       console.log(res);
+  //     });
+  //   } else {
+  //     setInputValueMoassa(null);
+  //   }
+  // }, [educationalPhase, inputValueBaldia, inputValueWilaya]);
   return (
     <Formik
       initialValues={{
@@ -148,26 +305,88 @@ const FormInfoInterested = (props) => {
             <Controls.Textfield name="lastName" label="اللقب" />
           </Grid>
           <Grid item xs={12} sm={6}>
+            <Controls.MaterialUIPickers
+              name={"dateOfBirth"}
+              label="تاريخ الميلاد"
+              format="DD-MM-YYYY"
+              defVlue={new Date().getTime() - 567993600000}
+              max={new Date().getTime() - 567993600000}
+              //views={["year", "month", "date"]}
+            />
+          </Grid>
+          {/* <Grid item xs={12} sm={6} elevation={6}>
+            <Controls.AutocompleteMui
+              name="maritalStatus"
+              label="الحالة العائلية"
+              variant="outlined"
+              inputValue={inputValueMaritalStatus}
+              onInputChange={getValueMaritalStatus}
+              options={maritalStatus}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <Controls.Textfield
+              name="numberOfChildren"
+              label="عدد الأولاد"
+              type="number"
+              InputProps={{
+                inputComponent: Controls.NumberFormatCustom,
+              }}
+
+              // InputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+            />
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <Controls.Textfield name="phone" label="رقم الهاتف" />
+          </Grid>
+          <Grid item xs={3}>
+            <Controls.Textfield
+              name="degree"
+              label="الدرجة الحالية"
+              type="number"
+              InputProps={{
+                inputComponent: Controls.NumberFormatCustom,
+                inputProps: { min: 0, max: 12 },
+              }}
+
+              // InputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+            />
+          </Grid> */}
+          <Grid item xs={12} sm={6}>
             <Controls.Textfield name="employeeId" label="رقم التعريف الوظيفي" />
           </Grid>
+          {/* <Grid item xs={12} sm={6} elevation={6}>
+            <Controls.AutocompleteMui
+              name="movemenType"
+              label="نوع الحركة"
+              variant="outlined"
+              inputValue={inputMovemenType}
+              onInputChange={getMovemenType}
+              options={interOrExten}
+            />
+          </Grid> */}
           <Grid item xs={12} sm={6} elevation={6}>
             <Controls.AutocompleteMui
               name="situation"
               label="الوضعية"
               variant="outlined"
-              inputValue={postion}
+              inputValue={inputValuePostion}
               onInputChange={getValuePostion}
               options={postionChoise}
             />
           </Grid>
-          <Grid item xs={12} sm={6} elevation={6}>
+          <Grid item xs={12} sm={6}>
             <Controls.AutocompleteMui
-              name="educationalPhase"
-              label="الطور"
+              name="wilaya"
+              label="مديرية التربية"
               variant="outlined"
-              inputValue={educationalPhase}
-              onInputChange={getValueEducationalPhase}
-              options={_educationalPhase}
+              inputValue={inputValueWilaya}
+              onInputChange={getValueWilaya}
+              options={wilayaList}
+              getOptionLabel={(option) => {
+                return option.value || "";
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -177,7 +396,31 @@ const FormInfoInterested = (props) => {
               variant="outlined"
               inputValue={inputValueBaldia}
               onInputChange={getValueBaldia}
-              options={baldiaList}
+              options={baldiaList || []}
+              getOptionLabel={(option) => {
+                return option.valeur || "";
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} elevation={6}>
+            <Controls.AutocompleteMui
+              name="educationalPhase"
+              label="الطور"
+              variant="outlined"
+              inputValue={educationalValuePhase}
+              onInputChange={getValueEducationalPhase}
+              options={educationalPhaseList}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Controls.AutocompleteMui
+              name="specialty"
+              label="مادة التدريس"
+              loading
+              loadingText={"في الانتظار"}
+              inputValue={inputValueSpecialty}
+              onInputChange={getValueSpecialty}
+              options={specialtyList || []}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -194,7 +437,6 @@ const FormInfoInterested = (props) => {
               }}
             />
           </Grid>
-
           <Grid item xs={12}>
             <Controls.Textfield
               id="email"

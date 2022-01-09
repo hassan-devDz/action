@@ -56,8 +56,8 @@ const getListStyle = (isDraggingOver) => ({
 });
 // const results = (arr1, arr2) => {
 //       return arr1.filter(
-//         ({ moassa: id1 }) =>
-//           !arr2.some(({ moassa: id2 }) => id2.EtabMatricule === id1.EtabMatricule)
+//         ({ workSchool: id1 }) =>
+//           !arr2.some(({ workSchool: id2 }) => id2.EtabMatricule === id1.EtabMatricule)
 //       );
 //     };
 const DailogMui1 = (props) => {
@@ -92,7 +92,7 @@ const DailogMui1 = (props) => {
     console.log(items);
     setOpen(false);
   };
- 
+
   const query = new URLSearchParams(router.query).toString();
   console.log(query);
   const postData = (e) => {
@@ -101,8 +101,10 @@ const DailogMui1 = (props) => {
   };
   const results = (arr1, arr2) => {
     return arr1.filter(
-      ({ moassa: id1 }) =>
-        !arr2.some(({ moassa: id2 }) => id2.EtabMatricule === id1.EtabMatricule)
+      ({ workSchool: id1 }) =>
+        !arr2.some(
+          ({ workSchool: id2 }) => id2.EtabMatricule === id1.EtabMatricule
+        )
     );
   };
 
@@ -126,7 +128,7 @@ const DailogMui1 = (props) => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
+        <DialogTitle id="alert-dialog-title" style={{ textAlign: "center" }}>
           {"رتب رغباتك عن طريق السحب والافلات "}
         </DialogTitle>
 
@@ -142,8 +144,8 @@ const DailogMui1 = (props) => {
                   <List>
                     {items.map((item, index) => (
                       <Draggable
-                        key={item.moassa.EtabMatricule}
-                        draggableId={`${item.moassa.EtabMatricule}`}
+                        key={item.id}
+                        draggableId={`${item.id}`}
                         index={index}
                       >
                         {(provided, snapshot) => (
@@ -167,7 +169,7 @@ const DailogMui1 = (props) => {
                               >{`الرغبة رقم ${index + 1} `}</span>
                               <ListItemText
                                 style={{ color: "#000" }}
-                                primary={item.moassa.EtabNom}
+                                primary={item.workSchool.EtabNom}
                               ></ListItemText>
                             </ListItem>
                           </Paper>

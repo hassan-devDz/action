@@ -18,15 +18,15 @@ handler
 
       ///
 
-      const deleteToken = await findUserByTokenAndDelete(req.db, token);
-      if (!deleteToken) {
+      const findTokenInDb = await findUserByTokenAndDelete(req.db, token);
+      if (!findTokenInDb) {
         return res
           .status(401)
           .json({ message: "رمز التحقق خاطئ أو انتهت صلاحيتة" });
       }
 
-      if (deleteToken) {
-        req.body = deleteToken;
+      if (findTokenInDb) {
+        req.body = findTokenInDb;
         const inset = await insertUser(req);
 
         return req.logIn(inset, (err) => {

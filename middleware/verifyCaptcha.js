@@ -2,7 +2,7 @@ import nextConnect from "next-connect";
 
 async function verifyCaptcha(req, res, next) {
   const { captcha } = req.body;
- 
+
   try {
     // Ping the hcaptcha verify API to verify the captcha code you received
     const response = await fetch(
@@ -17,7 +17,7 @@ async function verifyCaptcha(req, res, next) {
       }
     );
     const captchaValidation = await response.json();
-    console.log(captchaValidation);
+
     /**
      * {
      *    "success": true|false,     // is the passcode valid, and does it meet security criteria you specified, e.g. sitekey?
@@ -32,7 +32,7 @@ async function verifyCaptcha(req, res, next) {
     if (captchaValidation.success) {
       // Replace this with the API that will save the data received
       // to your backend
-     
+
       return next();
 
       // Return 200 if everything is successful
@@ -42,7 +42,6 @@ async function verifyCaptcha(req, res, next) {
       message: "رمز التفعيل غير صحيح",
     });
   } catch (error) {
-    console.log(error);
     return res.status(422).json({ message: "هناك خطأ ما" });
   }
 }

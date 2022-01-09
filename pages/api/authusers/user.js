@@ -9,10 +9,20 @@ handler
   .get(async (req, res) => {
     // You do not generally want to return the whole user object
     // because it may contain sensitive field such as !!password!! Only return what needed
-    console.log(req.isUnauthenticated());
+
     if (req.user) {
-      const { lastName, firstName, email } = await req.user;
-      return res.json({ user: { lastName, firstName, email } });
+      const { AccountType } = req.user;
+      if (AccountType === "participant") {
+        const { lastName, firstName, email } = await req.user;
+        return res.json({ user: { lastName, firstName, email } });
+      }
+      if (AccountType === "manger") {
+        const { lastName, firstName, email, wilaya, baldia, workSchool } =
+          await req.user;
+        return res.json({
+          user: { lastName, firstName, email, wilaya, baldia, workSchool },
+        });
+      }
     }
 
     // res.json({ user: { name, username, favoriteColor } })

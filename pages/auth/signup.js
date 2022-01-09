@@ -27,7 +27,6 @@ const SignUp = (props) => {
 
   const theme = useTheme();
   const sumbitUser = (values, actions) => {
-    console.log(values);
     const { passwordConfirmation, ...INITIAL_FORM_STATE1 } = values;
     setCreateUser(values);
   };
@@ -62,8 +61,9 @@ const SignUp = (props) => {
       openToastError(`${error?.message} هناك خطأ ما` || "هناك خطأ ما");
     }
   };
+
   useEffect(() => {
-    if (user) {
+    http: if (user) {
       router.push("/");
     }
   }, [user]);
@@ -86,15 +86,22 @@ const SignUp = (props) => {
           <Grid item xs={12}>
             {" "}
             <Typography component="h1" variant="h5" className={classes.dokhol}>
-              التسجيل في الحركة التنقلية السنوية
+              التسجيل في الحركة التنقلية السنوية{" "}
+              {`${new Date().getFullYear()} / ${new Date().getFullYear() + 1}`}
             </Typography>
           </Grid>
 
           <Grid item xs={12}>
-            <FormInfoInterested
-              onSubmit={sumbitUser}
-              onReCAPTCHAChange={onReCAPTCHAChange}
-            />
+            {false ? (
+              <Typography component={"h1"} variant="h5">
+                مدير
+              </Typography>
+            ) : (
+              <FormInfoInterested
+                onSubmit={sumbitUser}
+                onReCAPTCHAChange={onReCAPTCHAChange}
+              />
+            )}
           </Grid>
         </Grid>
       </Container>

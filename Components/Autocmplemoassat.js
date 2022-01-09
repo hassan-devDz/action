@@ -22,12 +22,11 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { useField, useFormikContext } from "formik";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
-import dynamic from 'next/dynamic'
+import dynamic from "next/dynamic";
 
-const Autocomplete = dynamic(
-  () => import("@material-ui/lab/Autocomplete"),
-  { ssr: false }
-)
+const Autocomplete = dynamic(() => import("@material-ui/lab/Autocomplete"), {
+  ssr: false,
+});
 
 const LISTBOX_PADDING = 8; // px
 
@@ -127,13 +126,24 @@ const checkedIcon = <CheckBoxIcon fontSize="medium" />;
 
 export default function Virtualize({ name, label, ...otherProps }) {
   const classes = useStyles();
-  const { setFieldValue} = useFormikContext(null);
+  const { setFieldValue } = useFormikContext(null);
 
   const [field, mata, helpers] = useField(name);
 
-  const handelChange = (e, value, t) => {
+  const handelChange = (e, value) => {
+    if (name === "wilaya") {
+      setFieldValue("baldia", null);
+      setFieldValue("educationalPhase", null);
+      setFieldValue("specialty", null);
+      setFieldValue("workSchool", null);
+    }
     if (name === "baldia") {
-      setFieldValue(name, value);
+      setFieldValue("educationalPhase", null);
+      setFieldValue("specialty", null);
+      setFieldValue("workSchool", null);
+    }
+    if (name === "educationalPhase") {
+      setFieldValue("specialty", null);
       setFieldValue("workSchool", null);
     }
 
@@ -142,13 +152,14 @@ export default function Virtualize({ name, label, ...otherProps }) {
 
   const configAutoComple = {
     ...field,
+    noOptionsText: "لا توجد خيارات",
+
     ...otherProps,
 
     //
 
     classes: classes,
     ListboxComponent: ListboxComponent,
-    noOptionsText: "لا توجد خيارات",
     onChange: handelChange,
     renderOption: (option, { selected }) => (
       <React.Fragment>
@@ -159,7 +170,7 @@ export default function Virtualize({ name, label, ...otherProps }) {
           checked={selected}
         />
 
-        {option.EtabNom || option}
+        {option.EtabNom || option.value || option.valeur || option}
       </React.Fragment>
     ),
     renderInput: (params) => (

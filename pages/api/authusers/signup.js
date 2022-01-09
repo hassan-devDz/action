@@ -3,7 +3,7 @@ import auth, { AuthNotRequired } from "../../../middleware/auth";
 import sendVerificationEmail from "../../../middleware/sendemail";
 import { validate } from "../../../middleware/validate";
 import verifycaptcha from "../../../middleware/verifyCaptcha";
-import { FormInfoInterestedSchema } from "../../../schemas/schemas_moassa";
+import { FormSignup } from "../../../schemas/schemas_moassa";
 
 const handler = nextConnect();
 
@@ -15,4 +15,4 @@ handler
     const user = await sendVerificationEmail(req, res);
   });
 
-export default validate(FormInfoInterestedSchema, handler);
+export default validate(FormSignup, handler);

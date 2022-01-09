@@ -17,7 +17,12 @@ import {
   Paper,
   InputLabel,
 } from "@material-ui/core";
-
+import {
+  subjects,
+  getKeyByValue,
+  loop,
+  loopforUser,
+} from "../../middleware/StudySubjects";
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import CheckTwoToneIcon from "@material-ui/icons/CheckTwoTone";
 import ClearTwoToneIcon from "@material-ui/icons/ClearTwoTone";
@@ -60,14 +65,14 @@ import {
 import Router, { useRouter } from "next/router";
 import replaceStrIcon from "../../Components/IconReplaceTxt/IconRepTxt";
 
-const choiseScools = (props) => {
-  console.log(props);
+const choiseScools = ({ newStructureData }) => {
+  console.log(newStructureData);
 
   /**----------------all useState----------------------- */
   const rouet = useRouter();
   console.log(rouet.query);
   const [loading, setLoading] = useState(true), //جاري التحميل للجدول الرئيسي و احصائيات المدارس
-    [listMoassat, setListMoassat] = useState([]), //قائمة المؤسسات المعنية بالحركة
+    [listMoassat, setListMoassat] = useState(newStructureData), //قائمة المؤسسات المعنية بالحركة
     [selectedMoassa, setSelectedMoassa] = useState([]), //المؤسسات التي تم تحديدها للحذف
     [globalFilter, setGlobalFilter] = useState(null), //الكلمة التي سيتم البحث عنها في الجدول
     [spinnersLoding, setSpinnersLoding] = useState(false); //سبينر في انتظار رد السرفر على طلب اضافة مدرسة
@@ -107,46 +112,53 @@ const choiseScools = (props) => {
   };
   /********************* طلب تعديل أو حذف مؤسسة من الجدول *********************end */
   const results = (arr1, arr2) => {
+    //دالة للمقارنة بين المصفوفة الجديدة والقديمة واظهار الادخال في تنبيه
     const newMoassa = arr1.filter(
-      ({ moassa: elementArr1 }) =>
-        !arr2.some(
-          ({ moassa: elementArr2 }) =>
-            elementArr2.EtabMatricule === elementArr1.EtabMatricule
-        )
+      (idArr1) => !arr2.some((idArr2) => idArr2.id === idArr1.id)
     );
 
-    return newMoassa[0].moassa.EtabNom;
+    return newMoassa[0].workSchool.EtabNom;
   };
 
   const onSelected = (e, d) => {
-    console.log(e);
-    if (e.value.length > selectedMoassa.length) {
-      openToastSuccess(`تمت اضافة ${results(e.value, selectedMoassa)}`);
-    }
-    if (e.value.length < selectedMoassa.length) {
-      openToastError(`تمت حذف ${results(selectedMoassa, e.value)}`);
-    }
     /********************استبعاد الفائض************** */
-    if (
-      e.value.length > 0 &&
-      e.value[e.value.length - 1].forced === 0 &&
-      e.value[e.value.length - 1].potentialVacancy === 0 &&
-      e.value[e.value.length - 1].vacancy === 0 &&
-      e.value[e.value.length - 1].surplus > 0
-    ) {
-      console.log(e.value[e.value.length - 1]);
-      openToastError("لايمكن إختيار هاته المؤسسة لعدم وجود منصب");
-    } else {
-      setSelectedMoassa(e.value);
-    }
+    console.log(e.value[e.value.length - 1], e.value);
+    let arr = [];
+    e.value.map((elm, i) => {
+      if (
+        elm.forced === 0 &&
+        elm.potentialVacancy === 0 &&
+        elm.vacancy === 0 &&
+        elm.surplus > 0
+      ) {
+        openToastError(
+          `لايمكن إختيار ${elm.workSchool.EtabNom} لعدم وجود منصب`
+        );
+      } else {
+        arr.push(elm);
+      }
+    });
+    setSelectedMoassa(arr);
+  };
+  const onRowSelect = (event) => {
+    console.log(event);
+    openToastSuccess(`تمت اضافة ${event.data.workSchool.EtabNom}`);
   };
 
+  const onRowUnselect = (event) => {
+    openToastError(`تمت حذف ${event.data.workSchool.EtabNom}`);
+  };
+  if (selectedMoassa.length > 5) {
+    let _selectedMoassa = selectedMoassa.slice(0, 5);
+    setSelectedMoassa(_selectedMoassa);
+    openToastError("الحد الأقصى للرغبات هو 5");
+  }
   const dt = useRef(null);
 
   useEffect(() => {
-    fetcher("../api/schools", rouet.query)
+    fetcher("../api/getListMoassatForUser")
       .then((res) => {
-        setListMoassat(res);
+        setListMoassat(loopforUser(res));
         setLoading(false);
         console.log(res);
       })
@@ -169,17 +181,9 @@ const choiseScools = (props) => {
   /**-******************************************Submit************************************************************** */
   console.log(selectedMoassa);
 
-  if (selectedMoassa.length > 5) {
-    let _selectedMoassa = selectedMoassa.slice(0, 5);
-    setSelectedMoassa(_selectedMoassa);
-    openToastError("الحد الأقصى للرغبات هو 5");
-  }
-
   /**********************indexOfValueInDataList************************ */
   const indexOfValue = (value) =>
-    listMoassat.findIndex(
-      (x) => x.moassa.EtabMatricule === value.moassa.EtabMatricule
-    );
+    listMoassat.findIndex((x) => x.id === value.id);
 
   const indexOfValueInDataList = (data, props) => {
     return <div>{indexOfValue(data) + 1}</div>;
@@ -248,7 +252,7 @@ const choiseScools = (props) => {
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={2}>
             <DialogOrderOfDesires
-              selectedMoassa={selectedMoassa}
+              selectedMoassa={selectedMoassa} //ترتيب الاختيارات
             ></DialogOrderOfDesires>
           </Grid>
 
@@ -315,7 +319,9 @@ const choiseScools = (props) => {
           selectionMode="checkbox"
           selection={selectedMoassa}
           onSelectionChange={onSelected}
-          dataKey="moassa.EtabMatricule"
+          onRowSelect={onRowSelect}
+          onRowUnselect={onRowUnselect}
+          dataKey="id"
           emptyMessage={
             myChoise ? "لم تختر أي مؤسسة بعد" : "لا توجد بيانات لعرضها"
           }
@@ -336,6 +342,7 @@ const choiseScools = (props) => {
           <Column
             columnKey="multiple"
             selectionMode="multiple"
+            headerStyle={{ width: 40, padding: "0" }}
             style={{ width: 50 }}
             frozen
           ></Column>
@@ -345,38 +352,42 @@ const choiseScools = (props) => {
             header="الرقم"
             body={indexOfValueInDataList}
             headerStyle={{ width: 40, padding: 0 }}
-            style={{}}
             frozen
           ></Column>
           <Column
-            columnKey="moassa.EtabNom"
-            field="moassa.EtabNom"
+            columnKey="workSchool.EtabNom"
+            field="workSchool.EtabNom"
             header="المؤسسة"
             sortable
-            style={{ width: 300 }}
+            style={{ width: 300, padding: 7 }}
             body={replaceStrIcon}
           ></Column>
-
           <Column
-            columnKey="daira"
-            field="daira"
-            header="الدائرة"
-            headerStyle={{ width: 114 }}
-            style={{ padding: 7, height: 81 }}
+            columnKey="educationalPhase"
+            field="educationalPhase"
+            header="الطور"
+            headerStyle={{ width: 150, padding: 7 }}
             sortable
-            frozen
-          ></Column>
+          />
+          <Column
+            columnKey="specialty"
+            field="specialty"
+            header="مادة التدريس"
+            headerStyle={{ width: 150, padding: 7 }}
+            sortable
+          />
 
           <Column
-            columnKey="moassa.bladia"
-            field="moassa.bladia"
+            columnKey="baldia.valeur"
+            field="baldia.valeur"
             header="البلدية"
             sortable
+            frozen
             style={{ padding: 7, height: 81 }}
             headerStyle={{ width: 114, padding: 7 }}
           ></Column>
           {/* <Column
-            field="moassa.EtabMatricule"
+            field="workSchool.EtabMatricule"
             header="رقم المؤسسة"
             sortable
           ></Column> */}
@@ -386,6 +397,7 @@ const choiseScools = (props) => {
             header="محتمل الشغور"
             sortable
             headerStyle={{ width: 148, padding: 7 }}
+            style={{ padding: 7, height: 81 }}
           >
             {/* body={imageBodyTemplate}*/}
           </Column>
@@ -394,7 +406,7 @@ const choiseScools = (props) => {
             field="forced"
             header="مجبر"
             sortable
-            headerStyle={{ width: 120 }}
+            headerStyle={{ width: 120, padding: 7 }}
           >
             {/*body={priceBodyTemplate}*/}
           </Column>
@@ -403,14 +415,14 @@ const choiseScools = (props) => {
             field="vacancy"
             header="شاغر"
             sortable
-            headerStyle={{ width: 120 }}
+            headerStyle={{ width: 120, padding: 7 }}
           ></Column>
           <Column
             columnKey="surplus"
             field="surplus"
             header="فائض"
             sortable
-            headerStyle={{ width: 120 }}
+            headerStyle={{ width: 120, padding: 7 }}
           >
             {/*body={ratingBodyTemplate}*/}
           </Column>
@@ -424,23 +436,25 @@ export async function getServerSideProps(ctx) {
   const urlBass = await process.env.URL_BASE;
   const query = new URLSearchParams(ctx.query).toString();
   const cookie = await ctx.req?.headers.cookie;
-  const res = await fetch(`${urlBass}/api/schools?${query}`, {
+  const res = await fetch(`${urlBass}/api/getListMoassatForUser`, {
     headers: {
       cookie: cookie,
     },
   });
-  console.log(res);
+
   if (!res.ok) {
     return {
       notFound: true,
     };
   }
-
+  console.log(res);
   const data = await res.json();
+  console.log(data, "rrrrrrrrrrrrrrr");
+  const newStructureData = data.citys ? loopforUser(data) : data;
 
   return {
-    props: { data }, // will be passed to the page component as props
+    props: { newStructureData }, // will be passed to the page component as props
   };
 }
-export default choiseScools;
 choiseScools.auth = true;
+export default choiseScools;

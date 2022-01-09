@@ -19,13 +19,14 @@ export function validate(schema, handler) {
 }
 export function validateAuth(authREq = true, schema, handler) {
   return async (req, res) => {
-    
-    const authed = await req.isAuthenticated();//مسجل الدخول
-   const notAuth = await req.isUnauthenticated()
-    if (!authREq && authed) {//هذا مسجل فعلا 
+    const authed = await req.isAuthenticated(); //مسجل الدخول
+    const notAuth = await req.isUnauthenticated();
+    if (!authREq && authed) {
+      //هذا مسجل فعلا
       return res.status(409).json({ message: " انت مسجل الدخول فعلا " });
     }
-    if (authREq && notAuth) {//التسجيل مطلوب
+    if (authREq && notAuth) {
+      //التسجيل مطلوب
       return res.status(401).json({ message: " غير مصرح لك" });
     }
     if (["POST", "PUT"].includes(req.method)) {
@@ -57,7 +58,7 @@ export function validate1(schema, handler) {
         //     ? schema
         //     : schema.concat(object({ id: number().required().positive() }));
         let data = await JSON.parse(req.body.data);
-        console.log(data);
+
         data = await schema
           .camelCase()
           .validate(data, { abortEarly: false, stripUnknown: true });

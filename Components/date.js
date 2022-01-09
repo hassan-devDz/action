@@ -1,39 +1,50 @@
-
 import React, { Fragment, useState } from "react";
-import { DatePicker,MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/dayjs";
 import dayjs from "dayjs";
+import { useRouter } from "next/router";
+import { dateFormaNow } from "./FormsUi/DatePicker/index";
+const now = new Date().getUTCFullYear() - 10;
+const years = Array(now - (now - 20))
+  .fill("")
+  .map((v, idx) => (now + idx).toString());
+function reverse(s) {
+  return s.split("-").reverse().join("-");
+}
+
 function YearPicker(props) {
-  const [selectedDate, setDateChange] = useState(new Date());
-  console.log(dayjs(selectedDate).year())
-  
+  const router = useRouter();
+  const [selectedDate, setDateChange] = useState(
+    years.includes(router.query.year) ? router.query.year : new Date()
+  );
+
   const onChange = (e) => {
-      console.log(e,props);
-      setDateChange(e)
-      props.onChange(dayjs(e).year())
-      
-    
-  }
+    setDateChange(e);
+    props.onChange(dayjs(e).year());
+  };
   return (
     <>
-     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <DatePicker
-      fullWidth
-        views={["year"]}
-        label="السنة"
-        value={selectedDate}
-        onChange={onChange}
-        autoOk
-        inputVariant="outlined"
-        
-        cancelLabel={"الغاء"}
-        okLabel="موافق"
-        id="date"
-        minDateMessage={null}
-       maxDateMessage={null}
-
-
-      />
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <DatePicker
+          fullWidth
+          views={["year"]}
+          label="السنة"
+          value={selectedDate}
+          onChange={onChange}
+          autoOk
+          minDate={reverse(
+            dateFormaNow((new Date().getFullYear() - 10).toString())
+          )}
+          maxDate={reverse(
+            dateFormaNow((new Date().getFullYear() + 9).toString())
+          )}
+          inputVariant="outlined"
+          cancelLabel={"الغاء"}
+          okLabel="موافق"
+          id="date"
+          minDateMessage={null}
+          maxDateMessage={null}
+        />
       </MuiPickersUtilsProvider>
 
       {/* <DatePicker
@@ -81,14 +92,14 @@ export default YearPicker;
 // dayjs.extend(customParseFormat);
 // dayjs.extend(toObject)
 // export function parseDateString(value, originalValue) {
-  
+
 //  if (originalValue&& originalValue.length===4) {
 //   const parsedDate = dayjs(originalValue, "YYYY").toDate();
-  
+
 //   return parsedDate;
 //  }
 //   const parsedDate = dayjs(originalValue, "DD-MM-YYYY").toDate();
-  
+
 //   return parsedDate;
 // }
 // class RuLocalizedUtils extends DateFnsUtils {
@@ -112,21 +123,18 @@ export default YearPicker;
 //   const { setFieldValue } = useFormikContext();
 //   const handleDateChange = (date, e) => {
 
-   
-
-//  setSelectedDate(date); 
+//  setSelectedDate(date);
 //  console.log(e,name);
-  
-    
+
 //   };
- 
+
 //   const [field, meta] = useField(name);
 
 //   const configDateTimePicker = {
 //     ...field,
 //     ...otherProps,
 //     onChange: handleDateChange,
-    
+
 //     InputLabelProps: {
 //       shrink: true,
 //     },
