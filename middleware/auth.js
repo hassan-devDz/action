@@ -26,7 +26,7 @@ export const AuthNotRequired = nextConnect().use((req, res, next) => {
   if (req.isAuthenticated()) {
     return res
       .status(409)
-      .json({ message: "أنت فعلا مسجل الدخول ", err: req.isAuthenticated() });
+      .json({ message: "أنت فعلا مسجل الدخول ", err: req.user });
   }
   next();
 });
