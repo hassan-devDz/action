@@ -24,7 +24,9 @@ const auth = nextConnect()
 export default auth;
 export const AuthNotRequired = nextConnect().use((req, res, next) => {
   if (req.isAuthenticated()) {
-    return res.status(409).json({ message: "أنت فعلا مسجل الدخول " });
+    return res
+      .status(409)
+      .json({ message: "أنت فعلا مسجل الدخول ", err: req.isAuthenticated() });
   }
   next();
 });
