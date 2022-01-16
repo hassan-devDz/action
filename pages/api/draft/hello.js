@@ -1,11 +1,10 @@
-import auth from "../../middleware/auth";
+import auth from "../../../middleware/auth";
 import nextConnect from "next-connect";
 
 const handler = nextConnect();
 
 handler.use(auth).get(async (req, res) => {
   const query = await req.query;
-  
 
   const key_query = Object.keys(query)[0];
   const dairaIsTrue = [

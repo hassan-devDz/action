@@ -2,6 +2,8 @@ import nextConnect from "next-connect";
 import passport from "../lib/passport";
 import session from "../lib/session";
 import database from "../lib/database";
+import { findUserByEmail } from "../lib/dbRely";
+
 const auth = nextConnect()
   .use(database)
   .use(
@@ -33,6 +35,17 @@ export const AuthNotRequired = nextConnect().use((req, res, next) => {
 export const AuthIsRequired = nextConnect().use((req, res, next) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "غير مصرح يجب عليك التسجيل " });
+  }
+  next();
+});
+export const isAprroved = nextConnect().use(async (req, res, next) => {
+  const { email } = await req.body;
+  const { approved } = await findUserByEmail(req.db, email);
+
+  if (!approved) {
+    return res
+      .status(403)
+      .json({ message: "لم تتم الموافقة بعد على حسابك من طرف مسؤولك المباشر" });
   }
   next();
 });

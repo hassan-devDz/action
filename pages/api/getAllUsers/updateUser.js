@@ -1,6 +1,7 @@
 import nextConnect from "next-connect";
 import auth, { AuthIsRequired } from "../../../middleware/auth";
-import { ObjectId } from "mongodb";
+import { LoggerLevel, ObjectId } from "mongodb";
+import { insertUser } from "../../../lib/dbRely";
 const handler = nextConnect();
 
 /**
@@ -59,6 +60,7 @@ handler
     return res.json(findUser);
   })
   .delete(async (req, res) => {
+    console.log(req.user, "userrrrr");
     const { year } = await req.query;
     const { _id } = await req.body;
     const simple_query = {
@@ -67,12 +69,17 @@ handler
 
     const deleteUser = await req.db
       .collection(`users_${year}`)
-      .deleteOne(simple_query);
-    const { deletedCount } = deleteUser;
-    if (!deletedCount) {
+      .findOneAndDelete(simple_query);
+
+    const { value } = deleteUser;
+    console.log(value, "findOneAndDelete");
+    if (!value) {
       return res.status(400).json({ message: "معلومات غير موجودة" });
     }
-    if (deletedCount) {
+    if (value) {
+      const { _id, ...restBody } = await value;
+      req.body = restBody;
+      const inset = await insertUser(req, `users_delete_${year}`);
       return res.status(201).json({ message: "تم الحذف بنجاح" });
     }
 

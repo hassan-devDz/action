@@ -1,16 +1,31 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import {ButtonWrapper,ButtonRed} from '../FormsUi/Button/ButtonNorm';
+import React from "react";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import Paper from "@material-ui/core/Paper";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import { ButtonWrapper, ButtonRed } from "../FormsUi/Button/ButtonNorm";
 import { red } from "@material-ui/core/colors";
-
-
-const ConfirmationDialog = ({ open, options, onCancel, onConfirm, onClose }) => {
+import Draggable from "react-draggable";
+function PaperComponent(props) {
+  return (
+    <Draggable
+      handle="#form-dialog-title"
+      cancel={'[class*="MuiDialogContent-root"]'}
+    >
+      <Paper {...props} />
+    </Draggable>
+  );
+}
+const ConfirmationDialog = ({
+  open,
+  options,
+  onCancel,
+  onConfirm,
+  onClose,
+}) => {
   const {
     title,
     description,
@@ -23,14 +38,17 @@ const ConfirmationDialog = ({ open, options, onCancel, onConfirm, onClose }) => 
   } = options;
 
   return (
-    <Dialog fullWidth {...dialogProps} open={open} onClose={onClose}>
-      {title && (
-        <DialogTitle>{title}</DialogTitle>
-      )}
+    <Dialog
+      PaperComponent={PaperComponent}
+      aria-labelledby="form-dialog-title"
+      fullWidth
+      {...dialogProps}
+      open={open}
+      onClose={onClose}
+    >
+      {title && <DialogTitle id="form-dialog-title">{title}</DialogTitle>}
       {content ? (
-        <DialogContent>
-          {content}
-        </DialogContent>
+        <DialogContent>{content}</DialogContent>
       ) : (
         description && (
           <DialogContent>
@@ -39,11 +57,22 @@ const ConfirmationDialog = ({ open, options, onCancel, onConfirm, onClose }) => 
         )
       )}
       <DialogActions>
-      
-        <ButtonRed color="secondary" {...cancellationButtonProps}  onClick={onCancel}>
+        <ButtonRed
+          color="secondary"
+          {...cancellationButtonProps}
+          onClick={onCancel}
+          variant="text"
+          size="large"
+        >
           {cancellationText}
         </ButtonRed>
-        <ButtonWrapper color="secondary" {...confirmationButtonProps} onClick={onConfirm}>
+        <ButtonWrapper
+          color="secondary"
+          {...confirmationButtonProps}
+          onClick={onConfirm}
+          variant="text"
+          size="large"
+        >
           {confirmationText}
         </ButtonWrapper>
       </DialogActions>

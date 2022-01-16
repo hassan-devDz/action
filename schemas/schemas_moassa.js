@@ -157,7 +157,7 @@ export const itemsSchema = Yup.object().shape({
 });
 
 //FormInfoInterested
-export const FormSignup = Yup.object().shape({
+export const FormSignupTeacher = Yup.object().shape({
   firstName: YupString(3).trim(), //الاسم
   lastName: YupString(3).trim(), //اللقب
   dateOfBirth: YupDate(true, new Date().getTime() - 567993600000),
@@ -170,6 +170,15 @@ export const FormSignup = Yup.object().shape({
   })
     .required("حقل الزامي")
     .nullable(),
+  accountType: Yup.object({
+    key: Yup.number()
+      .integer()
+      .positive()
+      .typeError("يجب تحديد رقم")
+      .min(1, "أقل رقم")
+      .max(5, "أكبر رقم"),
+    value: BasicStr(),
+  }).required("حقل الزامي"),
   workSchool: Yup.object({
     EtabMatricule: numStr(8),
     EtabNom: BasicStr(),
@@ -205,6 +214,166 @@ export const FormSignup = Yup.object().shape({
 
   createdAt: Yup.date().required(),
 });
+export const FormSignupManager = Yup.object().shape({
+  firstName: YupString(3).trim(), //الاسم
+  lastName: YupString(3).trim(), //اللقب
+  dateOfBirth: YupDate(true, new Date().getTime() - 567993600000),
+  //maritalStatus: BasicStr().nullable(),
+  //degree: Yup.number().integer().required("حقل الزامي").nullable(), //اختيار الدرجة الحالية
+  //numberOfChildren: Yup.number().integer().required("حقل الزامي").nullable(),
+  baldia: Yup.object({
+    cle: numStr(4),
+    valeur: BasicStr(),
+  })
+    .required("حقل الزامي")
+    .nullable(),
+  accountType: Yup.object({
+    key: Yup.number()
+      .integer()
+      .positive()
+      .typeError("يجب تحديد رقم")
+      .min(1, "أقل رقم")
+      .max(5, "أكبر رقم"),
+    value: BasicStr(),
+  }).required("حقل الزامي"),
+  workSchool: Yup.object({
+    EtabMatricule: numStr(8),
+    EtabNom: BasicStr(),
+  })
+    .required("حقل الزامي")
+    .nullable(),
+  wilaya: Yup.object({
+    key: numStr(5),
+    value: BasicStr(),
+  })
+    .required("حقل الزامي")
+    .nullable(),
+  //movemenType: BasicStr().nullable(),
+
+  educationalPhase: BasicStr().nullable(),
+
+  //phone: numStr(10),
+  employeeId: numStr(),
+  email: Yup.string()
+    .email("صيغة البريد الإلكتروني غير صحيحة")
+    .required("هذا الحقل مطلوب"),
+
+  password: Yup.string()
+    .min(8, "يجب عليك ادخال 8 أحرف على الأقل")
+    .required("هذا الحقل مطلوب"),
+  passwordConfirmation: Yup.string()
+    .oneOf([Yup.ref("password"), null], "كلمة السر غير مطابقة")
+    .required("يرجى تأكيد كلمة السر"),
+  accept: Yup.boolean()
+    .oneOf([true], "بإنشائك لهذا الحساب أنت توافق على شروط استخدام المنصة .")
+    .required("بإنشائك لهذا الحساب أنت توافق على شروط استخدام المنصة ."),
+  captcha: Yup.string().required("هذا الحقل مطلوب"),
+
+  createdAt: Yup.date().required(),
+});
+export const FormSignupOfficeHead = Yup.object().shape({
+  firstName: YupString(3).trim(), //الاسم
+  lastName: YupString(3).trim(), //اللقب
+  dateOfBirth: YupDate(true, new Date().getTime() - 567993600000),
+  //maritalStatus: BasicStr().nullable(),
+  //degree: Yup.number().integer().required("حقل الزامي").nullable(), //اختيار الدرجة الحالية
+  //numberOfChildren: Yup.number().integer().required("حقل الزامي").nullable(),
+
+  accountType: Yup.object({
+    key: Yup.number()
+      .integer()
+      .positive()
+      .typeError("يجب تحديد رقم")
+      .min(1, "أقل رقم")
+      .max(5, "أكبر رقم"),
+    value: BasicStr(),
+  }).required("حقل الزامي"),
+
+  wilaya: Yup.object({
+    key: numStr(5),
+    value: BasicStr(),
+  })
+    .required("حقل الزامي")
+    .nullable(),
+  //movemenType: BasicStr().nullable(),
+
+  educationalPhase: BasicStr().nullable(),
+
+  //phone: numStr(10),
+  employeeId: numStr(),
+  email: Yup.string()
+    .email("صيغة البريد الإلكتروني غير صحيحة")
+    .required("هذا الحقل مطلوب"),
+
+  password: Yup.string()
+    .min(8, "يجب عليك ادخال 8 أحرف على الأقل")
+    .required("هذا الحقل مطلوب"),
+  passwordConfirmation: Yup.string()
+    .oneOf([Yup.ref("password"), null], "كلمة السر غير مطابقة")
+    .required("يرجى تأكيد كلمة السر"),
+  accept: Yup.boolean()
+    .oneOf([true], "بإنشائك لهذا الحساب أنت توافق على شروط استخدام المنصة .")
+    .required("بإنشائك لهذا الحساب أنت توافق على شروط استخدام المنصة ."),
+  captcha: Yup.string().required("هذا الحقل مطلوب"),
+
+  createdAt: Yup.date().required(),
+});
+export const FormSignupHeadOfInterest = Yup.object().shape({
+  firstName: YupString(3).trim(), //الاسم
+  lastName: YupString(3).trim(), //اللقب
+  dateOfBirth: YupDate(true, new Date().getTime() - 567993600000),
+  //maritalStatus: BasicStr().nullable(),
+  //degree: Yup.number().integer().required("حقل الزامي").nullable(), //اختيار الدرجة الحالية
+  //numberOfChildren: Yup.number().integer().required("حقل الزامي").nullable(),
+
+  accountType: Yup.object({
+    key: Yup.number()
+      .integer()
+      .positive()
+      .typeError("يجب تحديد رقم")
+      .min(1, "أقل رقم")
+      .max(5, "أكبر رقم"),
+    value: BasicStr(),
+  }).required("حقل الزامي"),
+  wilaya: Yup.object({
+    key: numStr(5),
+    value: BasicStr(),
+  })
+    .required("حقل الزامي")
+    .nullable(),
+  //movemenType: BasicStr().nullable(),
+
+  //phone: numStr(10),
+  employeeId: numStr(),
+  email: Yup.string()
+    .email("صيغة البريد الإلكتروني غير صحيحة")
+    .required("هذا الحقل مطلوب"),
+
+  password: Yup.string()
+    .min(8, "يجب عليك ادخال 8 أحرف على الأقل")
+    .required("هذا الحقل مطلوب"),
+  passwordConfirmation: Yup.string()
+    .oneOf([Yup.ref("password"), null], "كلمة السر غير مطابقة")
+    .required("يرجى تأكيد كلمة السر"),
+  accept: Yup.boolean()
+    .oneOf([true], "بإنشائك لهذا الحساب أنت توافق على شروط استخدام المنصة .")
+    .required("بإنشائك لهذا الحساب أنت توافق على شروط استخدام المنصة ."),
+  captcha: Yup.string().required("هذا الحقل مطلوب"),
+
+  createdAt: Yup.date().required(),
+});
+export function FormSignupSchemas(accountTypeKey) {
+  if (accountTypeKey.key == 2) {
+    return FormSignupManager;
+  }
+  if (accountTypeKey.key == 3 || accountTypeKey.key == 4) {
+    return FormSignupOfficeHead;
+  }
+  if (accountTypeKey.key == 5) {
+    return FormSignupHeadOfInterest;
+  }
+  return FormSignupTeacher;
+}
 export const FormInfoInterestedSchema = Yup.object().shape({
   firstName: YupString(3).trim(), //الاسم
   lastName: YupString(3).trim(), //اللقب
@@ -244,4 +413,23 @@ export const loginSchema = Yup.object().shape({
     .min(8, "يجب عليك ادخال 8 أحرف على الأقل")
     .required("هذا الحقل مطلوب"),
   captcha: Yup.string().required("هذا الحقل مطلوب"),
+});
+export const AddUserFromManger = Yup.object().shape({
+  firstName: YupString(3).trim(), //الاسم
+  lastName: YupString(3).trim(), //اللقب
+  dateOfBirth: YupDate(true, new Date().getTime() - 567993600000),
+  //maritalStatus: BasicStr().nullable(),
+  //degree: Yup.number().integer().required("حقل الزامي").nullable(), //اختيار الدرجة الحالية
+  //numberOfChildren: Yup.number().integer().required("حقل الزامي").nullable(),
+
+  //movemenType: BasicStr().nullable(),
+  situation: BasicStr().nullable(),
+
+  specialty: BasicStr().nullable(),
+  //phone: numStr(10),
+  employeeId: numStr(),
+
+  email: Yup.string()
+    .email("صيغة البريد الإلكتروني غير صحيحة")
+    .required("هذا الحقل مطلوب"),
 });

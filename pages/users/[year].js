@@ -316,6 +316,7 @@ const DataTableCrud = ({ dataserver }) => {
       })
       .catch((err) => {
         if (err.response) {
+          setSpinnersLoding(false);
           openToastError(err.response.data.message || err.response.data);
           // client received an error response (5xx, 4xx)
         } else if (err.request) {
@@ -799,7 +800,7 @@ const DataTableCrud = ({ dataserver }) => {
     <>
       {" "}
       <Container maxWidth="xl" style={{ marginBottom: 2, marginTop: 12 }}>
-        <div>
+        {/* <div>
           <button onClick={signOut}>Sign out</button>
           <Link color="primary" href="/auth/login">
             <button>login</button>{" "}
@@ -814,7 +815,7 @@ const DataTableCrud = ({ dataserver }) => {
               users
             </Button>
           </Link>
-        </div>
+        </div> */}
         {/* <TransferList selectedMoassa={selectedMoassa}></TransferList> */}
 
         <Backdrop open={spinnersLoding} style={{ zIndex: 1301 }}>
@@ -1050,7 +1051,7 @@ const DataTableCrud = ({ dataserver }) => {
           loading={isLoading}
           scrollable
           scrollHeight="490px"
-          frozenWidth="240px"
+          frozenWidth="100px"
         >
           <Column
             selectionMode="multiple"
@@ -1065,14 +1066,7 @@ const DataTableCrud = ({ dataserver }) => {
             bodyStyle={{ height: 81 }}
             frozen
           ></Column>
-          <Column
-            field="educationalPhase"
-            header="الطور"
-            filter
-            filterElement={statusFilter}
-            headerStyle={{ width: 150, padding: 7 }}
-            sortable
-          />
+
           <Column
             field="specialty"
             header="مادة التدريس"
@@ -1085,18 +1079,6 @@ const DataTableCrud = ({ dataserver }) => {
             sortable
             style={{ width: 300 }}
             body={replaceStrIcon}
-          ></Column>
-
-          <Column
-            field="wilaya.value"
-            header="الولاية"
-            body={replaceWilayaBody}
-            filter
-            filterElement={wilayaFilter}
-            headerStyle={{ width: 150 }}
-            bodyStyle={{ width: 150 }}
-            sortable
-            frozen
           ></Column>
 
           <Column
@@ -1127,13 +1109,7 @@ const DataTableCrud = ({ dataserver }) => {
           >
             {/*body={priceBodyTemplate}*/}
           </Column>
-          <Column
-            field="email"
-            header="البريد الالكتروني"
-            sortable
-            headerStyle={{ width: 200 }}
-            editor={inputTextEditor}
-          ></Column>
+
           <Column
             field="lastName"
             header="اللقب"

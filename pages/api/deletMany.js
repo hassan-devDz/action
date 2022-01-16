@@ -10,7 +10,7 @@ import {
 } from "../../middleware/StudySubjects";
 
 const handler = nextConnect();
-
+//حذف المؤسسات هذه الصفحة خاصة ب رئيس المصلحة أو من هو أعلى درجة منه
 handler
   .use(auth)
   .use(AuthIsRequired)

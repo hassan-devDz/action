@@ -4,7 +4,7 @@ const Toast = Swal.mixin({
   toast: true,
   position: "bottom-start",
   showConfirmButton: false,
-  timer: 3000,
+  timer: 5000,
   timerProgressBar: false,
 });
 
@@ -22,21 +22,18 @@ module.exports = {
     Toast.fire({
       icon: "error",
       title: message,
-      
     });
   },
   openToastWarning: (message) => {
     Toast.fire({
       icon: "warning",
       title: message,
-      
     });
   },
   openToastInfo: (message) => {
     Toast.fire({
       icon: "info",
       title: message,
-      
     });
   },
 };

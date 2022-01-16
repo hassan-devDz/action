@@ -1,12 +1,14 @@
 import { useState } from "react";
 
 import CheckIcon from "@material-ui/icons/Check";
-
+import RedoIcon from "@material-ui/icons/Redo";
 import DeleteTwoToneIcon from "@material-ui/icons/DeleteTwoTone";
 import { ButtonWrapper, ButtonRed } from "../FormsUi/Button/ButtonNorm";
-
+import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
 import useConfirm from "../UiDialog/useConfirm";
 import { Typography } from "@material-ui/core";
+import { dateFormaNow } from "../FormsUi/DatePicker";
 
 export default function AlertDialog(props) {
   const confirm = useConfirm();
@@ -28,19 +30,89 @@ export default function AlertDialog(props) {
   };
   const handleReject = (item) => {
     confirm({
+      title: "سيتم حذف معلومات الأستاذ (ة) :",
       content: (
-        <Typography variant="body1">
-          سيتم رفض{" "}
-          {item.workSchool
-            ? item?.workSchool.EtabNom
-            : `${item.firstName} ${item.lastName}`}
-          .
-        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              name="firstName"
+              label="الاسم"
+              value={item.firstName}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              value={item.lastName}
+              name="lastName"
+              label="اللقب"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              value={dateFormaNow(item.createdAt)}
+              name={"createdAt"}
+              label="تاريخ التسجيل"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              value={dateFormaNow(item.dateOfBirth)}
+              name={"dateOfBirth"}
+              label="تاريخ الميلاد"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              value={item.employeeId}
+              name="employeeId"
+              label="رقم التعريف الوظيفي"
+            />
+          </Grid>{" "}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              value={item.specialty}
+              name="specialty"
+              label="مادة التدريس"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} elevation={6}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              value={item.situation}
+              name="situation"
+              label="الوضعية"
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              value={item.email}
+              label="البريد الالكتروني"
+              name="email"
+            />
+          </Grid>
+        </Grid>
       ),
       confirmationButtonProps: { startIcon: <CheckIcon /> },
+      cancellationButtonProps: { startIcon: <RedoIcon /> },
     })
       .then(() => props.onReject(item))
-      .catch(() => console.log("Deletion cancelled."));
+      .catch(() => console.log(" cancelled."));
   };
   return (
     <>
@@ -52,7 +124,7 @@ export default function AlertDialog(props) {
         size="small"
         onClick={() => handleReject(props.rowData)}
       >
-        رفض
+        {props.children}
       </ButtonRed>
     </>
   );

@@ -17,7 +17,11 @@ handler
 
     ///
 
-    const findToken = await findUserByToken(req.db, token, "reset_password");
+    const findToken = await findUserByToken(
+      req.db,
+      token,
+      `reset_password_${new Date().getFullYear()}`
+    );
 
     return res.json({ valid: !!findToken });
   });

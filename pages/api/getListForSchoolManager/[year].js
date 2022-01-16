@@ -1,10 +1,10 @@
 import nextConnect from "next-connect";
-import { subjects } from "../../../middleware/StudySubjects";
+import {
+  getListForSchoolManager,
+  getListMoassatForUser,
+} from "../../../Method/getInfo";
 import auth, { AuthIsRequired } from "../../../middleware/auth";
-import { validate } from "../../../middleware/validate";
-import { moassaSchema } from "../../../schemas/schemas_moassa";
-import { getKeyByValue, projec } from "../../../middleware/StudySubjects";
-import { nanoid } from "nanoid";
+
 //صفحة المدير
 /**
  * معلومات المدير تتكون من
@@ -25,69 +25,13 @@ handler
   .use(auth)
   .use(AuthIsRequired)
   .get(async (req, res) => {
-    const {
-      wilaya,
-      baldia,
-      workSchool,
-      specialty,
-      educationalPhase,
-      ...restBody
-    } = await req.user;
-    const { year } = await req.query;
-    // مسار المستوى
-    const educationalPhasePath = `citys.${getKeyByValue(
-      projec,
-      educationalPhase
-    )}`; //todo ex => citys.primary
-    // مادة التدريس
-    const specialtyName = getKeyByValue(subjects.secondaryObj, specialty); //ex => Arabic
-    //مسار رقم المؤسسة
-    const workSchoolKey = `${educationalPhasePath}.${specialtyName}.EtabMatricule`;
-
-    //مسار اسم المؤسسة
-    const workSchoolName = `${educationalPhasePath}.${specialtyName}.EtabNom`;
-    /*^^^^التاكد من ان المعومات المرسلة موجودة في الداتا^^^^*/
-    const simple_query = {
-      $and: [
-        {
-          wilaya,
-          baldia,
-          workSchool,
-        },
-      ],
-    };
-
-    const key = getKeyByValue(projec, educationalPhase);
-
-    /**** الاصلية التاكد من ان المعومات المرسلة موجودة في الداتا*** */
-
-    //! انتهى التأكد من المعلومات المرسلة */
-
-    const valueOfTor = `citys.${[key]}`;
-    const keyOfspecialty = getKeyByValue(subjects[`${[key]}Obj`], specialty);
-    const keyOfspecialty2 = `citys.$.${[key]}.${keyOfspecialty}`;
-    //البحث عن كل المعلومات الواردة من المستخدم والتي طلب اضافتها هل موجودة سابقا او لا
-    console.log(simple_query, "simple_querysimple_query");
-    const isDataExt = await req.db
-      .collection(`users_${year}`)
-      .find(simple_query, {
-        projection: {
-          wilaya: 0,
-          baldia: 0,
-          workSchool: 0,
-          educationalPhase: 0,
-          AccountType: 0,
-          passwordHash: 0,
-        },
-      })
-      .toArray();
-
-    console.log(isDataExt, "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
-    if (!isDataExt) {
-      return res.status(200).json({});
+    const userKey = await req.user.accountType.key;
+    if (userKey === 1) {
+      await getListMoassatForUser(req, res);
     }
-    //البحث عن الولاية والبلدية فقط لكي لا تتداخل المعلومات ولتنسيق داتا الحركة الجديدة عند التحديث
-    return res.status(200).json(isDataExt);
+    if (userKey === 2) {
+      await getListForSchoolManager(req, res);
+    }
   });
 
 export default handler;

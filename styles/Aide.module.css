@@ -1,0 +1,19 @@
+.aside {
+    grid-area: aside;
+}
+
+.male {
+    /* background-color: rgb(215 223 255) !important; */
+    font-weight: normal;
+}
+
+.male:hover,
+.female:hover {
+    color: black !important;
+    font-weight: bold;
+}
+
+.female {
+    /*background-color: rgb(255 216 249) !important;*/
+    font-weight: normal;
+}

@@ -1,4 +1,4 @@
-import auth, { AuthIsRequired } from "../../middleware/auth";
+import auth, { AuthIsRequired } from "../../../middleware/auth";
 import nextConnect from "next-connect";
 
 const handler = nextConnect();

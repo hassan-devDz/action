@@ -11,23 +11,41 @@ handler
     // because it may contain sensitive field such as !!password!! Only return what needed
 
     if (req.user) {
-      const { AccountType } = req.user;
-      if (AccountType === "participant") {
+      const { accountType } = req.user;
+      if (accountType.key === 1 || accountType.key === 4) {
+        //أستاذ
         const { lastName, firstName, email } = await req.user;
-        return res.json({ user: { lastName, firstName, email } });
       }
-      if (AccountType === "manger") {
-        const { lastName, firstName, email, wilaya, baldia, workSchool } =
-          await req.user;
+      if (accountType.key === 2) {
+        //مدير
+        const {
+          lastName,
+          firstName,
+          email,
+          wilaya,
+          baldia,
+          workSchool,
+          educationalPhase,
+          accountType,
+        } = await req.user;
         return res.json({
-          user: { lastName, firstName, email, wilaya, baldia, workSchool },
+          user: {
+            lastName,
+            firstName,
+            email,
+            wilaya,
+            baldia,
+            workSchool,
+            educationalPhase,
+            accountType,
+          },
         });
       }
     }
-
+    return res.json({ user: req.user });
     // res.json({ user: { name, username, favoriteColor } })
 
-    return res.json({ user: "" });
+    //return res.json({ user: "" });
   });
 // .post(async (req, res) => {
 //   const { email, password, name } = await req.body;

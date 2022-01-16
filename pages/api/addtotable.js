@@ -7,7 +7,7 @@ import { getKeyByValue, projec } from "../../middleware/StudySubjects";
 import { nanoid } from "nanoid";
 
 const handler = nextConnect();
-
+// صفحة خاصة باضافة منصب شاغر او راغب او ..... الى الداتا
 handler
   .use(auth)
   .use(AuthIsRequired)
@@ -20,7 +20,7 @@ handler
       specialty,
       ...restBody
     } = await req.body;
-
+    const year = req.query.year;
     //مسار المادة في الداتا
     const elmada = `citys.${getKeyByValue(
       projec,
@@ -52,7 +52,7 @@ handler
       ],
     };
     const key = getKeyByValue(projec, educationalPhase);
-    console.log(subjects[key].includes(specialty), key);
+    console.log(subjects[key].includes(specialty), key, req.query);
     if (!subjects[key].includes(specialty)) {
       return res.status(400).json({ error: "بيانات غير صحيحة" });
     }
@@ -85,44 +85,48 @@ handler
     //البحث عن كل المعلومات الواردة من المستخدم والتي طلب اضافتها هل موجودة سابقا او لا
     console.log(simple_query, "simple_querysimple_query");
     const isDataExt = await req.db
-      .collection("new_action")
+      .collection(`new_action_${year}`)
       .findOne(simple_query);
 
     if (isDataExt) {
       return res.status(422).json({ message: "موجود بالفعل" });
     }
     //البحث عن الولاية والبلدية فقط لكي لا تتداخل المعلومات ولتنسيق داتا الحركة الجديدة عند التحديث
-    const findWilayaAndBaldia = await req.db.collection("new_action").findOne({
-      $and: [{ "citys.cle": baldia.cle, "citys.valeur": baldia.valeur }],
-    });
+    const findWilayaAndBaldia = await req.db
+      .collection(`new_action_${year}`)
+      .findOne({
+        $and: [{ "citys.cle": baldia.cle, "citys.valeur": baldia.valeur }],
+      });
 
     if (findWilayaAndBaldia) {
       //التحديث الثاني بعد وجود الولاية والبلدية
-      const nextUpdate = await req.db.collection("new_action").updateOne(
-        {
-          $and: [
-            {
-              key: wilaya.key,
-              value: wilaya.value,
-              "citys.cle": baldia.cle,
-              "citys.valeur": baldia.valeur,
-            },
-          ],
-        },
+      const nextUpdate = await req.db
+        .collection(`new_action_${year}`)
+        .updateOne(
+          {
+            $and: [
+              {
+                key: wilaya.key,
+                value: wilaya.value,
+                "citys.cle": baldia.cle,
+                "citys.valeur": baldia.valeur,
+              },
+            ],
+          },
 
-        {
-          $addToSet: {
-            [keyOfspecialty2]: {
-              ...workSchool,
-              specialty: specialty,
-              ...restBody,
-              id: nanoid(),
+          {
+            $addToSet: {
+              [keyOfspecialty2]: {
+                ...workSchool,
+                specialty: specialty,
+                ...restBody,
+                id: nanoid(),
+              },
             },
           },
-        },
-        { upsert: true }
-        //{ arrayFilters: [{ "elem.userId": "123" }] }
-      );
+          { upsert: true }
+          //{ arrayFilters: [{ "elem.userId": "123" }] }
+        );
       const { modifiedCount, upsertedCount, matchedCount } = nextUpdate;
       if (modifiedCount || upsertedCount) {
         return res.status(201).json({ message: "تمت العملية بنجاح" });
@@ -130,7 +134,7 @@ handler
     }
     if (!findWilayaAndBaldia) {
       //التحديث لاول مرة تسجيل الولاية والبلدية
-      const firstUpdate = await req.db.collection("new_action").update(
+      const firstUpdate = await req.db.collection(`new_action_${year}`).update(
         {
           key: wilaya.key,
           value: wilaya.value,

@@ -1,8 +1,8 @@
 import nextConnect from "next-connect";
 
-import auth, { AuthIsRequired } from "../../middleware/auth";
-import { validate } from "../../middleware/validate";
-import { moassaSchema } from "../../schemas/schemas_moassa";
+import auth, { AuthIsRequired } from "../../../middleware/auth";
+import { validate } from "../../../middleware/validate";
+import { moassaSchema } from "../../../schemas/schemas_moassa";
 
 // async function auth(req, res,next)  {
 //   const session = await getSession({ req })

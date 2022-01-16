@@ -520,6 +520,9 @@ button {
     border-width: 0 0 1px;
     padding: 1rem;
     outline-color: #a6d5fa;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .p-datatable .p-datatable-tbody>tr.p-highlight {
@@ -824,12 +827,37 @@ button {
     font-size: 2rem;
 }
 
-.row-mojbar {
-    background-color: rgba(255, 239, 6, 0.15) !important;
+.row-mojbar {}
+
+.row-raghib {}
+
+.fade-enter .MuiGrid-item {
+    opacity: 0;
+    transform: translateX(-100%);
 }
 
-.row-raghib {
-    background-color: rgba(243, 142, 124, 0.15) !important;
+.fade-enter-active .MuiGrid-item {
+    opacity: 1;
+    transform: translateX(0%);
+}
+
+.fade-exit .MuiGrid-item {
+    opacity: 1;
+    transform: translateX(0%);
+}
+
+.fade-exit-active .MuiGrid-item {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.fade-enter-active .MuiGrid-item,
+.fade-exit-active .MuiGrid-item {
+    transition: opacity 500ms, transform 500ms;
+    -webkit-transition: opacity 500ms, transform 500ms;
+    -moz-transition: opacity 500ms, transform 500ms;
+    -ms-transition: opacity 500ms, transform 500ms;
+    -o-transition: opacity 500ms, transform 500ms;
 }
 
 

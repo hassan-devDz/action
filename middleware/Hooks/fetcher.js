@@ -31,20 +31,22 @@ export function useData() {
   );
 
   const loading = !error && !data;
-  console.log(data, loading);
+
   return {
     data: data,
     isLoading: loading,
     isError: error,
     isMutate: mutate,
   };
-} //"/api/getAllUsers/2021"
+}
+
+//"/api/getAllUsers/2021"
 export function useUsers(url) {
   const year = useRouter().query.year;
   const { data, error, mutate } = useSWR(url + year, fetcher);
 
   const loading = !error && !data;
-  console.log(data, loading, error);
+
   return {
     data: data,
     isLoading: loading,

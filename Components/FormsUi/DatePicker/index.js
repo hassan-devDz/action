@@ -24,7 +24,7 @@ export function parseDateString(value, originalValue) {
 
     return parsedDate;
   }
-  const parsedDate = dayjs(originalValue, "DD-MM-YYYY").toDate();
+  const parsedDate = dayjs(originalValue, "YYYY-MM-DD").toDate();
 
   return parsedDate;
 }
@@ -40,7 +40,7 @@ export class RuLocalizedUtils extends DateFnsUtils {
 
 export function dateFormaNow(date = new Date()) {
   //تحويل فورما التاريخ الى DD-MM-YYYY
-  return dayjs(date).locale(arDz).format("DD-MM-YYYY");
+  return dayjs(date).locale(arDz).format("YYYY-MM-DD");
 }
 
 export default function MaterialUIPickers({

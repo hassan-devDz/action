@@ -40,7 +40,7 @@ export default function AlertDialog(props) {
       confirmationButtonProps: { startIcon: <CheckIcon /> },
     })
       .then(() => props.onDeleteProduct(item))
-      .catch(() => console.log("Deletion cancelled."));
+      .catch(() => console.log(" cancelled."));
   };
   return (
     <>

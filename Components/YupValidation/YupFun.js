@@ -45,7 +45,7 @@ export function YupDate(isRequired = true, date = new Date()) {
     .typeError(Messages.date)
     .transform(parseDateString)
     .min(
-      "01-01-1958",
+      "1958-01-01",
       Messages.rangeDate(1958, dateFormaNow(date) || new Date().getFullYear())
     )
     .max(

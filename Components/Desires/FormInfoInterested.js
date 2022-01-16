@@ -308,7 +308,7 @@ const FormInfoInterested = (props) => {
             <Controls.MaterialUIPickers
               name={"dateOfBirth"}
               label="تاريخ الميلاد"
-              format="DD-MM-YYYY"
+              format="YYYY-MM-DD"
               defVlue={new Date().getTime() - 567993600000}
               max={new Date().getTime() - 567993600000}
               //views={["year", "month", "date"]}

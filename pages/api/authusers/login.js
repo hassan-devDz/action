@@ -2,6 +2,7 @@ import nextConnect from "next-connect";
 import auth, {
   AuthNotRequired,
   AuthIsRequired,
+  isAprroved,
 } from "../../../middleware/auth";
 import passport from "../../../lib/passport";
 import verifycaptcha from "../../../middleware/verifyCaptcha";
@@ -23,9 +24,10 @@ handler
   .use(verifycaptcha)
   .use(auth)
   .use(AuthNotRequired)
+  //.use(isAprroved)
   .post(passport.authenticate("local"), (req, res) => {
     const { email } = req.user;
-    return res.status(200).json({ user: email });
+    return res.status(200).json({ user: req.user });
   });
 
 export default validate(loginSchema, handler);

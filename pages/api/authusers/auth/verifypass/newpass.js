@@ -6,9 +6,10 @@ import {
 } from "../../../../../lib/dbRely";
 import bcrypt from "bcryptjs";
 import auth, { AuthNotRequired } from "../../../../../middleware/auth";
-
+import verifycaptcha from "../../../../../middleware/verifyCaptcha";
 const handler = nextConnect();
 handler
+  .use(verifycaptcha)
   .use(auth)
   .use(AuthNotRequired)
   .put(async (req, res) => {
@@ -19,7 +20,7 @@ handler
     const findToken = await findUserByTokenAndDelete(
       req.db,
       token,
-      "reset_password"
+      `reset_password_${new Date().getFullYear()}`
     );
     if (findToken) {
       const { email } = findToken;

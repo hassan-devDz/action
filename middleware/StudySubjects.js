@@ -88,6 +88,22 @@ export const _educationalPhase = ["ابتدائي", "متوسط", "ثانوي"];
 export function getKeyByValue(object, value) {
   return Object.keys(object).find((key) => object[key] === value);
 }
+export const postionChoiseExtended = [
+  "راغب",
+  "مجبر",
+  "فائض",
+  "محال على الاستيداع",
+  "منتدب",
+  "تحت التصرف",
+  "عطلة طويلة الأمد",
+];
+export const _accountType = [
+  { value: "أستاذ", key: 1 },
+  { value: "مدير", key: 2 },
+  { value: "رئيس مكتب", key: 4 },
+  { value: "عضو لجنة", key: 3 },
+  { value: "رئيس مصلحة", key: 5 },
+];
 export const projec = {
   primary: "ابتدائي",
   middle: "متوسط",
@@ -163,7 +179,7 @@ export function loopf(data) {
 }
 export function loopforUser(data) {
   const arr = [];
-  if (data.citys) {
+  if (data?.citys) {
     data?.citys.map((ct) => {
       const { cle, valeur, ...ref } = ct; //البلدية ورمزها
 
@@ -216,3 +232,6 @@ export function loopforUser(data) {
 
   return arr;
 }
+const interOrExten = ["خارج الولاية", "داخل الولاية"];
+
+const maritalStatus = ["أعزب", "أرمل(ة)", "مطلق(ة)", "متزوج(ة)"];

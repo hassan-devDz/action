@@ -26,6 +26,7 @@ handler
       }
 
       if (findTokenInDb) {
+        //const { _id, ...restBody } = await findTokenInDb;
         req.body = findTokenInDb;
         const inset = await insertUser(req);
 
@@ -41,7 +42,7 @@ handler
       }
       return res.status(401).json({ message: "هناك خطأ ما" });
     } catch (error) {
-      return res.status(500).json({ message: "هناك خطأ ما" });
+      return res.status(500).json({ message: "هناك خطأ ما", error: error });
     }
   });
 

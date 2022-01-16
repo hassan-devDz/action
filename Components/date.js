@@ -32,12 +32,8 @@ function YearPicker(props) {
           value={selectedDate}
           onChange={onChange}
           autoOk
-          minDate={reverse(
-            dateFormaNow((new Date().getFullYear() - 10).toString())
-          )}
-          maxDate={reverse(
-            dateFormaNow((new Date().getFullYear() + 9).toString())
-          )}
+          minDate={dateFormaNow((new Date().getFullYear() - 10).toString())}
+          maxDate={dateFormaNow((new Date().getFullYear() + 9).toString())}
           inputVariant="outlined"
           cancelLabel={"الغاء"}
           okLabel="موافق"

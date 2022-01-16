@@ -10,7 +10,7 @@ import {
 } from "../../middleware/StudySubjects";
 
 const handler = nextConnect();
-
+// فحة خاصة بتعديل عدد المناصب شاغر راغب مجبر + 1
 handler
   .use(auth)
   .use(AuthIsRequired)

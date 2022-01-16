@@ -21,6 +21,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import router from "next/router";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
+import Layout from "../Components/Layout/index";
 
 NProgress.configure({
   showSpinner: false,
@@ -59,9 +60,11 @@ export default function MyApp({ Component, pageProps, user }) {
         <CssBaseline />
         <AppContext.Provider value={user}>
           {Component.auth ? (
-            <Auth>
-              <Component {...pageProps} />
-            </Auth>
+            <Layout>
+              <Auth>
+                <Component {...pageProps} />
+              </Auth>
+            </Layout>
           ) : (
             <Component {...pageProps} />
           )}

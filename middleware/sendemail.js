@@ -93,12 +93,18 @@ export default async function sendVerificationEmail(req, res) {
     const emailExisted = await findUserByEmail(
       req.db,
       req.body.email,
-      "verification_tokens"
+      `verification_tokens_${new Date().getFullYear()}`
     );
     const emailExistedUserCol = await findUserByEmail(req.db, req.body.email);
 
-    if (emailExisted || emailExistedUserCol) {
-      return res.status(409).send("تم استخدام البريد الإلكتروني بالفعل ");
+    if (emailExisted) {
+      return reSendVerificationEmail(req, res);
+    }
+
+    if (emailExistedUserCol) {
+      return res
+        .status(409)
+        .json({ message: "تم استخدام البريد الإلكتروني بالفعل " });
     }
     const token = await crypto.randomBytes(32).toString("hex");
 
@@ -138,7 +144,7 @@ export async function reSendVerificationEmail(req, res) {
       req,
       { email: req.body.email },
       { confirmationCode: token, expires: Date.now() + 3600000 },
-      "verification_tokens"
+      `verification_tokens_${new Date().getFullYear()}`
     );
 
     if (!emailExisted) {
@@ -174,7 +180,11 @@ export async function reSendVerificationEmail(req, res) {
 export async function reSetPassword(req, res) {
   try {
     // Save the verification token
-    const emailExisted = await findUserByEmail(req.db, req.body.email, "users");
+    const emailExisted = await findUserByEmail(
+      req.db,
+      req.body.email,
+      `users_${new Date().getFullYear()}`
+    );
 
     if (!emailExisted) {
       return res.status(200).json({ message: emailExisted });

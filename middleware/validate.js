@@ -1,3 +1,5 @@
+import { findUserByEmail } from "../lib/dbRely";
+
 export function validate(schema, handler) {
   return async (req, res) => {
     if (["POST", "PUT"].includes(req.method)) {
@@ -6,10 +8,19 @@ export function validate(schema, handler) {
         //   req.method === 'POST'
         //     ? schema
         //     : schema.concat(object({ id: number().required().positive() }));
+        console.log(req.url, "validate");
 
-        req.body = await schema
-          .camelCase()
-          .validate(req.body, { abortEarly: false, stripUnknown: true });
+        if (req.url === "/api/authusers/signup") {
+          const { accountType } = req.body;
+
+          req.body = await schema(accountType)
+            .camelCase()
+            .validate(req.body, { abortEarly: false, stripUnknown: true });
+        } else {
+          req.body = await schema
+            .camelCase()
+            .validate(req.body, { abortEarly: false, stripUnknown: true });
+        }
       } catch (error) {
         return res.status(400).json(error);
       }

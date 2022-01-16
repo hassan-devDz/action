@@ -13,6 +13,7 @@ import SchoolOutlinedIcon from "@material-ui/icons/SchoolOutlined";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Divider from "@material-ui/core/Divider";
 import { useUser } from "../middleware/Hooks/fetcher";
+import { blue } from "@material-ui/core/colors";
 const Static = (prpos) => {
   const classe = useStyle();
   const [user, { mutate, loading }] = useUser();
@@ -77,7 +78,7 @@ const Static = (prpos) => {
               >
                 مديرية التربية لولاية
               </Typography>
-              <Grid item container>
+              <Grid item>
                 <Typography
                   variant="h6"
                   component="h4"
@@ -91,10 +92,10 @@ const Static = (prpos) => {
                     fontWeight: 700,
                   }}
                 >
-                  {!prpos.loading ? (
+                  {!prpos.loading && !loading && user ? (
                     user.wilaya.value.replace("مديرية التربية لولاية", "")
                   ) : (
-                    <Skeleton width={"50%"} />
+                    <Skeleton width={"100%"} />
                   )}
                 </Typography>{" "}
               </Grid>
@@ -102,7 +103,7 @@ const Static = (prpos) => {
             <Divider
               orientation="vertical"
               flexItem
-              style={{ margin: "0px 4px" }}
+              style={{ margin: "0px" }}
             />
             <Grid
               item
@@ -111,7 +112,7 @@ const Static = (prpos) => {
                 backgroundImage: `url(/cards/wilaya.svg)`,
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
-                backgroundSize: "cover",
+                backgroundColor: "rgb(228, 233, 255)",
               }}
             >
               {/* <Icon>
@@ -143,7 +144,7 @@ const Static = (prpos) => {
               >
                 البلدية
               </Typography>
-              <Grid item container>
+              <Grid item>
                 <Typography
                   variant="h6"
                   component="h4"
@@ -157,10 +158,10 @@ const Static = (prpos) => {
                     fontWeight: 700,
                   }}
                 >
-                  {!prpos.loading ? (
+                  {!prpos.loading && !loading && user ? (
                     user.baldia.valeur
                   ) : (
-                    <Skeleton width={"50%"} />
+                    <Skeleton width={"100%"} />
                   )}
                 </Typography>{" "}
               </Grid>
@@ -168,7 +169,7 @@ const Static = (prpos) => {
             <Divider
               orientation="vertical"
               flexItem
-              style={{ margin: "0px 4px" }}
+              style={{ margin: "0px" }}
             />
             <Grid
               item
@@ -177,7 +178,7 @@ const Static = (prpos) => {
                 backgroundImage: `url(/cards/baldia.svg)`,
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
-                backgroundSize: "cover",
+                backgroundColor: "rgb(228, 233, 255)",
               }}
             >
               {/* <Icon>
@@ -207,9 +208,14 @@ const Static = (prpos) => {
                 color="textSecondary"
                 style={{ fontWeight: 700, whiteSpace: "nowrap" }}
               >
-                {replaceNom().nom}
+                {" "}
+                {!prpos.loading && !loading && user ? (
+                  replaceNom().nom
+                ) : (
+                  <Skeleton width={"50%"} />
+                )}
               </Typography>
-              <Grid item container>
+              <Grid item>
                 <Typography
                   variant="h6"
                   component="h4"
@@ -223,10 +229,10 @@ const Static = (prpos) => {
                     fontWeight: 700,
                   }}
                 >
-                  {!prpos.loading ? (
+                  {!prpos.loading && !loading && user ? (
                     replaceNom().name
                   ) : (
-                    <Skeleton width={"50%"} />
+                    <Skeleton width={"100%"} />
                   )}
                 </Typography>{" "}
               </Grid>
@@ -234,7 +240,7 @@ const Static = (prpos) => {
             <Divider
               orientation="vertical"
               flexItem
-              style={{ margin: "0px 4px" }}
+              style={{ margin: "0px" }}
             />
             <Grid
               item
@@ -243,7 +249,7 @@ const Static = (prpos) => {
                 backgroundImage: `url(/cards/kids_school.svg)`,
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
-                backgroundSize: "cover",
+                backgroundColor: "rgb(228, 233, 255)",
               }}
             >
               {/* <Icon>
@@ -275,7 +281,7 @@ const Static = (prpos) => {
               >
                 المدير (ة):
               </Typography>
-              <Grid item container>
+              <Grid item>
                 <Typography
                   variant="h6"
                   component="h4"
@@ -289,10 +295,10 @@ const Static = (prpos) => {
                     fontWeight: 700,
                   }}
                 >
-                  {!prpos.loading ? (
+                  {!prpos.loading && !loading && user ? (
                     `${user.firstName}  ${user.lastName}`
                   ) : (
-                    <Skeleton width={"50%"} />
+                    <Skeleton width={"100%"} />
                   )}
                 </Typography>{" "}
               </Grid>
@@ -300,7 +306,7 @@ const Static = (prpos) => {
             <Divider
               orientation="vertical"
               flexItem
-              style={{ margin: "0px 4px" }}
+              style={{ margin: "0px" }}
             />
             <Grid
               item
@@ -309,7 +315,7 @@ const Static = (prpos) => {
                 backgroundImage: `url(/cards/manager.svg)`,
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
-                backgroundSize: "cover",
+                backgroundColor: "rgb(228, 233, 255)",
               }}
             >
               {/* <Icon>

@@ -1,8 +1,8 @@
-import React from 'react';
-import { Button } from '@material-ui/core';
+import React from "react";
+import { Button } from "@material-ui/core";
 
-import Paper from '@material-ui/core/Paper'
-import useStyles from '../StyleForm'
+import Paper from "@material-ui/core/Paper";
+import useStyles from "../StyleForm";
 import { red } from "@material-ui/core/colors";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 const themebutton = createTheme({
@@ -32,54 +32,39 @@ const themebutton = createTheme({
   },
 });
 
-export const ButtonWrapper = ({
-  children,
-  ...otherProps
-}) => {
-  
- const classes = useStyles()
+export const ButtonWrapper = ({ children, ...otherProps }) => {
+  const classes = useStyles();
   const configButton = {
-    variant:"outlined",
-    
-    size:"medium",
+    variant: "outlined",
+
+    size: "medium",
     fullWidth: true,
-    
-    
-    
+
     ...otherProps,
-  }
+  };
 
   return (
     <Paper className={classes.buttonPapersubmit}>
-    <Button
-    
-      {...configButton}
-      className={classes.submit}
-    >
-      {children}
-    </Button></Paper>
+      <Button {...configButton} className={classes.submit}>
+        {children}
+      </Button>
+    </Paper>
   );
 };
 
-export const ButtonRed = ({
-  children,
-  ...otherProps
-}) => {
+export const ButtonRed = ({ children, ...otherProps }) => {
   const configButton = {
-    variant:"outlined",
-    
-    size:"medium",
+    variant: "outlined",
+
+    size: "medium",
     fullWidth: true,
-    
-    
-    
+
     ...otherProps,
-  }
- 
+  };
 
   return (
     <ThemeProvider theme={themebutton}>
-    <ButtonWrapper {...configButton} >{children}</ButtonWrapper>
-     </ThemeProvider>
+      <ButtonWrapper {...configButton}>{children}</ButtonWrapper>
+    </ThemeProvider>
   );
 };

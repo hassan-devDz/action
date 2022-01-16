@@ -775,22 +775,6 @@ const DataTableCrud = ({ newStructureData }) => {
     <>
       {" "}
       <Container maxWidth="xl" style={{ marginBottom: 2, marginTop: 12 }}>
-        <div>
-          <button onClick={signOut}>Sign out</button>
-          <Link color="primary" href="/auth/login">
-            <button>login</button>{" "}
-          </Link>
-          <Link color="primary" href="/choise/2021">
-            <Button color="primary" variant="outlined">
-              choise
-            </Button>
-          </Link>
-          <Link color="primary" href="/users/2021">
-            <Button color="primary" variant="outlined">
-              users
-            </Button>
-          </Link>
-        </div>
         {/* <TransferList selectedMoassa={selectedMoassa}></TransferList> */}
 
         <Backdrop open={spinnersLoding} style={{ zIndex: 1301 }}>
@@ -798,13 +782,6 @@ const DataTableCrud = ({ newStructureData }) => {
         </Backdrop>
 
         <Grid container spacing={2} justifyContent="center">
-          <Grid item xs={12} sm={9}>
-            <Paper elevation={3} style={{ padding: 10 }}>
-              <Typography variant="h4" component="h1" align="center">
-                جدول الحركة التنقلية للموسم {`${year} / ${year + 1}`}
-              </Typography>
-            </Paper>
-          </Grid>
           <Grid item xs={12}>
             <DialogMui
               fullScreen={fullScreen}

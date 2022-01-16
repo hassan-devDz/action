@@ -89,6 +89,11 @@ export default function logIn() {
       } else if (response.status === 401) {
         setpageLoding(false);
         openToastError("البريد الالكتروني أو كلمة السر غير صحيحة");
+      } else if (response.status === 403) {
+        const userObj = await response.json();
+        setpageLoding(false);
+
+        openToastError(userObj.message);
       } else {
         setpageLoding(false);
         openToastError(response.statusText);
