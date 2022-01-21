@@ -60,11 +60,11 @@ export default function MyApp({ Component, pageProps, user }) {
         <CssBaseline />
         <AppContext.Provider value={user}>
           {Component.auth ? (
-            <Layout>
-              <Auth>
+            <Auth>
+              <Layout>
                 <Component {...pageProps} />
-              </Auth>
-            </Layout>
+              </Layout>
+            </Auth>
           ) : (
             <Component {...pageProps} />
           )}

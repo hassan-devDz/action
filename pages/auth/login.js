@@ -122,161 +122,188 @@ export default function logIn() {
           className={classes.form}
           alignContent="center"
           style={{ margin: 0 }}
+          alignItems="center"
         >
-          <Grid item container alignContent="center" direction="column" xs={12}>
-            <Grid item>
-              <Avatar className={classes.avatar}>
-                <LockOutlinedIcon />
-              </Avatar>
-            </Grid>
-            <Grid item>
-              <Typography
-                component="h1"
-                variant="h5"
-                className={classes.dokhol}
-              >
-                دخول
-              </Typography>
-            </Grid>
+          <Grid item xs={12} md={6} className={classes.disp}>
+            <Image
+              src={"/signup/Quitting_a_job-bro.svg"}
+              width={700}
+              height={700}
+            />
           </Grid>
-
           <Grid
             item
             container
-            justifyContent="space-between"
-            className={classes.goolface}
+            xs={12}
+            sm={12}
+            md={6}
+            className={classes.form}
+            alignContent="center"
+            style={{ margin: 0 }}
           >
-            <Grid item xs={12} sm={5} md={5}>
-              <Button
-                variant="outlined"
-                color="primary"
-                size="large"
-                fullWidth
-                className={classes.button}
-                startIcon={
-                  <Image src="/signup/google.svg" width={20} height={20} />
-                }
-                onClick={Unavailable}
-              >
-                دخول عبر جوجل
-              </Button>
-            </Grid>
-            <Divider orientation="vertical" flexItem />
-            <Grid item item xs={12} sm={5} md={5}>
-              <Button
-                variant="outlined"
-                color="primary"
-                size="large"
-                fullWidth
-                className={classes.button}
-                startIcon={
-                  <Image src="/signup/facebook.svg" width={20} height={20} />
-                }
-                onClick={Unavailable}
-              >
-                دخول عبر فيسبوك
-              </Button>
-            </Grid>
-          </Grid>
-          <DividerWithText>
-            {" "}
-            أو يمكنك الدخول عبر البريد الإلكتروني
-          </DividerWithText>
-          <Grid item container>
-            <Formik
-              initialValues={{
-                ...INITIAL_FORM_STATE,
-              }}
-              validationSchema={FORM_VALIDATION}
-              onSubmit={handleSubmit}
+            <Grid
+              item
+              container
+              alignContent="center"
+              direction="column"
+              xs={12}
             >
-              <Form className={classes.form}>
-                <Grid item container spacing={2}>
-                  <Grid item xs={12}>
-                    <Controls.Textfield
-                      id="email"
-                      label="البريد الالكتروني"
-                      name="email"
-                      autoComplete="email"
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton aria-label="email">
-                              <AlternateEmailIcon />
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Controls.Textfield
-                      name="password"
-                      label="كلمة السر"
-                      type={showPassword ? "text" : "password"}
-                      id="password"
-                      autoComplete="current-password"
-                      InputProps={{
-                        // <-- This is where the toggle button is added.
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              aria-label="toggle password visibility"
-                              onClick={handleClickShowPassword}
-                              onMouseDown={handleMouseDownPassword}
-                            >
-                              {showPassword ? (
-                                <Visibility />
-                              ) : (
-                                <VisibilityOff />
-                              )}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </Grid>
+              <Grid item>
+                <Avatar className={classes.avatar}>
+                  <LockOutlinedIcon />
+                </Avatar>
+              </Grid>
+              <Grid item>
+                <Typography
+                  component="h1"
+                  variant="h5"
+                  className={classes.dokhol}
+                >
+                  دخول
+                </Typography>
+              </Grid>
+            </Grid>
 
-                  <Grid item xs={12}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox value="allowExtraEmails" color="primary" />
-                      }
-                      label="تذكرني ."
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <ReCAPTCHA
-                      ref={recaptchaRef}
-                      size="invisible"
-                      hl="ar"
-                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
-                      onChange={onReCAPTCHAChange}
-                      badge="bottomleft"
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Controls.Button
-                      type="submit"
-                      className={classes.submit}
-                      color="primary"
-                    >
-                      تسجيل الدخول
-                    </Controls.Button>
-                  </Grid>
-                  <Grid item container justifyContent="space-between">
-                    <Grid item>
-                      <Link href="/auth/resetpassword">نسيت كلمة السر ؟ </Link>
+            <Grid
+              item
+              container
+              justifyContent="space-between"
+              className={classes.goolface}
+            >
+              <Grid item xs={12} sm={5} md={5}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="large"
+                  fullWidth
+                  className={classes.button}
+                  startIcon={
+                    <Image src="/signup/google.svg" width={20} height={20} />
+                  }
+                  onClick={Unavailable}
+                >
+                  دخول عبر جوجل
+                </Button>
+              </Grid>
+              <Divider orientation="vertical" flexItem />
+              <Grid item item xs={12} sm={5} md={5}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="large"
+                  fullWidth
+                  className={classes.button}
+                  startIcon={
+                    <Image src="/signup/facebook.svg" width={20} height={20} />
+                  }
+                  onClick={Unavailable}
+                >
+                  دخول عبر فيسبوك
+                </Button>
+              </Grid>
+            </Grid>
+            <DividerWithText>
+              {" "}
+              أو يمكنك الدخول عبر البريد الإلكتروني
+            </DividerWithText>
+            <Grid item container>
+              <Formik
+                initialValues={{
+                  ...INITIAL_FORM_STATE,
+                }}
+                validationSchema={FORM_VALIDATION}
+                onSubmit={handleSubmit}
+              >
+                <Form className={classes.form}>
+                  <Grid item container spacing={2}>
+                    <Grid item xs={12}>
+                      <Controls.Textfield
+                        id="email"
+                        label="البريد الالكتروني"
+                        name="email"
+                        autoComplete="email"
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton aria-label="email">
+                                <AlternateEmailIcon />
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
                     </Grid>
-                    <Grid item>
-                      <Link href="/auth/signup">
-                        ليس لديك حساب ؟ تسجيل حساب جديد
-                      </Link>
+                    <Grid item xs={12}>
+                      <Controls.Textfield
+                        name="password"
+                        label="كلمة السر"
+                        type={showPassword ? "text" : "password"}
+                        id="password"
+                        autoComplete="current-password"
+                        InputProps={{
+                          // <-- This is where the toggle button is added.
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowPassword}
+                                onMouseDown={handleMouseDownPassword}
+                              >
+                                {showPassword ? (
+                                  <Visibility />
+                                ) : (
+                                  <VisibilityOff />
+                                )}
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox value="allowExtraEmails" color="primary" />
+                        }
+                        label="تذكرني ."
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <ReCAPTCHA
+                        ref={recaptchaRef}
+                        size="invisible"
+                        hl="ar"
+                        sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                        onChange={onReCAPTCHAChange}
+                        badge="bottomleft"
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Controls.Button
+                        type="submit"
+                        className={classes.submit}
+                        color="primary"
+                      >
+                        تسجيل الدخول
+                      </Controls.Button>
+                    </Grid>
+                    <Grid item container justifyContent="space-between">
+                      <Grid item>
+                        <Link href="/auth/resetpassword">
+                          نسيت كلمة السر ؟{" "}
+                        </Link>
+                      </Grid>
+                      <Grid item>
+                        <Link href="/auth/signup">
+                          ليس لديك حساب ؟ تسجيل حساب جديد
+                        </Link>
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
-              </Form>
-            </Formik>
+                </Form>
+              </Formik>
+            </Grid>
           </Grid>
         </Grid>
       </Container>

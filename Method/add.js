@@ -14,6 +14,7 @@ export async function addUserFromManger(req, res) {
     accept: true,
     addFromManger: true,
     approved: true,
+    emailVerified: false,
     passwordHash: passwordHash,
     createdAt: new Date().getTime(),
   };

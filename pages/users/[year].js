@@ -222,7 +222,7 @@ const DataTableCrud = ({ dataserver }) => {
 
     setEducationalValuePhase(newInputValue);
 
-    if (newInputValue) {
+    if (_educationalPhase.includes(newInputValue)) {
       const body = {
         cle: baldiaList.filter((elm) => elm.valeur == inputValueBaldia)[0].cle,
         value: newInputValue,

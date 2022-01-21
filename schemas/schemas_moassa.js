@@ -5,6 +5,11 @@ import {
   BasicStr,
   YupDate,
 } from "../Components/YupValidation/YupFun";
+import {
+  postionChoiseExtended,
+  subjects,
+  _educationalPhase,
+} from "../middleware/StudySubjects";
 export const moassaSchema = Yup.object().shape(
   {
     potentialVacancy: Yup.number()
@@ -63,8 +68,14 @@ export const moassaSchema = Yup.object().shape(
     })
       .required("حقل الزامي")
       .nullable(),
-    educationalPhase: BasicStr().nullable(),
-    specialty: BasicStr().nullable(),
+    educationalPhase: Yup.string()
+      .oneOf(_educationalPhase, "يجب أن تختار من الخيارات المتاحة")
+      .required("حقل الزامي")
+      .nullable(),
+    specialty: Yup.string()
+      .oneOf(subjects.secondary, "يجب أن تختار من الخيارات المتاحة")
+      .required("حقل الزامي")
+      .nullable(),
     workSchool: Yup.object({
       EtabMatricule: numStr(8),
       EtabNom: BasicStr(),
@@ -88,8 +99,14 @@ export const arrayMoassaSchema = Yup.object().shape({
     .of(
       Yup.object().shape({
         EtabMatricule: numStr(8),
-        specialty: BasicStr(),
-        educationalPhase: BasicStr(),
+        specialty: Yup.string()
+          .oneOf(subjects.secondary, "يجب أن تختار من الخيارات المتاحة")
+          .required("حقل الزامي")
+          .nullable(),
+        educationalPhase: Yup.string()
+          .oneOf(_educationalPhase, "يجب أن تختار من الخيارات المتاحة")
+          .required("حقل الزامي")
+          .nullable(),
         key: numStr(5),
         cle: numStr(4),
       })
@@ -192,9 +209,18 @@ export const FormSignupTeacher = Yup.object().shape({
     .required("حقل الزامي")
     .nullable(),
   //movemenType: BasicStr().nullable(),
-  situation: BasicStr().nullable(),
-  educationalPhase: BasicStr().nullable(),
-  specialty: BasicStr().nullable(),
+  situation: Yup.string()
+    .oneOf(postionChoiseExtended, "يجب أن تختار من الخيارات المتاحة")
+    .required("حقل الزامي")
+    .nullable(),
+  educationalPhase: Yup.string()
+    .oneOf(_educationalPhase, "يجب أن تختار من الخيارات المتاحة")
+    .required("حقل الزامي")
+    .nullable(),
+  specialty: Yup.string()
+    .oneOf(subjects.secondary, "يجب أن تختار من الخيارات المتاحة")
+    .required("حقل الزامي")
+    .nullable(),
   //phone: numStr(10),
   employeeId: numStr(),
   email: Yup.string()
@@ -250,7 +276,10 @@ export const FormSignupManager = Yup.object().shape({
     .nullable(),
   //movemenType: BasicStr().nullable(),
 
-  educationalPhase: BasicStr().nullable(),
+  educationalPhase: Yup.string()
+    .oneOf(_educationalPhase, "يجب أن تختار من الخيارات المتاحة")
+    .required("حقل الزامي")
+    .nullable(),
 
   //phone: numStr(10),
   employeeId: numStr(),
@@ -297,7 +326,10 @@ export const FormSignupOfficeHead = Yup.object().shape({
     .nullable(),
   //movemenType: BasicStr().nullable(),
 
-  educationalPhase: BasicStr().nullable(),
+  educationalPhase: Yup.string()
+    .oneOf(_educationalPhase, "يجب أن تختار من الخيارات المتاحة")
+    .required("حقل الزامي")
+    .nullable(),
 
   //phone: numStr(10),
   employeeId: numStr(),
@@ -384,8 +416,14 @@ export const FormInfoInterestedSchema = Yup.object().shape({
   })
     .required("حقل الزامي")
     .nullable(),
-  situation: BasicStr().nullable(),
-  educationalPhase: BasicStr().nullable(),
+  situation: Yup.string()
+    .oneOf(postionChoiseExtended, "يجب أن تختار من الخيارات المتاحة")
+    .required("حقل الزامي")
+    .nullable(),
+  educationalPhase: Yup.string()
+    .oneOf(_educationalPhase, "يجب أن تختار من الخيارات المتاحة")
+    .required("حقل الزامي")
+    .nullable(),
   employeeId: numStr(16),
   email: Yup.string()
     .email("صيغة البريد الإلكتروني غير صحيحة")
@@ -423,9 +461,15 @@ export const AddUserFromManger = Yup.object().shape({
   //numberOfChildren: Yup.number().integer().required("حقل الزامي").nullable(),
 
   //movemenType: BasicStr().nullable(),
-  situation: BasicStr().nullable(),
+  situation: Yup.string()
+    .oneOf(postionChoiseExtended, "يجب أن تختار من الخيارات المتاحة")
+    .required("حقل الزامي")
+    .nullable(),
 
-  specialty: BasicStr().nullable(),
+  specialty: Yup.string()
+    .oneOf(subjects.secondary, "يجب أن تختار من الخيارات المتاحة")
+    .required("حقل الزامي")
+    .nullable(),
   //phone: numStr(10),
   employeeId: numStr(),
 

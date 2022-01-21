@@ -213,7 +213,7 @@ const Manager = (props) => {
 
     setEducationalValuePhase(newInputValue);
     console.log(inputValueBaldia);
-    if (newInputValue) {
+    if (_educationalPhase.includes(newInputValue)) {
       const body = {
         cle: baldiaList.filter((elm) => elm.valeur == inputValueBaldia)[0].cle,
         value: newInputValue,

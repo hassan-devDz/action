@@ -545,7 +545,7 @@ const ManagerPage = ({ dataserver }) => {
     }
     if (rowData?.approved) {
       return (
-        <ButtonWrapper variant="text" color="secondary" fullWidth>
+        <ButtonWrapper variant="text" color="secondary" size="small" fullWidth>
           مقبول
         </ButtonWrapper>
       );
@@ -995,6 +995,7 @@ const ManagerPage = ({ dataserver }) => {
           <ButtonWrapper
             variant="outlined"
             color="secondary"
+            size="small"
             disabled={!rowData.approved}
             onClick={handleClickOpenInfo}
             style={{ transform: "rotate(180deg)" }}
@@ -1139,16 +1140,16 @@ const ManagerPage = ({ dataserver }) => {
                   <DialogContent>
                     <Grid container item spacing={2}>
                       <Grid item xs={12}>
-                        <DialogContentText>
-                          <Alert severity="warning">
-                            <Typography variant="body2">
+                        <DialogContentText component={"div"}>
+                          <Alert component={"div"} severity="warning">
+                            <Typography component={"p"} variant="body2">
                               {" "}
                               تحذير : لا تستخدم هذه الخانة الا في حالتين :
                             </Typography>
-                            <Typography variant="body2">
+                            <Typography component={"p"} variant="body2">
                               -1- المجبر الذي رفض التصريح بالرغبة .
                             </Typography>
-                            <Typography variant="body2">
+                            <Typography component={"p"} variant="body2">
                               -2- الفائض .
                             </Typography>
                           </Alert>
@@ -1405,7 +1406,7 @@ const ManagerPage = ({ dataserver }) => {
 
             <Column
               header="تأكيد حساب"
-              headerStyle={{ width: 180 }}
+              headerStyle={{ width: 120 }}
               body={bodyApproved}
             />
           </DataTable>
